@@ -115,3 +115,5 @@ reddit_post*
 *.wav
 
 _.* #ignore vim files
+
+target/
