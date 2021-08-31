@@ -1,6 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
-  (:require [hiccups.runtime :as hiccupsrt]))
+  (:require [hiccups.runtime :as hiccupsrt]
+           [clojure.spec.alpha :as s]))
 
 
 
@@ -19,7 +20,7 @@
 (def my-doc (js/document.getRootNode))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
-  (html [:h2 {} "HEADER 2"]
+  (html [:h2 {} "head 4"]
         [:div {} "ASDSD"]
         (:span {:class "foobar"} "ASSS2dsds")))
 
@@ -28,6 +29,11 @@
 (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
+;; (def to-output (person :name))
+
 (def person {:name "josh" :age 21})
-(println (str "|- start output -|\n" (person :name) "\n|- ended output -|"))
+
+(def to-output (person :age))
+
+(println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
