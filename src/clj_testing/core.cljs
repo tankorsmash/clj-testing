@@ -19,21 +19,29 @@
 
 (def my-doc (js/document.getRootNode))
 
-(defn render_dom "takes nothing and returns a new string for the entire DOM" []
-  (html [:h2 {} "head 4"]
-        [:div {} "ASDSD"]
-        (:span {:class "foobar"} "ASSS2dsds")))
-
 (def main-doc (js/document.getRootNode))
-;; uncomment this to alter the provided "app" DOM element
-(set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
 ;; (def to-output (person :name))
 
-(def person {:name "josh" :age 21})
+(def joshua {:name "josh" :age 23})
 
-(def to-output (person :age))
+(def test-spec (s/conform even? 1000))
+
+(s/def :person/age #{:age})
+(s/def :number/small '(1 2 3 4 5))
+(s/def :number/smaller '(1 2))
+
+(def my-spec (s/valid? :number/small joshua))
+
+(def to-output (joshua :age))
+
+(defn render_dom "takes nothing and returns a new string for the entire DOM" []
+  (html [:h2 {} (str "Header: " test-spec)]
+        [:div {} "ASDSD"]
+        (:span {:class "foobar"} "ASSS2dsds")))
+
+(set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 
 (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
