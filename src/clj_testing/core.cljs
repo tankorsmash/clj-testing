@@ -1,9 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
-  (:require [hiccups.runtime :as hiccupsrt]
-           [devtools.core :as devtools]))
+  (:require [hiccups.runtime :as hiccupsrt]))
 
-(devtools/install!)
 
 
 ;; (use 'hiccup.core)
@@ -31,5 +29,5 @@
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
 (def person {:name "josh" :age 21})
-(println (str "output -|\n" (str person.name) "|- done output"))
+(println (str "|- start output -|\n" (person :name) "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
