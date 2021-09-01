@@ -1,7 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
   (:require [hiccups.runtime :as hiccupsrt]
-            [clojure.test.check.generators]
+            [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]))
 
@@ -23,7 +23,6 @@
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
 ;; (def to-output (person :name))
-(def generated (gen/generate (s/gen string?)))
 
 (def joshua {:person/name "Josh" :person/age 23})
 (def sandy {:person/name "Sandy" :person/age 23})
@@ -43,24 +42,37 @@
 ;; (def my-spec (s/conform :number/small joshua))
 (defrecord Person [name phone age])
 
+(def generated (s/exercise (s/cat :age :person/age :name :person/name)))
+
+
+(def prem_json "{\"name\":\"Prem\",\"age\":40}")
+(def prem (.parse js/JSON prem_json))
+
 (def olivia (->Person "Olivia"  1234567897 100))
 
-(defn person-name
-  [person]
+;; (defn person-name
+;;   [person]
+;;   {:pre [(s/valid? :person/isValid person)]}
+;;   (str (:person/name person) "---" (:person/age person)))
+
+
+
+(defn takes-person [{:keys [:person/name :person/age] :as person}]
   {:pre [(s/valid? :person/isValid person)]}
-  (str (:person/name person) "---" (:person/age person)))
-
-
-(defn takes-person [{:keys [:person/name :person/age]}]
-  (str name " ++++ " age))
+  (str name " ++++ " age " (person: " person ")"))
 
 ;; (def to-output (s/conform :person/isValid joshua))
 ;; (def to-output (s/conform :person/isValidUnq matthew))
 ;; (def to-output (s/explain-str :person/isValidUnq olivia))
 ;; (def to-output (person-name joshua))
+;; (println (str "is valid? " (s/valid? :person/isValid joshua)))
+;; (println (takes-person joshua))
 (def to-output (takes-person joshua))
+;; (def to-output (takes-person prem))
 ;; (def to-output (person-name olivia))
 ;; (def to-output (person-name matthew))
+
+;; (def to-output "ASDS")
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
