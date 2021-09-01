@@ -42,6 +42,9 @@
 ;; (def my-spec (s/conform :number/small joshua))
 (defrecord Person [name phone age])
 
+(defn rec-to-person [person_rec]
+  {:person/age person_rec.age :person/name person_rec.name})
+
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
 (def prem_json "{\"name\":\"Prem\",\"age\":40}")
@@ -63,18 +66,26 @@
 (defn with-valid-person [person fn]
   (if (s/valid? :person/isValid person)
     (fn person)
-    (if (map? person)
-      (str
-       "Not a valid person map: "
-       (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person))))
-      (if (object? person)
-        (str "Not a valid person, see console " (js/console.table person))
-        (str (str "Not a valid person, unknown type" (type person)) person)))))
+    (if (instance? Person person)
+        (fn (rec-to-person person))
+      (if (map? person)
+        (str
+         "Not a valid person, 'map' "
+         (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person))))
+        (if (object? person)
+          (str "Not a valid person, 'JS Object' " (js->clj person))
+          (str (str "Not a valid person, unknown type" (type person)) person))))))
+
+(defn try-person-name [person]
+  (or (:person/name person) (:name person) person.name "unknown"))
+
+(defn handle-person [person]
+  (str (try-person-name person) ": " (with-valid-person person get-age)))
 
 (def to-output (clojure.string/join
                 "\n"
-                (map #(with-valid-person % get-age)
-                     [joshua sandy prem matthew olivia])))
+                (map handle-person
+                     [joshua sandy prem matthew olivia {}])))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
