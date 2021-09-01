@@ -21,10 +21,13 @@
   (str name " ++++ " age " (person: " person ")"))
 
 (defn rec-to-person [person_rec]
+  {:pre [instance? Person person_rec]}
   "converts an Person record to a valid person"
   {:person/age person_rec.age :person/name person_rec.name})
+
 (defn unq-to-person [unq_person]
   "converts an unqualified person to a valid person"
+  {:pre [s/valid? :person/isValidUnq unq_person]}
   {:person/age (:age unq_person) :person/name (:name unq_person)})
 
 (defn with-valid-person [person fn]
