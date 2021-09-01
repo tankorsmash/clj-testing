@@ -67,7 +67,7 @@
   (if (s/valid? :person/isValid person)
     (fn person)
     (if (instance? Person person)
-        (fn (rec-to-person person))
+      (fn (rec-to-person person))
       (if (map? person)
         (str
          "Not a valid person, 'map' "
