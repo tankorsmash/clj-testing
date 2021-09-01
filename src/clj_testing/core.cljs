@@ -1,12 +1,27 @@
 (ns clj-testing.core
-  (:require-macros [hiccups.core :as hiccups :refer [html]])
+  (:require-macros [hiccups.core :as hiccups :refer [html]]
+                   [cljs.core.async.macros :refer [go]])
   (:require [hiccups.runtime :as hiccupsrt]
             [cljs.pprint]
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [cljs-http.client :as http]
+            [cljs.core.async :refer [<!]]))
 
 ;; (use 'hiccup.core)
+
+(def resp
+  (go (let [response (<! (http/get "https://httpbin.org/get"
+                                 { :query-params {"since" 12235}}))]
+        (prn (str "status: " (:status response)))
+        ;; (prn (str "body: " (map :login (:body resp))))
+        (prn (str "body: " (:since (:args (:body response))))))))
+;; (go (let [response (<! (http/get "https://api.github.com/users"
+;;                                  {:with-credentials? false
+;;                                   :query-params {"since" 135}}))]
+;;       (prn (:status response))
+;;       (prn (map :login (:body response)))))
 
 (enable-console-print!)
 
