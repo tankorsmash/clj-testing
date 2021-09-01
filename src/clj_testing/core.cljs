@@ -16,7 +16,7 @@
                                    {:query-params {"since" 12235}}))]
         (prn (str "status: " (:status response)))
             ;; (prn (str "body: " (map :login (:body resp))))
-        (prn (str "body: " (:since (:args (:body response))))))))
+        (prn (str "body: " (get-in response [:body :args :since]))))))
 ;; (go (let [response (<! (http/get "https://api.github.com/users"
 ;;                                  {:with-credentials? false
 ;;                                   :query-params {"since" 135}}))]
