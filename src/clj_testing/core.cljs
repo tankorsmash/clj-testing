@@ -12,6 +12,15 @@
 
 (enable-console-print!)
 
+;;   "these are the commands to start up the repl for vim. not sure how to automate this"
+;; (defmacro set_up_vim_repl []
+;;   `(require 'figwheel.main.api)
+;;   `(figwheel.main.api/start {:mode :serve} "dev")
+;;   `(figwheel.main.api/cljs-repl "dev")
+;;   ;; :Piggieback! (do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))
+;;   `(js/alert "Hello from the ClojureScript REPL"))
+;;
+
 (hiccups/defhtml my-template [link-text]
   [:div]
   [:a {:href "https://github.com/weavejester/hiccup"} link-text])
@@ -25,15 +34,23 @@
 
 (def prem_json "{\"name\":\"Prem\",\"age\":40}")
 (def prem (.parse js/JSON prem_json))
-
 (def olivia (person/->Person "Olivia"  1234567897 100))
 
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
 (defn get-age [{:person/keys (age)}] age)
 
+(defn get-age-long [{:person/keys (age)}]
+  (let [new-age age]
+    (+ new-age 0)
+    (+ new-age 50)
+    (+ new-age 50)
+    (+ new-age 50)
+    (+ new-age 50)))
+
 (defn handle-person [person]
-  (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age)))
+  ;; (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age))
+  (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age-long)))
 
 (def people [joshua sandy prem matthew olivia {}])
 
