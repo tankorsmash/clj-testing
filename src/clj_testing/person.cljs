@@ -36,16 +36,19 @@
     (fn person)
     (if (instance? Person person)
       (fn (rec-to-person person))
+
       (if (map? person)
         (if (s/valid? :person/isValidUnq person)
           (fn (unq-to-person person))
           (str
            "Not a valid person, 'map' "
            (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person)))))
+
         (if (object? person)
           (str "Not a valid person, 'JS Object' " (js->clj person))
           (str (str "Not a valid person, unknown type" (type person)) person))))))
 
 (defn tryget-person-name [person]
+  "tries real hard to get a person's name for debugging purposes"
   (or (:person/name person) (:name person) person.name "unknown"))
 
