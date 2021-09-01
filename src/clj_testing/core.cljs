@@ -1,6 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
   (:require [hiccups.runtime :as hiccupsrt]
+            [clojure.test.check.generators]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]))
 
@@ -22,7 +23,7 @@
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
 ;; (def to-output (person :name))
-(gen/generate (s/gen string?))
+(def generated (gen/generate (s/gen string?)))
 
 (def joshua {:person/name "Josh" :person/age 23})
 (def sandy {:person/name "Sandy" :person/age 23})
@@ -62,7 +63,7 @@
 ;; (def to-output (person-name matthew))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
-  (html [:h2 {} (str "Header: " test-spec)]
+  (html [:h2 {} (str "Generated: " generated)]
         [:div {} "ASDSD"]
         (:span {:class "foobar"} "ASSS2dsds")))
 
