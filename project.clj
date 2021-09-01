@@ -11,4 +11,6 @@
                       [hiccups "0.3.0"]
                       ;; optional but recommended
                       [com.bhauman/rebel-readline-cljs "0.1.4"]]}}
-  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]})
+  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
+            "fmt" ["cljfmt" "fix"]}
+  :plugins [[lein-cljfmt "0.8.0"]])

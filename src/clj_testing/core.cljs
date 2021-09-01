@@ -1,9 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
   (:require [hiccups.runtime :as hiccupsrt]
-           [clojure.spec.alpha :as s]))
-
-
+            [clojure.spec.alpha :as s]))
 
 ;; (use 'hiccup.core)
 
@@ -24,17 +22,20 @@
 
 ;; (def to-output (person :name))
 
-(def joshua {:name "josh" :age 23})
+(def joshua {:person/name "josh" :person/age 23})
 
 (def test-spec (s/conform even? 1000))
 
-(s/def :person/age #{:age})
-(s/def :number/small '(1 2 3 4 5))
-(s/def :number/smaller '(1 2))
+(s/def :person/age int?)
+(s/def :person/name string?)
+(s/def :person/isValid (s/keys :req [:person/age :person/name]))
+;; (s/def :person/age #{:age})
+;; (s/def :number/small '(1 2 3 4 5))
+;; (s/def :number/smaller '(1 2))
+;;
+;; (def my-spec (s/conform :number/small joshua))
 
-(def my-spec (s/valid? :number/small joshua))
-
-(def to-output (joshua :age))
+(def to-output (s/conform :person/isValid joshua))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Header: " test-spec)]
