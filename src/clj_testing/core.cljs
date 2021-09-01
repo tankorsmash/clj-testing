@@ -15,7 +15,7 @@
   (go (let [response (<! (http/get "https://httpbin.org/get"
                                    {:query-params {"since" 12235}}))]
         (prn (str "status: " (:status response)))
-        ;; (prn (str "body: " (map :login (:body resp))))
+            ;; (prn (str "body: " (map :login (:body resp))))
         (prn (str "body: " (:since (:args (:body response))))))))
 ;; (go (let [response (<! (http/get "https://api.github.com/users"
 ;;                                  {:with-credentials? false
@@ -58,7 +58,11 @@
 (defrecord Person [name phone age])
 
 (defn rec-to-person [person_rec]
+  "converts an Person record to a valid person"
   {:person/age person_rec.age :person/name person_rec.name})
+(defn unq-to-person [unq_person]
+  "converts an unqualified person to a valid person"
+  {:person/age (:age unq_person) :person/name (:name unq_person)})
 
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
@@ -79,14 +83,17 @@
 (defn get-age [{:person/keys (age)}] age)
 
 (defn with-valid-person [person fn]
+  "calls `(fn person)` if its a valid person, Person, or JSON Person"
   (if (s/valid? :person/isValid person)
     (fn person)
     (if (instance? Person person)
       (fn (rec-to-person person))
       (if (map? person)
-        (str
-         "Not a valid person, 'map' "
-         (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person))))
+        (if (s/valid? :person/isValidUnq person)
+          (fn (unq-to-person person))
+          (str
+           "Not a valid person, 'map' "
+           (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person)))))
         (if (object? person)
           (str "Not a valid person, 'JS Object' " (js->clj person))
           (str (str "Not a valid person, unknown type" (type person)) person))))))
