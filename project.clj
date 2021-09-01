@@ -8,7 +8,7 @@
                       [com.bhauman/figwheel-main "0.2.14"]
                       [org.slf4j/slf4j-simple "1.7.5"]
                       [cider/piggieback "0.4.2"]
-                      ;; [hiccup "1.0.5"] ;;might only be in clj, not cljs
+                      [org.clojure/test.check "0.9.0"]
                       [hiccups "0.3.0"]
                       ;; optional but recommended
                       [com.bhauman/rebel-readline-cljs "0.1.4"]]}}

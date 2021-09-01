@@ -1,6 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
   (:require [hiccups.runtime :as hiccupsrt]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]))
 
 ;; (use 'hiccup.core)
@@ -21,9 +22,12 @@
 ;; (set! (.-innerHTML (js/document.getRootNode)) (render_dom))
 
 ;; (def to-output (person :name))
+(gen/generate (s/gen string?))
 
 (def joshua {:person/name "Josh" :person/age 23})
+(def sandy {:person/name "Sandy" :person/age 23})
 (def matthew {:name "Matt" :age 12})
+
 
 (def test-spec (s/conform even? 1004))
 
@@ -42,16 +46,20 @@
 
 (defn person-name
   [person]
-  {:pre [(s/valid? :person/isValid person)]
-   :post [(s/valid? string? %)]}
+  {:pre [(s/valid? :person/isValid person)]}
   (str (:person/name person) "---" (:person/age person)))
 
+
+(defn takes-person [{:keys [:person/name :person/age]}]
+  (str name " ++++ " age))
 
 ;; (def to-output (s/conform :person/isValid joshua))
 ;; (def to-output (s/conform :person/isValidUnq matthew))
 ;; (def to-output (s/explain-str :person/isValidUnq olivia))
 ;; (def to-output (person-name joshua))
-(def to-output (person-name olivia))
+(def to-output (takes-person joshua))
+;; (def to-output (person-name olivia))
+;; (def to-output (person-name matthew))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Header: " test-spec)]
