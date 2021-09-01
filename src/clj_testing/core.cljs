@@ -11,20 +11,20 @@
 
 ;; (use 'hiccup.core)
 
-(def root_json_server_url "http://localhost:5021/")
-(def hero_stats_url (str root_json_server_url "open_dota_player_data"))
+;; (def root_json_server_url "http://localhost:5021/")
+;; (def hero_stats_url (str root_json_server_url "open_dota_player_data"))
 
-(def resp
-  (go (let [response (<! (http/get hero_stats_url {}))]
-        (prn (str "status: " (:status response)))
-        (pprint (get-in response [:body])))))
+;; (def resp
+;;   (go (let [response (<! (http/get hero_stats_url {}))]
+;;         (prn (str "status: " (:status response)))
+;;         (pprint (get-in response [:body])))))
 
 (enable-console-print!)
 
-(hiccups/defhtml my-template
-  [link-text] [:div]
-  [:a {:href "https://github.com/weavejester/hiccup"}
-   link-text])
+(hiccups/defhtml my-template [link-text]
+  [:div]
+  [:a {:href "https://github.com/weavejester/hiccup"} link-text])
+
 
 ;; (defn make_span [text]
 ;;   (html [:span {:class "foo"} text]))
@@ -100,10 +100,12 @@
 (defn handle-person [person]
   (str (try-person-name person) ": " (with-valid-person person get-age)))
 
+(def people [joshua sandy prem matthew olivia {}])
+
 (def to-output (clojure.string/join
                 "\n"
                 (map handle-person
-                     [joshua sandy prem matthew olivia {}])))
+                     people)))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
