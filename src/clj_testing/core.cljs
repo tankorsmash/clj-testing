@@ -26,7 +26,7 @@
 ;; (def to-output (person :name))
 
 (def joshua {:person/name "Josh" :person/age 23})
-(def sandy {:person/name "Sandy" :person/age 23})
+(def sandy {:person/name "Sandy" :person/age 44})
 (def matthew {:name "Matt" :age 12})
 
 (def test-spec (s/conform even? 1004))
@@ -58,6 +58,8 @@
   {:pre [(s/valid? :person/isValid person)]}
   (str name " ++++ " age " (person: " person ")"))
 
+(defn get-age [{:person/keys (age)}] age)
+
 (defn with-valid-person [person fn]
   (if (s/valid? :person/isValid person)
     (fn person)
@@ -71,9 +73,8 @@
 
 (def to-output (clojure.string/join
                 "\n"
-                (map #(with-valid-person % takes-person)
-                     [joshua prem matthew olivia])))
-                      ;; [olivia])))
+                (map #(with-valid-person % get-age)
+                     [joshua sandy prem matthew olivia])))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
