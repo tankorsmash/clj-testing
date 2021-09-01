@@ -40,13 +40,13 @@
 
 (defn get-age [{:person/keys (age)}] age)
 
+(defn add_x [x] (+ x 10))
+
 (defn get-age-long [{:person/keys (age)}]
   (let [new-age age]
-    (+ new-age 0)
-    (+ new-age 50)
-    (+ new-age 50)
-    (+ new-age 50)
-    (+ new-age 50)))
+    (-> new-age
+      add_x
+      add_x)))
 
 (defn handle-person [person]
   ;; (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age))
