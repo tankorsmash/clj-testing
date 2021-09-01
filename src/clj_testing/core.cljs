@@ -1,6 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]])
   (:require [hiccups.runtime :as hiccupsrt]
+            [cljs.pprint]
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]))
@@ -11,8 +12,8 @@
 
 (hiccups/defhtml my-template
   [link-text] [:div]
-   [:a {:href "https://github.com/weavejester/hiccup"}
-    link-text])
+  [:a {:href "https://github.com/weavejester/hiccup"}
+   link-text])
 
 ;; (defn make_span [text]
 ;;   (html [:span {:class "foo"} text]))
@@ -28,7 +29,6 @@
 (def sandy {:person/name "Sandy" :person/age 23})
 (def matthew {:name "Matt" :age 12})
 
-
 (def test-spec (s/conform even? 1004))
 
 (s/def :person/age int?)
@@ -42,8 +42,7 @@
 ;; (def my-spec (s/conform :number/small joshua))
 (defrecord Person [name phone age])
 
-(def generated (s/exercise (s/cat :age :person/age :name :person/name)))
-
+(def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
 (def prem_json "{\"name\":\"Prem\",\"age\":40}")
 (def prem (.parse js/JSON prem_json))
@@ -55,29 +54,32 @@
 ;;   {:pre [(s/valid? :person/isValid person)]}
 ;;   (str (:person/name person) "---" (:person/age person)))
 
-
-
 (defn takes-person [{:keys [:person/name :person/age] :as person}]
   {:pre [(s/valid? :person/isValid person)]}
   (str name " ++++ " age " (person: " person ")"))
 
-;; (def to-output (s/conform :person/isValid joshua))
-;; (def to-output (s/conform :person/isValidUnq matthew))
-;; (def to-output (s/explain-str :person/isValidUnq olivia))
-;; (def to-output (person-name joshua))
-;; (println (str "is valid? " (s/valid? :person/isValid joshua)))
-;; (println (takes-person joshua))
-(def to-output (takes-person joshua))
-;; (def to-output (takes-person prem))
-;; (def to-output (person-name olivia))
-;; (def to-output (person-name matthew))
+(defn with-valid-person [person fn]
+  (if (s/valid? :person/isValid person)
+    (fn person)
+    (if (map? person)
+      (str
+       "Not a valid person map: "
+       (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person))))
+      (if (object? person)
+        (str "Not a valid person, see console " (js/console.table person))
+        (str (str "Not a valid person, unknown type" (type person)) person)))))
 
-;; (def to-output "ASDS")
+(def to-output (clojure.string/join
+                "\n"
+                (map #(with-valid-person % takes-person)
+                     [joshua prem matthew olivia])))
+                      ;; [olivia])))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
-        [:div {} "ASDSD"]
-        (:span {:class "foobar"} "ASSS2dsds")))
+        [:span.foobar "classed span"]
+        [:div {} "this is a newline"]
+        [:pre {:style "font-size: 24px"} to-output]))
 
 (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 

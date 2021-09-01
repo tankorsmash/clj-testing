@@ -15,4 +15,5 @@
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fmt" ["cljfmt" "fix"]}
   :plugins [[lein-cljfmt "0.8.0"] [cider/cider-nrepl "0.26.0"]]
-  :nrepl-port 5284)
+  :nrepl-port 5284
+  :cljfmt { :remove-multiple-non-indenting-spaces true})
