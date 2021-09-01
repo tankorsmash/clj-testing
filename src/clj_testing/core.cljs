@@ -7,10 +7,10 @@
 
 (enable-console-print!)
 
-(hiccups/defhtml my-template []
-  [:div
+(hiccups/defhtml my-template
+  [link-text] [:div]
    [:a {:href "https://github.com/weavejester/hiccup"}
-    "Hiccup"]])
+    link-text])
 
 ;; (defn make_span [text]
 ;;   (html [:span {:class "foo"} text]))
@@ -22,20 +22,36 @@
 
 ;; (def to-output (person :name))
 
-(def joshua {:person/name "josh" :person/age 23})
+(def joshua {:person/name "Josh" :person/age 23})
+(def matthew {:name "Matt" :age 12})
 
-(def test-spec (s/conform even? 1000))
+(def test-spec (s/conform even? 1004))
 
 (s/def :person/age int?)
 (s/def :person/name string?)
 (s/def :person/isValid (s/keys :req [:person/age :person/name]))
+(s/def :person/isValidUnq (s/keys :req-un [:person/age :person/name]))
 ;; (s/def :person/age #{:age})
 ;; (s/def :number/small '(1 2 3 4 5))
 ;; (s/def :number/smaller '(1 2))
 ;;
 ;; (def my-spec (s/conform :number/small joshua))
+(defrecord Person [name phone age])
 
-(def to-output (s/conform :person/isValid joshua))
+(def olivia (->Person "Olivia"  1234567897 100))
+
+(defn person-name
+  [person]
+  {:pre [(s/valid? :person/isValid person)]
+   :post [(s/valid? string? %)]}
+  (str (:person/name person) "---" (:person/age person)))
+
+
+;; (def to-output (s/conform :person/isValid joshua))
+;; (def to-output (s/conform :person/isValidUnq matthew))
+;; (def to-output (s/explain-str :person/isValidUnq olivia))
+;; (def to-output (person-name joshua))
+(def to-output (person-name olivia))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Header: " test-spec)]
