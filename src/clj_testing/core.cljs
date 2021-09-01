@@ -13,7 +13,7 @@
 
 (def resp
   (go (let [response (<! (http/get "https://httpbin.org/get"
-                                 { :query-params {"since" 12235}}))]
+                                   {:query-params {"since" 12235}}))]
         (prn (str "status: " (:status response)))
         ;; (prn (str "body: " (map :login (:body resp))))
         (prn (str "body: " (:since (:args (:body response))))))))
