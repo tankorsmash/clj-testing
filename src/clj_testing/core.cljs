@@ -2,7 +2,7 @@
   (:require-macros [hiccups.core :as hiccups :refer [html]]
                    [cljs.core.async.macros :refer [go]])
   (:require [hiccups.runtime :as hiccupsrt]
-            [cljs.pprint]
+            [cljs.pprint :refer [pprint]]
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]
@@ -11,17 +11,13 @@
 
 ;; (use 'hiccup.core)
 
+(def root_json_server_url "http://localhost:5021/")
+(def hero_stats_url (str root_json_server_url "open_dota_player_data"))
+
 (def resp
-  (go (let [response (<! (http/get "https://httpbin.org/get"
-                                   {:query-params {"since" 12235}}))]
+  (go (let [response (<! (http/get hero_stats_url {}))]
         (prn (str "status: " (:status response)))
-            ;; (prn (str "body: " (map :login (:body resp))))
-        (prn (str "body: " (get-in response [:body :args :since]))))))
-;; (go (let [response (<! (http/get "https://api.github.com/users"
-;;                                  {:with-credentials? false
-;;                                   :query-params {"since" 135}}))]
-;;       (prn (:status response))
-;;       (prn (map :login (:body response)))))
+        (pprint (get-in response [:body])))))
 
 (enable-console-print!)
 
