@@ -88,13 +88,15 @@
 (defn on-click-change-people []
   (swap! atom_people change-people))
 
-(defn change-person [person]
+(defn change-person-age [person]
   (assoc-in person [:person/age] 123))
 
+(defn swap-person [people idx person]
+  (assoc people idx person))
+
 (defn on-click-change-person [idx person]
-  (let [new-person (change-person person)
-        new-people (assoc @atom_people idx new-person)]
-    (reset! atom_people new-people)))
+  (let [new-person (change-person-age person)]
+    (swap! atom_people #(swap-person % idx new-person))))
 
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
