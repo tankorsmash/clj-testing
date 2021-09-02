@@ -64,6 +64,9 @@
 (defonce seconds-elapsed (r/atom 0))
 (defonce atom_people (r/atom raw_people))
 
+(defonce time-updater (js/setInterval
+                        #(swap! seconds-elapsed inc) 1000))
+
 (def to-output (clojure.string/join
                 "\n"
                 (map handle-person
@@ -94,7 +97,6 @@
 (defn uses-settimeout []
   (fn []
     ;; this stacks setTimeouts if you hotreload too many times
-    (js/setTimeout #(swap! seconds-elapsed inc) 1000)
     [:div
      "Seconds elapsed: " @seconds-elapsed]))
 
