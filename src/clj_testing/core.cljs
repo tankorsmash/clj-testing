@@ -59,7 +59,7 @@
 
 (defonce click-count (r/atom 0))
 (defonce seconds-elapsed (r/atom 0))
-(defonce atom_people (r/atom raw_people))
+(defonce atom-people (r/atom raw_people))
 
 (defonce time-updater (js/setInterval
                         #(swap! seconds-elapsed inc) 1000))
@@ -67,7 +67,7 @@
 (def to-output (clojure.string/join
                 "\n"
                 (map handle-person
-                     @atom_people)))
+                     @atom-people)))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
@@ -86,7 +86,7 @@
   (swap! click-count inc))
 
 (defn on-click-change-people []
-  (swap! atom_people change-people))
+  (swap! atom-people change-people))
 
 (defn change-person-age [person]
   (assoc-in person [:person/age] 123))
@@ -96,7 +96,7 @@
 
 (defn on-click-change-person [idx person]
   (let [new-person (change-person-age person)]
-    (swap! atom_people #(swap-person % idx new-person))))
+    (swap! atom-people #(swap-person % idx new-person))))
 
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
@@ -127,7 +127,7 @@
      [uses-settimeout]
      ;; (for [i (take 1 ages)]
      ;;   ^{:key 1} i)])))
-     (map-indexed clickable-age @atom_people)]))
+     (map-indexed clickable-age @atom-people)]))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
