@@ -72,8 +72,9 @@
 (defn on-click []
   (swap! click-count inc))
 
-(defn child-comp []
-  [:h4 "H4 Header in react"])
+(defn child-comp [num]
+  [:h4 "H4 Header in react " num])
+
 
 (defn simple-component [ctnt]
   [:div
@@ -83,7 +84,8 @@
     [:span {:style {:color "red"}} " and red "] "text."]
    [:input {:type "button" :value "CLICK ME!"
             :on-click on-click}]
-   [child-comp]])
+   ;; [(map child-comp (range 5))]
+   [child-comp 1]])
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
@@ -94,7 +96,7 @@
    react-app-elem))
 
 (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
-(render-simple)
+(defonce start-up (render-simple))
 
 (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
