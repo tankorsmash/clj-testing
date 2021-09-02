@@ -138,4 +138,3 @@
 ;; (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
 
-(log "WAKE UP!")
