@@ -68,17 +68,23 @@
         [:pre {:style "font-size: 24px"} to-output]))
 
 
+(def click-count (r/atom 0))
+
+(defn on-click []
+  (swap! click-count inc))
+
 (defn simple-component [ctnt]
   [:div
    [:p "I am a component!"]
    [:p.someclass
-    "I have " [:strong "bold"]
-    [:span {:style {:color "red"}} " and red "] "text."]])
+    "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
+    [:span {:style {:color "red"}} " and red "] "text."]
+   [:input {:type "button" :value "CLICK ME!"
+            :on-click on-click}]])
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
-(prn app-elem)
-;;
+
 (defn render-simple []
   (rdom/render
     [simple-component]
@@ -86,7 +92,6 @@
 
 (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 (render-simple)
-;; (set! (.-innerHTML (js/document.getElementById "app")) (render-simple))
 
 (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
