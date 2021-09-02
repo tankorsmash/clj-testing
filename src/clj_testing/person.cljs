@@ -3,6 +3,7 @@
                    [cljs.core.async.macros :refer [go]])
   (:require [hiccups.runtime :as hiccupsrt]
             [cljs.pprint :refer [pprint]]
+            [clojure.test]
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]
@@ -30,23 +31,45 @@
   {:pre [s/valid? :person/isValidUnq unq_person]}
   {:person/age (:age unq_person) :person/name (:name unq_person)})
 
-(defn with-valid-person [person fn]
-  "calls `(fn person)` if its a valid person, Person, or JSON Person"
+(defn pprint-person [person]
+  (clojure.string/trim-newline
+   (with-out-str (cljs.pprint/pprint person))))
+
+
+(declare with-valid-person)
+
+
+(defn is-map-true [person the_fn]
+  (if (s/valid? :person/isValidUnq person)
+      (do (println "is isValidUnq") (the_fn (unq-to-person person)))
+      (do (println "is NOT isValidUnq")
+          (str "Not a valid person because its a map but not a person map: " (pprint-person person))
+          {:person/age 0 :person/name ""})))
+(defn is-map-false [person the_fn]
+  (if (object? person)
+      (do (println "is object") (with-valid-person (js->clj person) the_fn))
+      (do (println "is NOT object") (str (str "Not a valid person, unknown type" (type person)) person))))
+
+(defn is-isvalid-false [person the_fn]
+  (if (instance? Person person)
+      (do (println "is Person") (the_fn (rec-to-person person)))
+      (do (println "is NOT Person") (if (map? person)
+                                        (do (println "so its a map???") ( is-map-true person the_fn))
+                                        (is-map-false person the_fn)))))
+
+(defn to-valid-person [person]
+   {:post [(clojure.test/is (s/valid? :person/isValid %))]}) ;;NOTE this doesnt work because this function also returns the (the_fn person)
+
+(defn with-valid-person
+  [person the_fn]
+  ;; (let [valid-person (to-valid-person person)]
+  ;;   (the_fn valid-person))
+  {:doc "calls `(the_fn person)` if its a valid person, Person, or JSON Person"}
+   ;; :post [(clojure.test/is (s/valid? :person/isValid %))]} ;;NOTE this doesnt work because this function also returns the (the_fn person)
+  (println "with-valid-person with :" person)
   (if (s/valid? :person/isValid person)
-    (fn person)
-    (if (instance? Person person)
-      (fn (rec-to-person person))
-
-      (if (map? person)
-        (if (s/valid? :person/isValidUnq person)
-          (fn (unq-to-person person))
-          (str
-           "Not a valid person, 'map' "
-           (clojure.string/trim-newline (with-out-str (cljs.pprint/pprint person)))))
-
-        (if (object? person)
-          (str "Not a valid person, 'JS Object' " (js->clj person))
-          (str (str "Not a valid person, unknown type" (type person)) person))))))
+      (do (println "is isValid") (the_fn person))
+      (do (println "is NOT isValid") (is-isvalid-false person the_fn))))
 
 (defn tryget-person-name [person]
   {:doc "tries real hard to get a person's name for debugging purposes"}

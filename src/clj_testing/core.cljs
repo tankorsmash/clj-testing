@@ -63,12 +63,29 @@
                       (mapv #(person/with-valid-person % identity) raw_people)))
 
 (defonce time-updater (js/setInterval
-                        #(swap! seconds-elapsed inc) 1000))
+                       #(swap! seconds-elapsed inc) 1000))
 
 (def to-output (clojure.string/join
                 "\n"
                 (map handle-person
                      @atom-people)))
+
+;; (identity prem)
+;; #js {:name "Prem", :age 40}
+;; (prn (type prem))
+; #object[Object]
+(prn (person/with-valid-person prem identity))
+"Not a valid person, 'map' {\"name\" \"Prem\", \"age\" 40}"
+;; (prn (s/valid? :person/isValid prem))
+false
+;; (prn (instance? person/Person prem))
+false
+;; (prn (s/valid? :person/isValidUnq prem))
+false
+;; (prn (map? prem))
+false
+;; (prn (object? prem))
+true
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
@@ -76,12 +93,10 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-
 (defn change-people [people]
   (let [new-people (concat people people)]
     (prn (count new-people))
     new-people))
-
 
 (defn on-click []
   (swap! click-count inc))
