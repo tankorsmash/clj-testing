@@ -116,9 +116,7 @@
      [:input {:type "button" :value "CLICK ME!"
               :on-click on-click}]
      ;; [(map child-comp (range 5))]
-     [child-comp 1]
      [uses-settimeout]
-     [child-comp 2]
      ;; (for [i (take 1 ages)]
      ;;   ^{:key 1} i)])))
      (map-indexed clickable-age @atom_people)]))
@@ -127,7 +125,7 @@
 (def react-app-elem (js/document.getElementById "react-app"))
 
 (defn render-simple []
-  (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
+  ;; (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
   (rdom/render
    [root-component "inner text"]
    react-app-elem))
