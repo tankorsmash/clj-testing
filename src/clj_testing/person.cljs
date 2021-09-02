@@ -52,3 +52,7 @@
   "tries real hard to get a person's name for debugging purposes"
   (or (:person/name person) (:name person) person.name "unknown"))
 
+(defn tryget-person-age [person]
+  "tries real hard to get a person's age for debugging purposes"
+  (or (:person/age person) (:age person) person.age "unknown"))
+

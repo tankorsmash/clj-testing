@@ -41,6 +41,7 @@
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
 (defn get-age [{:person/keys (age)}] age)
+(defn get-name [{:person/keys (name)}] name)
 
 (defn add_x [x] (+ x 10))
 
@@ -86,10 +87,9 @@
     [:div
      "Seconds elapsed: " @seconds-elapsed]))
 
-
-(defn clickable-age [idx age]
+(defn clickable-age [idx person]
   [:div {:key idx}
-   [:p "This is a UNclickable-age: " (str age)]])
+   [:p "This is a UNclickable-age: " (get-age person) "-" (get-name person)]])
 
 ;; ^{:key (:person/age %)}
 
@@ -107,8 +107,6 @@
        [child-comp 1]
        [uses-settimeout]
        [child-comp 2]
-       [clickable-age 222]
-       [clickable-age 224]
        ;; (for [i (take 1 ages)]
        ;;   ^{:key 1} i)])))
        ages])))
