@@ -40,9 +40,6 @@
 
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
-(defn get-age [{:person/keys (age)}] age)
-(defn get-name [{:person/keys (name)}] name)
-
 (defn add_x [x] (+ x 10))
 
 (defn get-age-long [{:person/keys (age)}]
@@ -91,6 +88,14 @@
 (defn on-click-change-people []
   (swap! atom_people change-people))
 
+(defn change-person [person]
+  (assoc-in person [:person/age] 123))
+
+(defn on-click-change-person [idx person]
+  (let [new-person (change-person person)
+        new-people (assoc @atom_people idx new-person)]
+    (reset! atom_people new-people)))
+
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
 
@@ -101,8 +106,9 @@
      "Seconds elapsed: " @seconds-elapsed]))
 
 (defn clickable-age [idx person]
-  [:div {:key idx :on-click on-click-change-people}
-   [:p "This is a UNclickable-age: " (get-age person) "-" (get-name person)]])
+  [:div {:key idx :on-click #(on-click-change-person idx person)}
+   [:p "This is a UNclickable-age: "
+    (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
 ;; ^{:key (:person/age %)}
 
