@@ -68,20 +68,25 @@
         [:pre {:style "font-size: 24px"} to-output]))
 
 
-(defn simple-component []
+(defn simple-component [ctnt]
   [:div
    [:p "I am a component!"]
    [:p.someclass
     "I have " [:strong "bold"]
     [:span {:style {:color "red"}} " and red "] "text."]])
 
+(def app-elem (js/document.getElementById "app"))
+(def react-app-elem (js/document.getElementById "react-app"))
+(prn app-elem)
+;;
 (defn render-simple []
   (rdom/render
     [simple-component]
-    (.-body js/document)))
+    react-app-elem))
 
-;; (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
-(set! (.-innerHTML (js/document.getElementById "app")) (render-simple))
+(set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
+(render-simple)
+;; (set! (.-innerHTML (js/document.getElementById "app")) (render-simple))
 
 (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
