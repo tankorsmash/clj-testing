@@ -39,7 +39,6 @@
 (def prem (person/to-valid-person (.parse js/JSON prem_json)))
 (def olivia (person/to-valid-person (person/->Person "Olivia"  1234567897 100)))
 
-
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 
 (defn add_x [x] (+ x 10))
@@ -106,7 +105,7 @@
 
 (defn clickable-age [idx person]
   [:div {:key idx :on-click #(on-click-change-person idx person)}
-   [:p "This is a " [:b "CLICKABLE" ] "-age: "
+   [:p "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
 (defn root-component [innertext]
