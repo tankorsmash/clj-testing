@@ -15,7 +15,7 @@
             [reagent.dom :as rdom]))
 
 
-(defonce user-data (r/atom {:dota/userdata nil}))
+(defonce user-data (r/atom {:dota/player-data nil}))
 
 (def root_json_server_url "http://localhost:5021/")
 (def hero_stats_url (str root_json_server_url "open_dota_player_data"))
@@ -41,6 +41,14 @@
             (do (log "player-data-unq failed to match")
                 (s/explain :dota/player-data-unq body))))
         (log "in do-requiest" response))))
+
+(defn render-user-data [user-data]
+  [:h2 "OPEN DOTA USER DATA"]
+  [:div "ASD" @user-data])
+  ;; (log (:dota/player-data user-data))
+  ;; (if-not (:dota/player-data user-data)
+  ;;   [:div "no user data"]
+    ;; [:h1 "LOADED!!!"]])
 
 (comment
   (do-request-for-hero-stats))
