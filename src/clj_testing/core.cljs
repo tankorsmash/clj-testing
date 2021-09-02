@@ -52,7 +52,10 @@
 
 (defn handle-person [person]
   ;; (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age))
-  (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age-long)))
+  (str
+   (person/tryget-person-name person)
+   ": "
+   (person/with-valid-person person get-age-long)))
 
 (def people [joshua sandy prem matthew olivia {}])
 
@@ -68,6 +71,7 @@
         [:pre {:style "font-size: 24px"} to-output]))
 
 (defonce click-count (r/atom 0))
+(defonce seconds-elapsed (r/atom 0))
 
 (defn on-click []
   (swap! click-count inc))
@@ -75,16 +79,24 @@
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
 
-(defn simple-component [ctnt]
+(defn uses-settimeout []
+  (fn []
+    ;; this stacks setTimeouts if you hotreload too many times
+    (js/setTimeout #(swap! seconds-elapsed inc) 1000)
+    [:div
+     "Seconds elapsed: " @seconds-elapsed]))
+
+(defn simple-component [innertext]
   [:div
-   [:p "I am a component!"]
+   [:p "I am a component! " innertext]
    [:p.someclass
     "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
     [:span {:style {:color "red"}} " and red "] "text."]
    [:input {:type "button" :value "CLICK ME!"
             :on-click on-click}]
    ;; [(map child-comp (range 5))]
-   [child-comp 1]])
+   [child-comp 1]
+   [uses-settimeout]])
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
@@ -92,7 +104,7 @@
 (defn render-simple []
   (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
   (rdom/render
-   [simple-component]
+   [simple-component "inner text"]
    react-app-elem))
 
 (def start-up (do (render-simple) true))
