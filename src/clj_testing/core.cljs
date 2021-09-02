@@ -8,7 +8,9 @@
             [clojure.spec.alpha :as s]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
-            [clj-testing.person :as person]))
+            [clj-testing.person :as person]
+            [reagent.core :as r]
+            [reagent.dom :as rdom]))
 
 (enable-console-print!)
 
@@ -65,7 +67,21 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-(set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
+
+(defn simple-component []
+  [:div
+   [:p "I am a component!"]
+   [:p.someclass
+    "I have " [:strong "bold"]
+    [:span {:style {:color "red"}} " and red "] "text."]])
+
+(defn render-simple []
+  (rdom/render
+    [simple-component]
+    (.-body js/document)))
+
+;; (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
+(set! (.-innerHTML (js/document.getElementById "app")) (render-simple))
 
 (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))

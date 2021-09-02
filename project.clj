@@ -2,7 +2,10 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.slf4j/slf4j-simple "1.7.5"]
                  [cljs-http "0.1.46"]
-                 [hiccups "0.3.0"]]
+                 [hiccups "0.3.0"]
+                 [reagent "1.1.0"]
+                 [cljsjs/react "17.0.2-0"]
+                 [cljsjs/react-dom "17.0.2-0"]]
   :profiles
     {:dev
       {:resource-paths ["target"]
