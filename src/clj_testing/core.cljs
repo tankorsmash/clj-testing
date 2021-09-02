@@ -47,8 +47,8 @@
 (defn get-age-long [{:person/keys (age)}]
   (let [new-age age]
     (-> new-age
-      add_x
-      add_x)))
+        add_x
+        add_x)))
 
 (defn handle-person [person]
   ;; (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age))
@@ -67,11 +67,13 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-
 (def click-count (r/atom 0))
 
 (defn on-click []
   (swap! click-count inc))
+
+(defn child-comp []
+  [:h4 "H4 Header in react"])
 
 (defn simple-component [ctnt]
   [:div
@@ -80,15 +82,16 @@
     "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
     [:span {:style {:color "red"}} " and red "] "text."]
    [:input {:type "button" :value "CLICK ME!"
-            :on-click on-click}]])
+            :on-click on-click}]
+   [child-comp]])
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
 
 (defn render-simple []
   (rdom/render
-    [simple-component]
-    react-app-elem))
+   [simple-component]
+   react-app-elem))
 
 (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
 (render-simple)
