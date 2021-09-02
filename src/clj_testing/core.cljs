@@ -99,9 +99,6 @@
   (let [new-person (change-person-age person)]
     (swap! atom-people #(swap-person % idx new-person))))
 
-(defn child-comp [num]
-  [:h4 "H4 Header in react " num])
-
 (defn uses-settimeout []
   (fn []
     [:div
@@ -128,13 +125,8 @@
 (def react-app-elem (js/document.getElementById "react-app"))
 
 (defn render-simple []
-  ;; (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
   (rdom/render
    [root-component "inner text"]
    react-app-elem))
 
-;; (render-simple)
 (def start-up (do (render-simple) true))
-;; (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
-;;             "the doc:\n" (render_dom)))
-
