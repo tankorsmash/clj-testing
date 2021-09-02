@@ -86,17 +86,32 @@
     [:div
      "Seconds elapsed: " @seconds-elapsed]))
 
-(defn simple-component [innertext]
-  [:div
-   [:p "I am a component! " innertext]
-   [:p.someclass
-    "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
-    [:span {:style {:color "red"}} " and red "] "text."]
-   [:input {:type "button" :value "CLICK ME!"
-            :on-click on-click}]
-   ;; [(map child-comp (range 5))]
-   [child-comp 1]
-   [uses-settimeout]])
+
+(defn clickable-age [idx age]
+  [:div {:key idx}
+   [:p "This is a UNclickable-age: " (str age)]])
+
+;; ^{:key (:person/age %)}
+
+(defn root-component [innertext]
+  (let [ages (map-indexed clickable-age people)]
+    (fn []
+      [:div
+       [:p "I am a component! " innertext]
+       [:p.someclass
+        "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
+        [:span {:style {:color "red"}} " and red "] "text."]
+       [:input {:type "button" :value "CLICK ME!"
+                :on-click on-click}]
+       ;; [(map child-comp (range 5))]
+       [child-comp 1]
+       [uses-settimeout]
+       [child-comp 2]
+       [clickable-age 222]
+       [clickable-age 224]
+       ;; (for [i (take 1 ages)]
+       ;;   ^{:key 1} i)])))
+       ages])))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
@@ -104,7 +119,7 @@
 (defn render-simple []
   (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
   (rdom/render
-   [simple-component "inner text"]
+   [root-component "inner text"]
    react-app-elem))
 
 (def start-up (do (render-simple) true))
