@@ -10,6 +10,7 @@
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
             [clj-testing.person :as person]
+            [clj-testing.open-dota :as dota]
             [reagent.core :as r]
             [reagent.dom :as rdom]))
 
@@ -23,7 +24,6 @@
 ;;   ;; :Piggieback! (do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))
 ;;   `(js/alert "Hello from the ClojureScript REPL"))
 ;;
-
 (hiccups/defhtml my-template [link-text]
   [:div]
   [:a {:href "https://github.com/weavejester/hiccup"} link-text])
@@ -130,3 +130,11 @@
    react-app-elem))
 
 (def start-up (do (render-simple) true))
+
+(defn dota-download []
+  (log "dota channel: " (clj-testing.open-dota/do-request-for-hero-stats)))
+
+(comment
+  (js/console.clear)
+  (dota-download)
+  (dota/do-request-for-hero-stats))
