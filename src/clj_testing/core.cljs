@@ -67,7 +67,9 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-(def click-count (r/atom 0))
+
+(defonce click-count (r/atom 0))
+
 
 (defn on-click []
   (swap! click-count inc))
@@ -90,13 +92,14 @@
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
 
+
 (defn render-simple []
+  (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
   (rdom/render
    [simple-component]
    react-app-elem))
 
-(set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
-(defonce start-up (render-simple))
+(def start-up (do (render-simple) true))
 
-(println (str "|- start output -|\n" to-output "\n|- ended output -|"))
+;; (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
