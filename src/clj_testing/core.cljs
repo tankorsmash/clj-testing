@@ -90,7 +90,7 @@
   (swap! atom-people change-people))
 
 (defn change-person-age [person]
-  (assoc-in person [:person/age] 123))
+  (update-in person [:person/age] #(+ % 1)))
 
 (defn swap-person [people idx person]
   (assoc people idx person))
@@ -109,7 +109,7 @@
 
 (defn clickable-age [idx person]
   [:div {:key idx :on-click #(on-click-change-person idx person)}
-   [:p "This is a UNclickable-age: "
+   [:p "This is a " [:b "CLICKABLE" ] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
 (defn root-component [innertext]
