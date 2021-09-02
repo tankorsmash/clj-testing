@@ -103,7 +103,6 @@
 
 (defn uses-settimeout []
   (fn []
-    ;; this stacks setTimeouts if you hotreload too many times
     [:div
      "Seconds elapsed: " @seconds-elapsed]))
 
@@ -111,8 +110,6 @@
   [:div {:key idx :on-click #(on-click-change-person idx person)}
    [:p "This is a UNclickable-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
-
-;; ^{:key (:person/age %)}
 
 (defn root-component [innertext]
   (fn []
@@ -123,10 +120,7 @@
       [:span {:style {:color "red"}} " and red "] "text."]
      [:input {:type "button" :value "CLICK ME!"
               :on-click on-click}]
-     ;; [(map child-comp (range 5))]
      [uses-settimeout]
-     ;; (for [i (take 1 ages)]
-     ;;   ^{:key 1} i)])))
      (map-indexed clickable-age @atom-people)]))
 
 (def app-elem (js/document.getElementById "app"))
