@@ -23,6 +23,7 @@
        ;;                 :init (do (println "in init but not josh-test yet")
        ;;                           (load-file "setup_repl_josh.clj")
        ;;                           (set_up_vim_outer_repl))}}}
+       ;; :compiler { :preloads [devtools.preload]}}}
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fmt" ["cljfmt" "fix"]}
   :plugins [[lein-cljfmt "0.8.0"] [cider/cider-nrepl "0.26.0"]]

@@ -1,6 +1,7 @@
 (ns clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]]
-                   [cljs.core.async.macros :refer [go]])
+                   [cljs.core.async.macros :refer [go]]
+                   [clj-testing.logging :refer [log info]])
   (:require [hiccups.runtime :as hiccupsrt]
             [cljs.pprint :refer [pprint]]
             [clojure.test.check]
@@ -134,6 +135,7 @@
 
 ;; (render-simple)
 (def start-up (do (render-simple) true))
-
 ;; (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
 ;;             "the doc:\n" (render_dom)))
+
+(log "WAKE UP!")
