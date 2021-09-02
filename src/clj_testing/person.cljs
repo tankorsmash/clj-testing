@@ -22,8 +22,8 @@
   (str name " ++++ " age " (person: " person ")"))
 
 (defn rec-to-person [person_rec]
-  {:pre [instance? Person person_rec]}
   "converts an Person record to a valid person"
+  {:pre [instance? Person person_rec]}
   {:person/age person_rec.age :person/name person_rec.name})
 
 (defn unq-to-person [unq_person]
@@ -40,34 +40,38 @@
 (declare to-valid-person)
 
 
+(def is-verbose-to-valid-person false)
+
+(defn log [msg]
+  (when is-verbose-to-valid-person (println msg)))
+
 (defn is-map-true [person]
   (if (s/valid? :person/isValidUnq person)
-      (do (println "is isValidUnq") (unq-to-person person))
-      (do (println "is NOT isValidUnq")
-          (str "Not a valid person because its a map but not a person map: " (pprint-person person))
+      (do (log "is isValidUnq") (unq-to-person person))
+      (do (log (str "is NOT isValidUnq" "Not a valid person because its a map but not a person map: " (pprint-person person)))
           {:person/age 0 :person/name "Mr. Valid B. Empty"})))
 (defn is-map-false [person]
   (if (object? person)
-      (do (println "is object") (to-valid-person (js->clj person)))
-      (do (println "is NOT object") (str (str "Not a valid person, unknown type" (type person)) person))))
+      (do (log "is object") (to-valid-person (js->clj person)))
+      (do (log "is NOT object") (str (str "Not a valid person, unknown type" (type person)) person))))
 
 (defn is-isvalid-false [person]
   (if (instance? Person person)
-      (do (println "is Person") (rec-to-person person))
-      (do (println "is NOT Person") (if (map? person)
-                                        (do (println "so its a map???") ( is-map-true person))
-                                        (is-map-false person)))))
+      (do (log "is Person") (rec-to-person person))
+      (do (log "is NOT Person") (if (map? person)
+                                    (do (log "so its a map???") ( is-map-true person))
+                                    (is-map-false person)))))
 
 (defn to-valid-person [person]
    {:post [(clojure.test/is (s/valid? :person/isValid %))]} ;;NOTE this doesnt work because this function also returns the (the_fn person)
    (if (s/valid? :person/isValid person)
-       (do (println "is isValid") person)
-       (do (println "is NOT isValid") (is-isvalid-false person))))
+       (do (log "is isValid") person)
+       (do (log "is NOT isValid") (is-isvalid-false person))))
 
 (defn with-valid-person
-  ;; ^{:doc "calls `(the_fn person)` if its a valid person, Person, or JSON Person"}
+  "calls `(the_fn person)` if its a valid person, Person, or JSON Person"
   [person the_fn]
-  (println "with-valid-person with :" person)
+  (log (str "with-valid-person with :" person))
   (let [valid-person (to-valid-person person)]
       (the_fn valid-person)))
 

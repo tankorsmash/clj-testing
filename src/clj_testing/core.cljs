@@ -70,23 +70,6 @@
                 (map handle-person
                      @atom-people)))
 
-;; (identity prem)
-;; #js {:name "Prem", :age 40}
-;; (prn (type prem))
-; #object[Object]
-(prn (person/with-valid-person prem identity))
-"Not a valid person, 'map' {\"name\" \"Prem\", \"age\" 40}"
-;; (prn (s/valid? :person/isValid prem))
-false
-;; (prn (instance? person/Person prem))
-false
-;; (prn (s/valid? :person/isValidUnq prem))
-false
-;; (prn (map? prem))
-false
-;; (prn (object? prem))
-true
-
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
         [:span.foobar "classed span"]
