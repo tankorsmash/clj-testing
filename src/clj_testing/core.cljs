@@ -58,12 +58,16 @@
    ": "
    (person/with-valid-person person get-age-long)))
 
-(def people [joshua sandy prem matthew olivia {}])
+(def raw_people [joshua sandy prem matthew olivia {}])
+
+(defonce click-count (r/atom 0))
+(defonce seconds-elapsed (r/atom 0))
+(defonce atom_people (r/atom raw_people))
 
 (def to-output (clojure.string/join
                 "\n"
                 (map handle-person
-                     people)))
+                     @atom_people)))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
@@ -71,11 +75,17 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-(defonce click-count (r/atom 0))
-(defonce seconds-elapsed (r/atom 0))
+
+(defn change-people [people]
+  (prn people)
+  [])
+
 
 (defn on-click []
   (swap! click-count inc))
+
+(defn on-click-change-people []
+  (swap! atom_people change-people))
 
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
@@ -88,13 +98,13 @@
      "Seconds elapsed: " @seconds-elapsed]))
 
 (defn clickable-age [idx person]
-  [:div {:key idx}
+  [:div {:key idx :on-click on-click-change-people}
    [:p "This is a UNclickable-age: " (get-age person) "-" (get-name person)]])
 
 ;; ^{:key (:person/age %)}
 
 (defn root-component [innertext]
-  (let [ages (map-indexed clickable-age people)]
+  (let [ages (map-indexed clickable-age @atom_people)]
     (fn []
       [:div
        [:p "I am a component! " innertext]
