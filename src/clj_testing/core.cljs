@@ -55,11 +55,12 @@
    ": "
    (person/with-valid-person person get-age-long)))
 
-(def raw_people [joshua sandy prem matthew olivia {}])
+(def raw_people [joshua sandy prem matthew olivia])
 
 (defonce click-count (r/atom 0))
 (defonce seconds-elapsed (r/atom 0))
-(defonce atom-people (r/atom raw_people))
+(defonce atom-people (r/atom
+                      (mapv #(person/with-valid-person % identity) raw_people)))
 
 (defonce time-updater (js/setInterval
                         #(swap! seconds-elapsed inc) 1000))
