@@ -77,8 +77,9 @@
 
 
 (defn change-people [people]
-  (prn people)
-  [])
+  (let [new-people (concat people people)]
+    (prn (count new-people))
+    new-people))
 
 
 (defn on-click []
@@ -104,22 +105,21 @@
 ;; ^{:key (:person/age %)}
 
 (defn root-component [innertext]
-  (let [ages (map-indexed clickable-age @atom_people)]
-    (fn []
-      [:div
-       [:p "I am a component! " innertext]
-       [:p.someclass
-        "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
-        [:span {:style {:color "red"}} " and red "] "text."]
-       [:input {:type "button" :value "CLICK ME!"
-                :on-click on-click}]
-       ;; [(map child-comp (range 5))]
-       [child-comp 1]
-       [uses-settimeout]
-       [child-comp 2]
-       ;; (for [i (take 1 ages)]
-       ;;   ^{:key 1} i)])))
-       ages])))
+  (fn []
+    [:div
+     [:p "I am a component! " innertext]
+     [:p.someclass
+      "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
+      [:span {:style {:color "red"}} " and red "] "text."]
+     [:input {:type "button" :value "CLICK ME!"
+              :on-click on-click}]
+     ;; [(map child-comp (range 5))]
+     [child-comp 1]
+     [uses-settimeout]
+     [child-comp 2]
+     ;; (for [i (take 1 ages)]
+     ;;   ^{:key 1} i)])))
+     (map-indexed clickable-age @atom_people)]))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
@@ -130,6 +130,7 @@
    [root-component "inner text"]
    react-app-elem))
 
+;; (render-simple)
 (def start-up (do (render-simple) true))
 
 ;; (println (str "|- start output -|\n" to-output "\n|- ended output -|"))
