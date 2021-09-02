@@ -35,8 +35,9 @@
 (def matthew {:name "Matt" :age 12})
 
 (def prem_json "{\"name\":\"Prem\",\"age\":40}")
-(def prem (.parse js/JSON prem_json))
-(def olivia (person/->Person "Olivia"  1234567897 100))
+(def prem (person/to-valid-person (.parse js/JSON prem_json)))
+(def olivia (person/to-valid-person (person/->Person "Olivia"  1234567897 100)))
+
 
 (def generated (s/exercise (s/cat :age :person/age :name :person/name) 2))
 

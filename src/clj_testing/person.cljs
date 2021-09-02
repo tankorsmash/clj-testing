@@ -3,7 +3,7 @@
                    [cljs.core.async.macros :refer [go]])
   (:require [hiccups.runtime :as hiccupsrt]
             [cljs.pprint :refer [pprint]]
-            [clojure.test]
+            [clojure.test :as ct]
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]
@@ -45,22 +45,31 @@
 (defn log [msg]
   (when is-verbose-to-valid-person (println msg)))
 
+(def default-valid-person {:person/age 0 :person/name "Mr. Valid B. Empty"})
+
 (defn is-map-true [person]
   (if (s/valid? :person/isValidUnq person)
-      (do (log "is isValidUnq") (unq-to-person person))
+      (do (log "is isValidUnq")
+          (unq-to-person person))
       (do (log (str "is NOT isValidUnq" "Not a valid person because its a map but not a person map: " (pprint-person person)))
-          {:person/age 0 :person/name "Mr. Valid B. Empty"})))
+          default-valid-person)))
 (defn is-map-false [person]
   (if (object? person)
-      (do (log "is object") (to-valid-person (js->clj person)))
-      (do (log "is NOT object") (str (str "Not a valid person, unknown type" (type person)) person))))
+      (do (log "is object")
+          (to-valid-person (js->clj person)))
+      (do (log "is NOT object...")
+          (log (str "Not a valid person, unknown type" (type person) person))
+          default-valid-person)))
 
 (defn is-isvalid-false [person]
   (if (instance? Person person)
-      (do (log "is Person") (rec-to-person person))
-      (do (log "is NOT Person") (if (map? person)
-                                    (do (log "so its a map???") ( is-map-true person))
-                                    (is-map-false person)))))
+      (do (log "is Person")
+          (rec-to-person person))
+      (do (log "is NOT Person")
+          (if (map? person)
+              (do (log "so its a map???") ( is-map-true person))
+              (is-map-false person)))))
+
 
 (defn to-valid-person [person]
    {:post [(clojure.test/is (s/valid? :person/isValid %))]} ;;NOTE this doesnt work because this function also returns the (the_fn person)
@@ -83,3 +92,20 @@
   "tries real hard to get a person's age for debugging purposes"
   (or (:person/age person) (:age person) person.age "unknown"))
 
+;; (ct/deftest person-test
+;;   (let [age 20] (ct/is( = 1 age))))
+
+(ct/deftest test-to-valid-person
+  (let [valid-person {:person/age 21 :person/name "Mr Tested Name"}
+        map-person {:age 35 :name 452}
+        empty-map-person {}]
+      (ct/is( = valid-person (to-valid-person valid-person)))
+      (ct/is(s/valid? :person/isValid (to-valid-person valid-person)))
+
+      ;;conversions
+      (ct/is(s/valid? :person/isValid (to-valid-person map-person)))
+      (ct/is(= default-valid-person (to-valid-person empty-map-person)))
+      (ct/is(= default-valid-person (to-valid-person 123)))))
+
+
+(def results (ct/run-tests))
