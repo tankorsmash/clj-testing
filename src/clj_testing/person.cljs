@@ -49,7 +49,7 @@
           (str (str "Not a valid person, unknown type" (type person)) person))))))
 
 (defn tryget-person-name [person]
-  "tries real hard to get a person's name for debugging purposes"
+  {:doc "tries real hard to get a person's name for debugging purposes"}
   (or (:person/name person) (:name person) person.name "unknown"))
 
 (defn tryget-person-age [person]

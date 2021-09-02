@@ -1,3 +1,6 @@
+(defn josh-test []
+  (prn "this is josh-test doing its thing"))
+
 (defproject clj-testing "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.slf4j/slf4j-simple "1.7.5"]
@@ -16,6 +19,10 @@
                       [org.clojure/test.check "0.10.0"]
                       ;; optional but recommended
                       [com.bhauman/rebel-readline-cljs "0.1.4"]]}}
+       ;; :repl-options  {
+       ;;                 :init (do (println "in init but not josh-test yet")
+       ;;                           (load-file "setup_repl_josh.clj")
+       ;;                           (set_up_vim_outer_repl))}}}
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fmt" ["cljfmt" "fix"]}
   :plugins [[lein-cljfmt "0.8.0"] [cider/cider-nrepl "0.26.0"]]

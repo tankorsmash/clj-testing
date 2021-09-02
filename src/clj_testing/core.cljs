@@ -16,9 +16,9 @@
 
 ;;   "these are the commands to start up the repl for vim. not sure how to automate this"
 ;; (defmacro set_up_vim_repl []
-;;   `(require 'figwheel.main.api)
-;;   `(figwheel.main.api/start {:mode :serve} "dev")
-;;   `(figwheel.main.api/cljs-repl "dev")
+;;   (do (require 'figwheel.main.api
+;;        (figwheel.main.api/start {:mode :serve} "dev")
+;;        (figwheel.main.api/cljs-repl "dev"))))
 ;;   ;; :Piggieback! (do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))
 ;;   `(js/alert "Hello from the ClojureScript REPL"))
 ;;
