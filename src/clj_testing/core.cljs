@@ -67,16 +67,13 @@
         [:div {} "this is a newline"]
         [:pre {:style "font-size: 24px"} to-output]))
 
-
 (defonce click-count (r/atom 0))
-
 
 (defn on-click []
   (swap! click-count inc))
 
 (defn child-comp [num]
   [:h4 "H4 Header in react " num])
-
 
 (defn simple-component [ctnt]
   [:div
@@ -91,7 +88,6 @@
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
-
 
 (defn render-simple []
   (set! (.-innerHTML (js/document.getElementById "app")) (render_dom))
