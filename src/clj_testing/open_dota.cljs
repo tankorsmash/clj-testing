@@ -83,15 +83,15 @@
 (defn do-request-for-player-data! []
   "makes a request for player data"
   (go (let [response (<! (http/get player_data_url {}))]
-        (log (str "response status: " (:status response)))
-        (let [body (get-in response [:body])]
-          (log body)
-          (if (ct/is (s/valid? :dota/player-data-unq body))
-            (do (log "mfer is valid, assigning to variable")
-                (reset! user-data body))
-            (do (log "player-data-unq failed to match")
-                (s/explain :dota/player-data-unq body))))
-        (log "in do-requiest" response))))
+        ;; (log (str "response status: " (:status response)))
+           (let [body (get-in response [:body])]
+             ;; (log body)
+             (if (ct/is (s/valid? :dota/player-data-unq body))
+               ;; (do (log "mfer is valid, assigning to variable")
+                 (reset! user-data body)
+               ;; (do (log "player-data-unq failed to match")
+                 (s/explain :dota/player-data-unq body))))))
+      ;; (log "in do-requiest" response))))
 
 (defn do-request-for-hero-stats! []
   "makes a request for hero stats"
@@ -160,32 +160,30 @@
 (defn float-to-percentage-str [flt]
  (str (double (/ (Math/floor (* flt 10000)) 100)) "%"))
 
-(declare get-winrate)
-
-(defn render-single-hero-stat [ahs hero-stat]
- (let [all-wins (sum-7_wins ahs)
-       my-wins (:7_win hero-stat)
-       my-picks (:7_pick hero-stat)
-       my-losses (- (:7_pick hero-stat) my-wins)
-       winrate (get-winrate hero-stat)]
-  [:div
-   [:div "this is about a hero named: " (str (:localized_name hero-stat))]
-   [:div "and ive got this many rank7 wins: " (str my-wins)]
-   [:div "and ive got this many rank7 losses: " (str my-losses)]
-   [:div "and ive got this many rank7 winrate " (float-to-percentage-str winrate)]]))
-
 
 (defn get-winrate [{wins :7_win
-                    picks :7_pick} hero-stat]
+                    picks :7_pick :as hero-stats}]
   (/ wins picks))
+
+(defn render-single-hero-stat [ahs hero-stat]
+ (let [ winrate (get-winrate hero-stat)]
+  (let [all-wins (sum-7_wins ahs)
+        my-wins (:7_win hero-stat)
+        my-picks (:7_pick hero-stat)
+        my-losses (- (:7_pick hero-stat) my-wins)]
+   [:div
+    [:div "this is about a hero named: " (str (:localized_name hero-stat))]
+    [:div "and ive got this many rank7 wins: " (str my-wins)]
+    [:div "and ive got this many rank7 losses: " (str my-losses)]
+    [:div "and ive got this many rank7 winrate " (float-to-percentage-str winrate)]])))
+
+
 
 (defn render-hero-winrates [{wins :7_win
                               picks :7_pick
                               hero-id :hero_id
                               hero-name :localized_name
-                              :as hero-stat} hero-stat]
- (log "hero-stat: " hero-stat)
-;;  (let [winrate (get-winrate hero-stat)])
+                              :as hero-stat}]
  [:div
    [:div
     [:div "wins: " wins]
