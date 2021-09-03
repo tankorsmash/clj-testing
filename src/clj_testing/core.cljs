@@ -104,7 +104,7 @@
 
 (defn root-component [innertext]
   (fn []
-    [:div
+    [:div.container
      [:span.someclass
       "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
       [:span {:style {:color "red"}} " and red "] "text. "]

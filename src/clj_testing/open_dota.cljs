@@ -61,11 +61,11 @@
                            :value "CLICK ME"
                            :on-click do-request-for-hero-stats}]
       [:div
-       [:h2 "OPEN DOTA USER DATA"]
+       [:h4 "OPEN DOTA USER DATA"]
        [:div
         (if-not (nil? ud)
           [:div
-           [:h1 "LOADED!!!"]
+           [:h5 {:style {:color "green"}} "Data has loaded!"]
            [:div
             [:div "Tracked until " (str (:tracked_until ud))]
             [:div "Rank Tier " (str (:rank_tier ud))]
