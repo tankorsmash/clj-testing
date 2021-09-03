@@ -7,9 +7,9 @@
 ;;     (figwheel.main.api/cljs-repl "dev"))
 
 ;; it actually needs to be done in a macro so that vim's Piggieback can access it. IDK why either
-(defmacro set_up_vim_outer_repl []
+(defmacro set-up-figwheel []
   `(do (require 'figwheel.main.api)
       (figwheel.main.api/start {:mode :serve} "dev")
       (figwheel.main.api/cljs-repl "dev")))
 
-(set_up_vim_outer_repl)
+(set-up-figwheel)
