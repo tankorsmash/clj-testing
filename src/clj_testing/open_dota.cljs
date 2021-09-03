@@ -59,6 +59,7 @@
           p (:profile @user-data)
           request-btn-cfg {:type "button"
                            :value "CLICK ME"
+                           :class ["btn" "btn-outline-secondary"]
                            :on-click do-request-for-hero-stats}]
       [:div
        [:h4 "OPEN DOTA USER DATA"]
