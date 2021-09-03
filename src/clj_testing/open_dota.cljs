@@ -218,7 +218,7 @@
               [:div
                [:div {:style {:max-height "100px"
                               :overflow-y :scroll}}
-                (map render-hero-winrates ahs)]
+                (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
                [render-single-hero-stat ahs selected-hero]
                [divider-with-text "raw user-data"]
                [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
@@ -260,4 +260,16 @@
          my-wins (:7_win sample-hero-stat)
          my-picks (:7_pick sample-hero-stat)
          my-losses (- my-picks my-wins)]
-    (/ my-wins my-picks))))
+    (/ my-wins my-picks)))
+  (:hero_id (first @all-hero-stats))
+
+  ;; (defn configure [val options]
+  ;;   (let [{:keys [debug verbose] :or {debug false, verbose false}} options]
+  ;;     (println "val =" val " debug =" debug " verbose =" verbose)))
+  (defn configure [val & {:keys [debug verbose]
+                          :or {debug false, verbose false}}]
+    (println "val =" val " debug =" debug " verbose =" verbose))
+  (configure 1)
+  (configure 1 :debug true)
+  (configure 12222 :debug true 2222 123)
+  ,)
