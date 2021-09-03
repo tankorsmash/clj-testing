@@ -77,7 +77,8 @@
              [:div "Profile URL "
               [:a {:href (str (:profileurl p))} "Link"]]]]
 
-           [:pre (str ud)]]
+           ;;dump the rest of the data
+           [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]]
           (let [null ud]
             [:div "No user dota yet" null
              [:div

@@ -31,9 +31,13 @@
   {:pre [s/valid? :person/isValidUnq unq_person]}
   {:person/age (:age unq_person) :person/name (:name unq_person)})
 
+(declare pp-str)
 (defn pprint-person [person]
+  (pp-str person))
+
+(defn pp-str [text]
   (clojure.string/trim-newline
-   (with-out-str (cljs.pprint/pprint person))))
+   (with-out-str (cljs.pprint/pprint text))))
 
 (declare with-valid-person)
 (declare to-valid-person)
