@@ -112,7 +112,8 @@
               :on-click on-click}]
      [:span " Seconds elapsed: " @seconds-elapsed]
      (take 2 (map-indexed clickable-age @atom-people))
-     [dota/render-user-data dota/user-data]]))
+     [dota/render-user-data dota/user-data]
+     [dota/render-hero-stats dota/all-hero-stats]]))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))

@@ -15,7 +15,7 @@
             [reagent.dom :as rdom]))
 
 (defonce user-data (r/atom nil))
-(defonce hero-stats (r/atom nil))
+(defonce all-hero-stats (r/atom nil))
 
 (def root_json_server_url "http://localhost:5021/")
 (def player_data_url (str root_json_server_url "open_dota_player_data"))
@@ -88,10 +88,10 @@
           (log body)
           (if (ct/is (s/coll-of (s/valid? :dota/hero-stats-unq body)))
             (do (log "heroic mfer is valid, assigning to variable")
-                (reset! hero-stats body))
+                (reset! all-hero-stats body))
             (do (log "player-data-unq failed to match")
                 (s/explain :dota/hero-stats-unq body))))
-        (log "in do-request for hero-stats" response))))
+        (log "in do-request for all-hero-stats" response))))
 
 (defn render-user-data-loaded [ud p]
   [:div
@@ -137,6 +137,16 @@
         (if-not (nil? ud)
           (render-user-data-loaded ud p)
           (render-user-data-notloaded ud))]])))
+
+(defn render-hero-stats [all-hero-stats]
+  (fn [all-hero-stats]
+    (let [ahs @all-hero-stats]
+      [:div
+        [:h4 "OPEN DATA HERO STATS"]
+        [:div
+         (if-not (nil? ahs)
+           [ :h2.text-success "NOT NULL SO WE GOT AHS!"]
+           [ :div "no hero stats downloaded"])]])))
 
 (comment
   (do-request-for-player-data!))
