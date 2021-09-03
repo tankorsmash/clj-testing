@@ -16,6 +16,7 @@
        :dependencies [[org.clojure/clojurescript "1.10.773"]
                       [com.bhauman/figwheel-main "0.2.14"]
                       [cider/piggieback "0.4.2"]
+                      [clj-commons/pomegranate "1.2.1"]
                       [org.clojure/test.check "0.10.0"]
                       ;; optional but recommended
                       [com.bhauman/rebel-readline-cljs "0.1.4"]]}}
