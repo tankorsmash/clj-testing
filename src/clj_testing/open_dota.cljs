@@ -16,6 +16,7 @@
 
 (defonce user-data (r/atom nil))
 (defonce all-hero-stats (r/atom nil))
+(defonce selected-hero-id (r/atom 0))
 
 (defn sum [& args]
  (apply #(reduce + %) args))
@@ -203,29 +204,28 @@
 
 
 (defn render-hero-stats [all-hero-stats]
-  (let [selected-hero-id (r/atom 0)]
-    (fn [all-hero-stats]
-      (let [ahs @all-hero-stats]
+  (fn [all-hero-stats]
+    (let [ahs @all-hero-stats]
+      [:div
+        [:h4 "OPEN DATA HERO STATS"]
+        [:div "the selected hero id " @selected-hero-id]
+        [:input.btn.btn-primary {:type :button
+                                 :value "Next Hero ID"
+                                 :on-click #(swap! selected-hero-id inc)}]
+        ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
         [:div
-          [:h4 "OPEN DATA HERO STATS"]
-          [:div "the selected hero id " @selected-hero-id]
-          [:input.btn.btn-primary {:type :button
-                                   :value "Next Hero ID"
-                                   :on-click #(swap! selected-hero-id inc)}]
-          ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
-          [:div
-           (if-not (nil? ahs)
-             (let [selected-hero (nth ahs @selected-hero-id)]
-              [:div
-               [:div {:style {:max-height "100px"
-                              :overflow-y :scroll}}
-                (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
-               [render-single-hero-stat ahs selected-hero]
-               [divider-with-text "raw user-data"]
-               [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
-             [ :div "no hero stats downloaded"
-              [:br]
-              [:input request-btn-cfg-hero-stats]])]]))))
+         (if-not (nil? ahs)
+           (let [selected-hero (nth ahs @selected-hero-id)]
+            [:div
+             [:div {:style {:max-height "100px"
+                            :overflow-y :scroll}}
+              (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
+             [render-single-hero-stat ahs selected-hero]
+             [divider-with-text "raw user-data"]
+             [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
+           [ :div "no hero stats downloaded"
+            [:br]
+            [:input request-btn-cfg-hero-stats]])]])))
 
 
 (def sample-hero-stat
@@ -249,6 +249,7 @@
 (comment
   (js/console.clear)
   (sum [1 2 3])
+  (swap! selected-hero-id 2)
   (do-request-for-player-data!)
   (do-request-for-hero-stats!)
   (do (do-request-for-hero-stats!)
