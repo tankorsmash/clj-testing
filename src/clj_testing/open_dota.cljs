@@ -21,8 +21,7 @@
  (apply #(reduce + %) args))
 
 (defn sum-7_wins [ahs]
- (let [ahs @all-hero-stats
-       wins (map :7_win ahs)]
+ (let [wins (map :7_win ahs)]
     (sum wins)))
 
 (def root_json_server_url "http://localhost:5021/")
