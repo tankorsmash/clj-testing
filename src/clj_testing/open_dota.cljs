@@ -57,6 +57,7 @@
 (defn render-user-data [user-data]
   (fn [user-data]
     (let [ud @user-data
+          p (:profile @user-data)
           request-btn-cfg {:type "button"
                            :value "CLICK ME"
                            :on-click do-request-for-hero-stats}]
@@ -68,7 +69,13 @@
            [:h1 "LOADED!!!"]
            [:div
             [:div "Tracked until " (str (:tracked_until ud))]
-            [:div "Rank Tier " (str (:rank_tier ud))]]
+            [:div "Rank Tier " (str (:rank_tier ud))]
+            [:div "profile"
+             [ :div "Persona Name " (str (:personaname p))]
+             [ :div "Account ID " (str (:account_id p))]
+             [ :div "Avatar Full " (str (:avatarfull p))]
+             [ :div "Profile URL " (str (:profileurl p))]]]
+
            [:pre (str ud)]]
           (let [null ud]
             [:div "No user dota yet" null

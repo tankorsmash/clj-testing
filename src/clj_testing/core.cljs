@@ -118,7 +118,7 @@
      [:input {:type "button" :value "CLICK ME!"
               :on-click on-click}]
      [uses-settimeout]
-     (map-indexed clickable-age @atom-people)
+     (take 2 (map-indexed clickable-age @atom-people))
      [dota/render-user-data dota/user-data]]))
 
 (def app-elem (js/document.getElementById "app"))
