@@ -20,6 +20,12 @@
 (defn sum [& args]
  (apply #(reduce + %) args))
 
+(defn ahs-getter [ahs k]
+  (map k ahs))
+
+(defn all-winrates [ahs]
+  (ahs-getter ahs #(/ (:7_win %) (:7_pick %))))
+
 (defn sum-7_wins [ahs]
  (let [wins (map :7_win ahs)]
     (sum wins)))
@@ -154,17 +160,40 @@
 (defn float-to-percentage-str [flt]
  (str (double (/ (Math/floor (* flt 10000)) 100)) "%"))
 
+(declare get-winrate)
+
 (defn render-single-hero-stat [ahs hero-stat]
  (let [all-wins (sum-7_wins ahs)
        my-wins (:7_win hero-stat)
        my-picks (:7_pick hero-stat)
        my-losses (- (:7_pick hero-stat) my-wins)
-       winrate (/ my-wins my-picks)]
+       winrate (get-winrate hero-stat)]
   [:div
    [:div "this is about a hero named: " (str (:localized_name hero-stat))]
    [:div "and ive got this many rank7 wins: " (str my-wins)]
    [:div "and ive got this many rank7 losses: " (str my-losses)]
    [:div "and ive got this many rank7 winrate " (float-to-percentage-str winrate)]]))
+
+
+(defn get-winrate [{wins :7_win
+                    picks :7_pick} hero-stat]
+  (/ wins picks))
+
+(defn render-hero-winrates [{wins :7_win
+                              picks :7_pick
+                              hero-id :hero_id
+                              hero-name :localized_name
+                              :as hero-stat} hero-stat]
+ (log "hero-stat: " hero-stat)
+;;  (let [winrate (get-winrate hero-stat)])
+ [:div
+   [:div
+    [:div "wins: " wins]
+    [:div "picks: " picks]
+    [:div "id: " hero-id]
+    [:div "name: " hero-name]
+    [:div "WINRATE: " (get-winrate hero-stat)]]
+   [:br]])
 
 
 (defn render-hero-stats [all-hero-stats]
@@ -175,16 +204,19 @@
           [:h4 "OPEN DATA HERO STATS"]
           [:div "the selected hero id " @selected-hero-id]
           [:input.btn.btn-primary {:type :button :value "Next Hero ID" :on-click #(swap! selected-hero-id inc)}]
+          ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
           [:div
            (if-not (nil? ahs)
              (let [selected-hero (nth ahs @selected-hero-id)]
-               [:div
-                [render-single-hero-stat ahs selected-hero]
-                [divider-with-text "raw user-data"]
-                [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
+              [:div
+               [render-hero-winrates selected-hero]
+               [render-single-hero-stat ahs selected-hero]
+               [divider-with-text "raw user-data"]
+               [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
              [ :div "no hero stats downloaded"
               [:br]
               [:input request-btn-cfg-hero-stats]])]]))))
+
 
 (def sample-hero-stat
  {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
