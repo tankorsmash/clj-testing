@@ -56,8 +56,6 @@
                         :padding "0 10px"
                         :color "red"}} text]])
 
-
-
 (defn do-request-for-hero-stats []
   {:doc "makes a request"}
   (go (let [response (<! (http/get hero_stats_url {}))]
@@ -102,8 +100,7 @@
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
    [:div
-     [:input request-btn-cfg]]])
-
+    [:input request-btn-cfg]]])
 
 (defn render-user-data [user-data]
   (fn [user-data]
