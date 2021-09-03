@@ -168,16 +168,20 @@
   (/ wins picks))
 
 (defn render-single-hero-stat [ahs hero-stat]
- (let [ winrate (get-winrate hero-stat)]
   (let [all-wins (sum-7_wins ahs)
         my-wins (:7_win hero-stat)
         my-picks (:7_pick hero-stat)
-        my-losses (- (:7_pick hero-stat) my-wins)]
+        my-losses (- (:7_pick hero-stat) my-wins)
+        winrate (get-winrate hero-stat)
+        img-icon (:icon hero-stat)]
    [:div
-    [:div "this is about a hero named: " (str (:localized_name hero-stat))]
-    [:div "and ive got this many rank7 wins: " (str my-wins)]
-    [:div "and ive got this many rank7 losses: " (str my-losses)]
-    [:div "and ive got this many rank7 winrate " (float-to-percentage-str winrate)]])))
+    [:div.row.row-cols-auto
+      [:div.col
+       [:img.img-fluid {:src (str "https://steamcdn-a.akamaihd.net/" img-icon)}]
+       [:b (str (:localized_name hero-stat))]]
+     [:div.col "Wins: " (str my-wins)]
+     [:div.col "Losses: " (str my-losses)]
+     [:div.col "Matches: " (str my-picks)]]]))
 
 
 
@@ -209,18 +213,18 @@
       [:div
         [:h4 "OPEN DATA HERO STATS"]
         [:div "the selected hero id " @selected-hero-id]
-        [:input.btn.btn-primary {:type :button
-                                 :value "Next Hero ID"
-                                 :on-click #(swap! selected-hero-id inc)}]
+        [:input.btn.btn-outline-secondary {:type :button
+                                           :value "Next Hero ID"
+                                           :on-click #(swap! selected-hero-id inc)}]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
         [:div
          (if-not (nil? ahs)
            (let [selected-hero (nth ahs @selected-hero-id)]
             [:div
+             [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
               (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
-             [render-single-hero-stat ahs selected-hero]
              [divider-with-text "raw user-data"]
              [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
            [ :div "no hero stats downloaded"
