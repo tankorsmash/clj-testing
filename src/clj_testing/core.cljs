@@ -125,9 +125,9 @@
 (def start-up (do (render-simple) true))
 
 (defn dota-download []
-  (log "dota channel: " (clj-testing.open-dota/do-request-for-hero-stats)))
+  (log "dota channel: " (clj-testing.open-dota/do-request-for-hero-stats!)))
 
 (comment
   (js/console.clear)
   (dota-download)
-  (dota/do-request-for-hero-stats))
+  (dota/do-request-for-hero-stats!))

@@ -56,7 +56,7 @@
                         :padding "0 10px"
                         :color "red"}} text]])
 
-(defn do-request-for-hero-stats []
+(defn do-request-for-hero-stats! []
   {:doc "makes a request"}
   (go (let [response (<! (http/get hero_stats_url {}))]
         (log (str "response status: " (:status response)))
@@ -73,12 +73,12 @@
   [:div
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
-    [:h4 "User"]
+    [divider-with-text "user-data"]
     [:div.row
      [:div.col "Tracked until " (str (:tracked_until ud))]
      [:div.col "Rank Tier " (str (:rank_tier ud))]]
 
-    [:h4 "Profile"]
+    [divider-with-text "user-data.profile"]
     [:div.row
      [:div.col "Persona Name " (str (:personaname p))]
      [:div.col "Account ID " (str (:account_id p))]
@@ -88,14 +88,14 @@
       [:a {:href (str (:profileurl p))} "Link"]]]]
 
    ;;dump the rest of the data
-   [divider-with-text "user-data"]
+   [divider-with-text "raw user-data"]
    [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]])
 
 (def request-btn-cfg
   {:type "button"
    :value "CLICK ME"
    :class ["btn" "btn-outline-secondary"]
-   :on-click do-request-for-hero-stats})
+   :on-click do-request-for-hero-stats!})
 
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
@@ -114,4 +114,4 @@
           (render-user-data-notloaded ud))]])))
 
 (comment
-  (do-request-for-hero-stats))
+  (do-request-for-hero-stats!))
