@@ -93,8 +93,8 @@
 (def request-btn-cfg
   {:type "button"
    :value "CLICK ME"
-   :class ["btn" "btn-outline-secondary"
-           :on-click do-request-for-hero-stats]})
+   :class ["btn" "btn-outline-secondary"]
+   :on-click do-request-for-hero-stats})
 
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
