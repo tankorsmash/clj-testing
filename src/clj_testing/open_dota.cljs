@@ -71,40 +71,47 @@
                 (s/explain :dota/player-data-unq body))))
         (log "in do-requiest" response))))
 
+(defn render-user-data-loaded [ud p]
+  [:div
+   [:h5 {:style {:color "green"}} "Data has loaded!"]
+   [:div
+    [:div "Tracked until " (str (:tracked_until ud))]
+    [:div "Rank Tier " (str (:rank_tier ud))]
+    [:div "profile:"
+     [:div "Persona Name " (str (:personaname p))]
+     [:div "Account ID " (str (:account_id p))]
+     [:div "Avatar Full "
+      [:img {:src (str (:avatarfull p))}]]
+     [:div "Profile URL "
+      [:a {:href (str (:profileurl p))} "Link"]]]]
+
+   ;;dump the rest of the data
+   ;; [:hr]
+   [divider-with-text "user-data"]
+   [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]])
+
+(def request-btn-cfg
+  {:type "button"
+   :value "CLICK ME"
+   :class ["btn" "btn-outline-secondary"
+           :on-click do-request-for-hero-stats]})
+
+(defn render-user-data-notloaded [ud]
+  [:div "No user dota yet" ud
+   [:div
+     [:input request-btn-cfg]]])
+
+
 (defn render-user-data [user-data]
   (fn [user-data]
     (let [ud @user-data
-          p (:profile @user-data)
-          request-btn-cfg {:type "button"
-                           :value "CLICK ME"
-                           :class ["btn" "btn-outline-secondary"]
-                           :on-click do-request-for-hero-stats}]
+          p (:profile @user-data)]
       [:div
        [:h4 "OPEN DOTA USER DATA"]
        [:div
         (if-not (nil? ud)
-          [:div
-           [:h5 {:style {:color "green"}} "Data has loaded!"]
-           [:div
-            [:div "Tracked until " (str (:tracked_until ud))]
-            [:div "Rank Tier " (str (:rank_tier ud))]
-            [:div "profile:"
-             [:div "Persona Name " (str (:personaname p))]
-             [:div "Account ID " (str (:account_id p))]
-             [:div "Avatar Full "
-              [:img {:src (str (:avatarfull p))}]]
-             [:div "Profile URL "
-              [:a {:href (str (:profileurl p))} "Link"]]]]
-
-           ;;dump the rest of the data
-           ;; [:hr]
-           [divider-with-text "user-data"]
-           [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]]
-
-          (let [null ud]
-            [:div "No user dota yet" null
-             [:div
-              [:input request-btn-cfg]]]))]])))
+          (render-user-data-loaded ud p)
+          (render-user-data-notloaded ud))]])))
 
 (comment
   (do-request-for-hero-stats))
