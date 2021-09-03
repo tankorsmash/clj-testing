@@ -139,14 +139,19 @@
           (render-user-data-notloaded ud))]])))
 
 (defn render-hero-stats [all-hero-stats]
-  (fn [all-hero-stats]
-    (let [ahs @all-hero-stats]
-      [:div
-        [:h4 "OPEN DATA HERO STATS"]
+  (let [selected-hero-id (r/atom 0)]
+    (fn [all-hero-stats]
+      (let [ahs @all-hero-stats]
         [:div
-         (if-not (nil? ahs)
-           [ :h2.text-success "NOT NULL SO WE GOT AHS!"]
-           [ :div "no hero stats downloaded"])]])))
+          [:h4 "OPEN DATA HERO STATS"]
+          [:div "the selected hero id " @selected-hero-id]
+          [:input.btn.btn-primary {:type :button :value "mess with state" :on-click #(swap! selected-hero-id inc)}]
+          [:div
+           (if-not (nil? ahs)
+             [ :h2.text-success "NOT NULL SO WE GOT AHS!"]
+             [ :div "no hero stats downloaded"])]
+          [divider-with-text "raw user-data"]
+          [:pre {:style {:white-space "break-spaces"}} (person/pp-str (take 1 ahs))]]))))
 
 (comment
   (do-request-for-player-data!))
