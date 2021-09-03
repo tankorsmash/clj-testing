@@ -15,6 +15,7 @@
             [reagent.dom :as rdom]))
 
 (defonce user-data (r/atom nil))
+(defonce hero-stats (r/atom nil))
 
 (def root_json_server_url "http://localhost:5021/")
 (def player_data_url (str root_json_server_url "open_dota_player_data"))
@@ -41,6 +42,15 @@
 (s/def :dota/player-data (s/keys :req (vector player-data-keys)))
 (s/def :dota/player-data-unq (s/keys :req-unq (vector player-data-keys)))
 
+(def hero-stats-keys
+  [:dota.hero-stats/hero_id
+   :dota.hero-stats/icon
+   :dota.hero-stats/img
+   :dota.hero-stats/localized_name])
+
+(s/def :dota/hero-stats (s/keys :req (vector hero-stats-keys)))
+(s/def :dota/hero-stats-unq (s/keys :req-unq (vector hero-stats-keys)))
+
 ;; h2 { width:100%; text-align:center; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 0 20px; } 
 ;;     h2 span { background:#fff}}; padding:0 10px; color:red}
 
@@ -58,7 +68,7 @@
                         :color "red"}} text]])
 
 (defn do-request-for-player-data! []
-  {:doc "makes a request"}
+  "makes a request for player data"
   (go (let [response (<! (http/get player_data_url {}))]
         (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
@@ -69,6 +79,19 @@
             (do (log "player-data-unq failed to match")
                 (s/explain :dota/player-data-unq body))))
         (log "in do-requiest" response))))
+
+(defn do-request-for-hero-stats! []
+  "makes a request for hero stats"
+  (go (let [response (<! (http/get hero_stats_url {}))]
+        (log (str "response status: " (:status response)))
+        (let [body (get-in response [:body])]
+          (log body)
+          (if (ct/is (s/coll-of (s/valid? :dota/hero-stats-unq body)))
+            (do (log "heroic mfer is valid, assigning to variable")
+                (reset! hero-stats body))
+            (do (log "player-data-unq failed to match")
+                (s/explain :dota/hero-stats-unq body))))
+        (log "in do-request for hero-stats" response))))
 
 (defn render-user-data-loaded [ud p]
   [:div
@@ -96,7 +119,8 @@
   {:type "button"
    :value "CLICK ME"
    :class ["btn" "btn-outline-secondary"]
-   :on-click do-request-for-player-data!})
+   ;; :on-click do-request-for-player-data!
+   :on-click do-request-for-hero-stats!})
 
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
