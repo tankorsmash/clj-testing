@@ -20,13 +20,12 @@
 (def hero_stats_url (str root_json_server_url "open_dota_player_data"))
 
 (def player-profile-keys
-  [ :dota.profile/is_contributor
-    :dota.profile/loccountry_code
-    :dota.profile/account_id
-    :dota.profile/avatarfull
-    :dota.profile/avatar
-    :dota.profile/profileurl])
-
+  [:dota.profile/is_contributor
+   :dota.profile/loccountry_code
+   :dota.profile/account_id
+   :dota.profile/avatarfull
+   :dota.profile/avatar
+   :dota.profile/profileurl])
 
 (s/def :dota/tracked_until string?) ;;TODO make it a string of numbers
 (s/def :dota/rank_tier int?)
@@ -70,12 +69,12 @@
            [:div
             [:div "Tracked until " (str (:tracked_until ud))]
             [:div "Rank Tier " (str (:rank_tier ud))]
-            [:div "profile"
-             [ :div "Persona Name " (str (:personaname p))]
-             [ :div "Account ID " (str (:account_id p))]
-             [ :div "Avatar Full "
+            [:div "profile:"
+             [:div "Persona Name " (str (:personaname p))]
+             [:div "Account ID " (str (:account_id p))]
+             [:div "Avatar Full "
               [:img {:src (str (:avatarfull p))}]]
-             [ :div "Profile URL "
+             [:div "Profile URL "
               [:a {:href (str (:profileurl p))} "Link"]]]]
 
            [:pre (str ud)]]
