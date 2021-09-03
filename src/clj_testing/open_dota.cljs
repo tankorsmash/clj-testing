@@ -249,7 +249,7 @@
 (comment
   (js/console.clear)
   (sum [1 2 3])
-  (swap! selected-hero-id 2)
+  (reset! selected-hero-id 16)
   (do-request-for-player-data!)
   (do-request-for-hero-stats!)
   (do (do-request-for-hero-stats!)
