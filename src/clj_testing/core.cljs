@@ -97,26 +97,20 @@
   (let [new-person (change-person-age person)]
     (swap! atom-people #(swap-person % idx new-person))))
 
-(defn uses-settimeout []
-  (fn []
-    [:div
-     "Seconds elapsed: " @seconds-elapsed]))
-
 (defn clickable-age [idx person]
   [:div {:key idx :on-click #(on-click-change-person idx person)}
-   [:p "This is a " [:b "CLICKABLE"] "-age: "
+   [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
 (defn root-component [innertext]
   (fn []
     [:div
-     [:p "I am a component! " innertext]
-     [:p.someclass
+     [:span.someclass
       "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
-      [:span {:style {:color "red"}} " and red "] "text."]
+      [:span {:style {:color "red"}} " and red "] "text. "]
      [:input {:type "button" :value "CLICK ME!"
               :on-click on-click}]
-     [uses-settimeout]
+     [:span " Seconds elapsed: " @seconds-elapsed]
      (take 2 (map-indexed clickable-age @atom-people))
      [dota/render-user-data dota/user-data]]))
 
