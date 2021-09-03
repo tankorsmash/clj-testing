@@ -73,8 +73,10 @@
             [:div "profile"
              [ :div "Persona Name " (str (:personaname p))]
              [ :div "Account ID " (str (:account_id p))]
-             [ :div "Avatar Full " (str (:avatarfull p))]
-             [ :div "Profile URL " (str (:profileurl p))]]]
+             [ :div "Avatar Full "
+              [:img {:src (str (:avatarfull p))}]]
+             [ :div "Profile URL "
+              [:a {:href (str (:profileurl p))} "Link"]]]]
 
            [:pre (str ud)]]
           (let [null ud]
