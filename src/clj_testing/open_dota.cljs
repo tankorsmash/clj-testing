@@ -184,14 +184,21 @@
                               hero-id :hero_id
                               hero-name :localized_name
                               :as hero-stat}]
- [:div
-   [:div
-    [:div "wins: " wins]
-    [:div "picks: " picks]
-    [:div "id: " hero-id]
-    [:div "name: " hero-name]
-    [:div "WINRATE: " (get-winrate hero-stat)]]
-   [:br]])
+ (let [winrate (get-winrate hero-stat)]
+  [:div {:key hero-id}
+     ;; [:span "#" hero-id]
+     [:progress {:value winrate :max 1} winrate]
+     " "
+     [:span
+      [:strong hero-name]
+      " "
+      [:span
+        [:span {:style {:color :green}} wins]
+        "/"
+        [:span picks]]
+      " "
+      [:span " (" (float-to-percentage-str (get-winrate hero-stat)) ")"]]
+   [:br]]))
 
 
 (defn render-hero-stats [all-hero-stats]
@@ -201,13 +208,17 @@
         [:div
           [:h4 "OPEN DATA HERO STATS"]
           [:div "the selected hero id " @selected-hero-id]
-          [:input.btn.btn-primary {:type :button :value "Next Hero ID" :on-click #(swap! selected-hero-id inc)}]
+          [:input.btn.btn-primary {:type :button
+                                   :value "Next Hero ID"
+                                   :on-click #(swap! selected-hero-id inc)}]
           ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
           [:div
            (if-not (nil? ahs)
              (let [selected-hero (nth ahs @selected-hero-id)]
               [:div
-               [render-hero-winrates selected-hero]
+               [:div {:style {:max-height "100px"
+                              :overflow-y :scroll}}
+                (map render-hero-winrates ahs)]
                [render-single-hero-stat ahs selected-hero]
                [divider-with-text "raw user-data"]
                [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
@@ -237,6 +248,7 @@
 (comment
   (sum [1 2 3])
   (do-request-for-player-data!)
+  (do-request-for-hero-stats!)
   (do (do-request-for-hero-stats!)
       (log "ASD " (count @all-hero-stats))
       #_(let [ahs @all-hero-stats]
