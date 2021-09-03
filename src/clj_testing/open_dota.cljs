@@ -79,6 +79,7 @@
     [:div.row
      [:div.col "Tracked until " (str (:tracked_until ud))]
      [:div.col "Rank Tier " (str (:rank_tier ud))]]
+
     [:h4 "Profile"]
     [:div.row
      [:div.col "Persona Name " (str (:personaname p))]
@@ -89,7 +90,6 @@
       [:a {:href (str (:profileurl p))} "Link"]]]]
 
    ;;dump the rest of the data
-   ;; [:hr]
    [divider-with-text "user-data"]
    [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]])
 
