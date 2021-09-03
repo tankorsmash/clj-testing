@@ -17,6 +17,9 @@
 (defonce user-data (r/atom nil))
 (defonce all-hero-stats (r/atom nil))
 
+(defn sum [& args]
+ (apply + args))
+
 (def root_json_server_url "http://localhost:5021/")
 (def player_data_url (str root_json_server_url "open_dota_player_data"))
 (def hero_stats_url (str root_json_server_url "open_dota_hero_stats"))
@@ -151,6 +154,7 @@
   (let [selected-hero-id (r/atom 0)]
     (fn [all-hero-stats]
       (let [ahs @all-hero-stats]
+            
         [:div
           [:h4 "OPEN DATA HERO STATS"]
           [:div "the selected hero id " @selected-hero-id]
@@ -166,5 +170,23 @@
               [:br]
               [:input request-btn-cfg-hero-stats]])]]))))
 
+(def sample-hero-stat 
+ {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
+  :attack_range 400, :2_pick 22572, :base_armor -1, :2_win 11630,
+  :1_pick 17365, :7_win 1202, :move_speed 290, :3_pick 23656, :3_win 12177,
+  :1_win 8965, :base_int 18, :name "npc_dota_hero_huskar",
+  :roles ["Carry" "Durable" "Initiator"], :base_agi 13,
+  :attack_type "Ranged", :8_win 278, :primary_attr "str", :pro_ban 23,
+  :icon "/apps/dota2/images/heroes/huskar_icon.png",
+  :base_str 21, :8_pick 511, :5_pick 11338, :pro_pick 12, :attack_rate 1.6,
+  :pro_win 7, :cm_enabled true, :projectile_speed 1400, :6_win 2609, :4_win 9981,
+  :int_gain 1.5, :legs 2, :id 59, :turbo_wins 28578, :base_mana_regen 0,
+  :4_pick 19198, :base_attack_max 26, :7_pick 2266, :base_health 200,
+  :null_pick 1001867, :base_health_regen nil, :6_pick 4908
+  :turn_rate nil, :base_mr 25, :null_win 0,
+  :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21, 
+  :localized_name "Huskar", :turbo_picks 54811})
+
 (comment
+  (sum [1 2 3])
   (do-request-for-player-data!))
