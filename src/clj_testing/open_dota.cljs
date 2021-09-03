@@ -75,14 +75,17 @@
   [:div
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
-    [:div "Tracked until " (str (:tracked_until ud))]
-    [:div "Rank Tier " (str (:rank_tier ud))]
-    [:div "profile:"
-     [:div "Persona Name " (str (:personaname p))]
-     [:div "Account ID " (str (:account_id p))]
-     [:div "Avatar Full "
-      [:img {:src (str (:avatarfull p))}]]
-     [:div "Profile URL "
+    [:h4 "User"]
+    [:div.row
+     [:div.col "Tracked until " (str (:tracked_until ud))]
+     [:div.col "Rank Tier " (str (:rank_tier ud))]]
+    [:h4 "Profile"]
+    [:div.row
+     [:div.col "Persona Name " (str (:personaname p))]
+     [:div.col "Account ID " (str (:account_id p))]
+     [:div.col-2 "Avatar Full "
+      [:img.img-thumbnail {:src (str (:avatarfull p))}]]
+     [:div.col "Profile URL "
       [:a {:href (str (:profileurl p))} "Link"]]]]
 
    ;;dump the rest of the data
