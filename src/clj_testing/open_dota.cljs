@@ -19,16 +19,30 @@
 (def root_json_server_url "http://localhost:5021/")
 (def hero_stats_url (str root_json_server_url "open_dota_player_data"))
 
+(def player-profile-keys
+  [ :dota.profile/is_contributor
+    :dota.profile/loccountry_code
+    :dota.profile/account_id
+    :dota.profile/avatarfull
+    :dota.profile/avatar
+    :dota.profile/profileurl])
+
+
 (s/def :dota/tracked_until string?) ;;TODO make it a string of numbers
 (s/def :dota/rank_tier int?)
+(s/def :dota.profile/profile (s/keys :req (vector player-profile-keys)))
+(s/def :dota.profile/profile-unq (s/keys :req-unq (vector player-profile-keys)))
 
-(s/def :dota/player-data (s/keys :req [:dota/tracked_until
-                                       :dota/rank_tier]))
-(s/def :dota/player-data-unq (s/keys :req-unq [:dota/tracked_until
-                                               :dota/rank_tier]))
+(def player-data-keys
+  [:dota/tracked_until
+   :dota/rank_tier
+   :dota.profile/profile])
+
+(s/def :dota/player-data (s/keys :req (vector player-data-keys)))
+(s/def :dota/player-data-unq (s/keys :req-unq (vector player-data-keys)))
 
 (defn do-request-for-hero-stats []
-  "ASDSAD"
+  {:doc "makes a request"}
   (go (let [response (<! (http/get hero_stats_url {}))]
         (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
@@ -42,7 +56,10 @@
 
 (defn render-user-data [user-data]
   (fn [user-data]
-    (let [ud @user-data]
+    (let [ud @user-data
+          request-btn-cfg {:type "button"
+                           :value "CLICK ME"
+                           :on-click do-request-for-hero-stats}]
       [:div
        [:h2 "OPEN DOTA USER DATA"]
        [:div
@@ -50,11 +67,13 @@
           [:div
            [:h1 "LOADED!!!"]
            [:div
-              [:div "Tracked until " (str (:tracked_until ud))]
-              [:div "Rank Tier " (str (:rank_tier ud))]]
+            [:div "Tracked until " (str (:tracked_until ud))]
+            [:div "Rank Tier " (str (:rank_tier ud))]]
            [:pre (str ud)]]
           (let [null ud]
-            [:div "No user dota yet" null]))]])))
+            [:div "No user dota yet" null
+             [:div
+              [:input request-btn-cfg]]]))]])))
 
 (comment
   (do-request-for-hero-stats))
