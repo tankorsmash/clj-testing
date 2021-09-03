@@ -17,7 +17,8 @@
 (defonce user-data (r/atom nil))
 
 (def root_json_server_url "http://localhost:5021/")
-(def hero_stats_url (str root_json_server_url "open_dota_player_data"))
+(def player_data_url (str root_json_server_url "open_dota_player_data"))
+(def hero_stats_url (str root_json_server_url "open_dota_hero_stats"))
 
 (def player-profile-keys
   [:dota.profile/is_contributor
@@ -56,9 +57,9 @@
                         :padding "0 10px"
                         :color "red"}} text]])
 
-(defn do-request-for-hero-stats! []
+(defn do-request-for-player-data! []
   {:doc "makes a request"}
-  (go (let [response (<! (http/get hero_stats_url {}))]
+  (go (let [response (<! (http/get player_data_url {}))]
         (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
           (log body)
@@ -95,7 +96,7 @@
   {:type "button"
    :value "CLICK ME"
    :class ["btn" "btn-outline-secondary"]
-   :on-click do-request-for-hero-stats!})
+   :on-click do-request-for-player-data!})
 
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
@@ -114,4 +115,4 @@
           (render-user-data-notloaded ud))]])))
 
 (comment
-  (do-request-for-hero-stats!))
+  (do-request-for-player-data!))
