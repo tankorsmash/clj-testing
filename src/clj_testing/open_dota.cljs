@@ -144,6 +144,9 @@
           (render-user-data-loaded ud p)
           (render-user-data-notloaded ud))]])))
 
+(defn render-single-hero-stat [hero-stat]
+ [:div "this is about a hero named: " (str (:localized_name hero-stat))])
+
 (defn render-hero-stats [all-hero-stats]
   (let [selected-hero-id (r/atom 0)]
     (fn [all-hero-stats]
@@ -151,12 +154,14 @@
         [:div
           [:h4 "OPEN DATA HERO STATS"]
           [:div "the selected hero id " @selected-hero-id]
-          [:input.btn.btn-primary {:type :button :value "mess with state" :on-click #(swap! selected-hero-id inc)}]
+          [:input.btn.btn-primary {:type :button :value "Next Hero ID" :on-click #(swap! selected-hero-id inc)}]
           [:div
            (if-not (nil? ahs)
-             [:div
-              [divider-with-text "raw user-data"]
-              [:pre {:style {:white-space "break-spaces"}} (person/pp-str (take 1 ahs))]]
+             (let [selected-hero (nth ahs @selected-hero-id)]
+               [:div
+                [render-single-hero-stat selected-hero]
+                [divider-with-text "raw user-data"]
+                [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
              [ :div "no hero stats downloaded"
               [:br]
               [:input request-btn-cfg-hero-stats]])]]))))
