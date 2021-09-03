@@ -50,7 +50,6 @@
         add_x)))
 
 (defn handle-person [person]
-  ;; (str (person/tryget-person-name person) ": " (person/with-valid-person person get-age))
   (str
    (person/tryget-person-name person)
    ": "
