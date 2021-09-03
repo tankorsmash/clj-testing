@@ -158,11 +158,12 @@
           (render-user-data-notloaded ud))]])))
 
 (defn float-to-percentage-str [flt]
- (str (double (/ (Math/floor (* flt 10000)) 100)) "%"))
+  (str (double (/ (Math/floor (* flt 10000)) 100)) "%"))
 
 
-(defn get-winrate [{wins :7_win
-                    picks :7_pick :as hero-stats}]
+(defn get-winrate
+  [{wins :7_win
+    picks :7_pick :as hero-stats}]
   (/ wins picks))
 
 (defn render-single-hero-stat [ahs hero-stat]
@@ -246,6 +247,7 @@
 
 
 (comment
+  (js/console.clear)
   (sum [1 2 3])
   (do-request-for-player-data!)
   (do-request-for-hero-stats!)
@@ -262,6 +264,20 @@
          my-losses (- my-picks my-wins)]
     (/ my-wins my-picks)))
   (:hero_id (first @all-hero-stats))
+
+  (defn say-hi
+    ([] (println "hello no args"))
+    ([a] (println "heya 1 arg"))
+    ([a b] (println "holla 2 arg"))
+    ([a b c] (println "hi 3 arg"))
+    ([a b c d] (println "bonjour 4 arg")))
+
+  (say-hi)
+  (say-hi "one arg")
+  (say-hi "_" "two args")
+  (say-hi "_" "_" "three args")
+  (say-hi "_" "_" "_" "four args")
+  (apply say-hi [1 2 3 4]) ;; passes a 4 args
 
   ;; (defn configure [val options]
   ;;   (let [{:keys [debug verbose] :or {debug false, verbose false}} options]
