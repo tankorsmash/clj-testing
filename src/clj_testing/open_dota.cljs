@@ -115,17 +115,23 @@
    [divider-with-text "raw user-data"]
    [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]])
 
-(def request-btn-cfg
+(defn request-btn-cfg [callback]
   {:type "button"
-   :value "CLICK ME"
+   :value "Download"
    :class ["btn" "btn-outline-secondary"]
    ;; :on-click do-request-for-player-data!
-   :on-click do-request-for-hero-stats!})
+   :on-click callback})
+
+(def request-btn-cfg-hero-stats
+  (request-btn-cfg do-request-for-hero-stats!))
+
+(def request-btn-cfg-player-stats
+  (request-btn-cfg do-request-for-player-data!))
 
 (defn render-user-data-notloaded [ud]
   [:div "No user dota yet" ud
    [:div
-    [:input request-btn-cfg]]])
+    [:input request-btn-cfg-player-stats]]])
 
 (defn render-user-data [user-data]
   (fn [user-data]
@@ -148,10 +154,12 @@
           [:input.btn.btn-primary {:type :button :value "mess with state" :on-click #(swap! selected-hero-id inc)}]
           [:div
            (if-not (nil? ahs)
-             [ :h2.text-success "NOT NULL SO WE GOT AHS!"]
-             [ :div "no hero stats downloaded"])]
-          [divider-with-text "raw user-data"]
-          [:pre {:style {:white-space "break-spaces"}} (person/pp-str (take 1 ahs))]]))))
+             [:div
+              [divider-with-text "raw user-data"]
+              [:pre {:style {:white-space "break-spaces"}} (person/pp-str (take 1 ahs))]]
+             [ :div "no hero stats downloaded"
+              [:br]
+              [:input request-btn-cfg-hero-stats]])]]))))
 
 (comment
   (do-request-for-player-data!))
