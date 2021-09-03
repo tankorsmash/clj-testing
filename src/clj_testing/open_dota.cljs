@@ -40,6 +40,24 @@
 (s/def :dota/player-data (s/keys :req (vector player-data-keys)))
 (s/def :dota/player-data-unq (s/keys :req-unq (vector player-data-keys)))
 
+;; h2 { width:100%; text-align:center; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 0 20px; } 
+;;     h2 span { background:#fff}}; padding:0 10px; color:red}
+
+(defn divider-with-text [text]
+  "basically -------text-----"
+  [:div {:style
+         {:width "100%"
+          :text-align :center
+          :border-bottom "1px solid grey"
+          :line-height "0.1em"
+          :margin "10px 0 20px"}}
+   [:small.text-muted {:style
+                       {:background "white"
+                        :padding "0 10px"
+                        :color "red"}} text]])
+
+
+
 (defn do-request-for-hero-stats []
   {:doc "makes a request"}
   (go (let [response (<! (http/get hero_stats_url {}))]
@@ -79,7 +97,10 @@
               [:a {:href (str (:profileurl p))} "Link"]]]]
 
            ;;dump the rest of the data
+           ;; [:hr]
+           [divider-with-text "user-data"]
            [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]]
+
           (let [null ud]
             [:div "No user dota yet" null
              [:div
