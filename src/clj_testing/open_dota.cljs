@@ -153,7 +153,7 @@
           (render-user-data-notloaded ud))]])))
 
 (defn float-to-percentage-str [flt]
- (str (double (Math/floor (* flt 100))) "%"))
+ (str (double (/ (Math/floor (* flt 10000)) 100)) "%"))
 
 (defn render-single-hero-stat [ahs hero-stat]
  (let [all-wins (sum-7_wins ahs)
