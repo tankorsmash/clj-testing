@@ -20,6 +20,11 @@
 (defn sum [& args]
  (apply #(reduce + %) args))
 
+(defn sum-7_wins [ahs]
+ (let [ahs @all-hero-stats
+       wins (map :7_win ahs)]
+    (sum wins)))
+
 (def root_json_server_url "http://localhost:5021/")
 (def player_data_url (str root_json_server_url "open_dota_player_data"))
 (def hero_stats_url (str root_json_server_url "open_dota_hero_stats"))
@@ -147,14 +152,26 @@
           (render-user-data-loaded ud p)
           (render-user-data-notloaded ud))]])))
 
-(defn render-single-hero-stat [hero-stat]
- [:div "this is about a hero named: " (str (:localized_name hero-stat))])
+(defn float-to-percentage-str [flt]
+ (str (double (Math/floor (* flt 100))) "%"))
+
+(defn render-single-hero-stat [ahs hero-stat]
+ (let [all-wins (sum-7_wins ahs)
+       my-wins (:7_win hero-stat)
+       my-picks (:7_pick hero-stat)
+       my-losses (- (:7_pick hero-stat) my-wins)
+       winrate (/ my-wins my-picks)]
+  [:div
+   [:div "this is about a hero named: " (str (:localized_name hero-stat))]
+   [:div "and ive got this many rank7 wins: " (str my-wins)]
+   [:div "and ive got this many rank7 losses: " (str my-losses)]
+   [:div "and ive got this many rank7 winrate " (float-to-percentage-str winrate)]]))
+  
 
 (defn render-hero-stats [all-hero-stats]
   (let [selected-hero-id (r/atom 0)]
     (fn [all-hero-stats]
       (let [ahs @all-hero-stats]
-            
         [:div
           [:h4 "OPEN DATA HERO STATS"]
           [:div "the selected hero id " @selected-hero-id]
@@ -163,7 +180,7 @@
            (if-not (nil? ahs)
              (let [selected-hero (nth ahs @selected-hero-id)]
                [:div
-                [render-single-hero-stat selected-hero]
+                [render-single-hero-stat ahs selected-hero]
                 [divider-with-text "raw user-data"]
                 [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
              [ :div "no hero stats downloaded"
@@ -187,6 +204,19 @@
   :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21, 
   :localized_name "Huskar", :turbo_picks 54811})
 
+
 (comment
   (sum [1 2 3])
-  (do-request-for-player-data!))
+  (do-request-for-player-data!)
+  (do (do-request-for-hero-stats!)
+      (log "ASD " (count @all-hero-stats))
+      #_(let [ahs @all-hero-stats]
+            wins (map :7_win ahs))
+        log (sum wins)
+      (log "7_wins " (sum-7_wins @all-hero-stats)))
+  (def winrate
+   (let [all-wins (sum-7_wins @all-hero-stats)
+         my-wins (:7_win sample-hero-stat)
+         my-picks (:7_pick sample-hero-stat)
+         my-losses (- my-picks my-wins)]
+    (/ my-wins my-picks))))
