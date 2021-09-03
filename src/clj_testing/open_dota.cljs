@@ -232,28 +232,50 @@
             [:input request-btn-cfg-hero-stats]])]])))
 
 
-(def sample-hero-stat
- {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
-  :attack_range 400, :2_pick 22572, :base_armor -1, :2_win 11630,
-  :1_pick 17365, :7_win 1202, :move_speed 290, :3_pick 23656, :3_win 12177,
-  :1_win 8965, :base_int 18, :name "npc_dota_hero_huskar",
-  :roles ["Carry" "Durable" "Initiator"], :base_agi 13,
-  :attack_type "Ranged", :8_win 278, :primary_attr "str", :pro_ban 23,
-  :icon "/apps/dota2/images/heroes/huskar_icon.png",
-  :base_str 21, :8_pick 511, :5_pick 11338, :pro_pick 12, :attack_rate 1.6,
-  :pro_win 7, :cm_enabled true, :projectile_speed 1400, :6_win 2609, :4_win 9981,
-  :int_gain 1.5, :legs 2, :id 59, :turbo_wins 28578, :base_mana_regen 0,
-  :4_pick 19198, :base_attack_max 26, :7_pick 2266, :base_health 200,
-  :null_pick 1001867, :base_health_regen nil, :6_pick 4908
-  :turn_rate nil, :base_mr 25, :null_win 0,
-  :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21,
-  :localized_name "Huskar", :turbo_picks 54811})
+;; (def sample-hero-stat
+;;  {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
+;;   :attack_range 400, :2_pick 22572, :base_armor -1, :2_win 11630,
+;;   :1_pick 17365, :7_win 1202, :move_speed 290, :3_pick 23656, :3_win 12177,
+;;   :1_win 8965, :base_int 18, :name "npc_dota_hero_huskar",
+;;   :roles ["Carry" "Durable" "Initiator"], :base_agi 13,
+;;   :attack_type "Ranged", :8_win 278, :primary_attr "str", :pro_ban 23,
+;;   :icon "/apps/dota2/images/heroes/huskar_icon.png",
+;;   :base_str 21, :8_pick 511, :5_pick 11338, :pro_pick 12, :attack_rate 1.6,
+;;   :pro_win 7, :cm_enabled true, :projectile_speed 1400, :6_win 2609, :4_win 9981,
+;;   :int_gain 1.5, :legs 2, :id 59, :turbo_wins 28578, :base_mana_regen 0,
+;;   :4_pick 19198, :base_attack_max 26, :7_pick 2266, :base_health 200,
+;;   :null_pick 1001867, :base_health_regen nil, :6_pick 4908
+;;   :turn_rate nil, :base_mr 25, :null_win 0,
+;;   :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21,
+;;   :localized_name "Huskar", :turbo_picks 54811})
+
+;; (s/def :dota/win_7 int?)
+;; (s/def :dota/pick_7 int?)
+;; (s/def :dota/rank7 (s/keys :req [:dota/win_7 :dota/pick_7]))
+;; (s/def ::7_win int?)
+;; (s/def ::7_pick int?)
+(s/def :dota/rank1 (s/keys :req-un [::1_win ::1_pick]))
+(s/def :dota/rank2 (s/keys :req-un [::2_win ::2_pick]))
+(s/def :dota/rank3 (s/keys :req-un [::3_win ::3_pick]))
+(s/def :dota/rank4 (s/keys :req-un [::4_win ::4_pick]))
+(s/def :dota/rank5 (s/keys :req-un [::5_win ::5_pick]))
+(s/def :dota/rank6 (s/keys :req-un [::6_win ::6_pick]))
+(s/def :dota/rank7 (s/keys :req-un [::7_win ::7_pick]))
+(s/def :dota/ranks (s/merge :dota/rank1
+                            :dota/rank2
+                            :dota/rank3
+                            :dota/rank4
+                            :dota/rank5
+                            :dota/rank6
+                            :dota/rank7))
 
 
 (comment
   (js/console.clear)
   (sum [1 2 3])
+  (def selected-hero (nth @all-hero-stats @selected-hero-id))
   (reset! selected-hero-id 16)
+  (swap! selected-hero-id inc)
   (do-request-for-player-data!)
   (do-request-for-hero-stats!)
   (do (do-request-for-hero-stats!)
@@ -270,19 +292,43 @@
     (/ my-wins my-picks)))
   (:hero_id (first @all-hero-stats))
 
-  (defn say-hi
-    ([] (println "hello no args"))
-    ([a] (println "heya 1 arg"))
-    ([a b] (println "holla 2 arg"))
-    ([a b c] (println "hi 3 arg"))
-    ([a b c d] (println "bonjour 4 arg")))
+  (do-request-for-hero-stats!)
+  (def selected-hero (nth @all-hero-stats @selected-hero-id))
+  (s/def :dota/win_7 int?)
+  (s/def :dota/pick_7 int?)
+  ;; (s/def :dota/rank7 (s/keys :req-un [:dota/win_7 :dota/pick_7]))
+  ;; (s/def :dota/rank7 (s/keys :req-un [::7_win ::7_pick]))
+  (log (s/unform :dota/rank7 selected-hero))
+  (log (s/conform :dota/rank7 selected-hero))
+  (s/conform :dota/rank7 selected-hero)
+  (s/explain :dota/rank7 selected-hero)
 
-  (say-hi)
-  (say-hi "one arg")
-  (say-hi "_" "two args")
-  (say-hi "_" "_" "three args")
-  (say-hi "_" "_" "_" "four args")
-  (apply say-hi [1 2 3 4]) ;; passes a 4 args
+  (select-keys selected-hero :dota/ranks)
+  (log (s/form :dota/ranks))
+  (log (s/describe :dota/ranks))
+  (log (apply hash-map (rest (s/describe :dota/ranks))))
+  (def rank-keys (apply hash-map (rest (s/describe :dota/ranks))))
+  (log ((juxt rank-keys) selected-hero))
+  (def juxted (juxt rank-keys))
+  (log ((apply juxt rank-keys) selected-hero))
+
+  (log (s/valid? :dota/ranks selected-hero))
+  (log (s/conform :dota/ranks selected-hero))
+  (log (s/explain :dota/ranks selected-hero))
+
+  ;; (defn say-hi
+  ;;   ([] (println "hello no args"))
+  ;;   ([a] (println "heya 1 arg"))
+  ;;   ([a b] (println "holla 2 arg"))
+  ;;   ([a b c] (println "hi 3 arg"))
+  ;;   ([a b c d] (println "bonjour 4 arg")))
+  ;;
+  ;; (say-hi)
+  ;; (say-hi "one arg")
+  ;; (say-hi "_" "two args")
+  ;; (say-hi "_" "_" "three args")
+  ;; (say-hi "_" "_" "_" "four args")
+  ;; (apply say-hi [1 2 3 4]) ;; passes a 4 args
 
   ;; (defn configure [val options]
   ;;   (let [{:keys [debug verbose] :or {debug false, verbose false}} options]
