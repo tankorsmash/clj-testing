@@ -18,7 +18,7 @@
 (defonce all-hero-stats (r/atom nil))
 
 (defn sum [& args]
- (apply + args))
+ (apply #(reduce + %) args))
 
 (def root_json_server_url "http://localhost:5021/")
 (def player_data_url (str root_json_server_url "open_dota_player_data"))
