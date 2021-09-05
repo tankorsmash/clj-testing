@@ -9,6 +9,15 @@
                  [reagent "1.1.0"]
                  [cljsjs/react "17.0.2-0"]
                  [cljsjs/react-dom "17.0.2-0"]]
+  :compiler {:external-config {:devtools/config
+                               {
+                                :print-config-overrides true
+                                :instance-custom-printing-background "rgba(255,255,255)" ;; (d/get-custom-printing-background-markup)
+                                :type-header-background                             "rgba(255,255,255)" ;;(d/get-instance-type-header-background-markup)
+                                :native-reference-background                        "rgba(255,255,255)" ;;(d/get-native-reference-background-markup)
+                                :protocol-background                                "rgba(255,255,255)" ;;(d/get-protocol-background-markup)
+                                }
+                               }}
   :profiles
     {:dev
       {:resource-paths ["target"]
