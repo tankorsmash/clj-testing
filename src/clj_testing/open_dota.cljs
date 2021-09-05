@@ -9,10 +9,11 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]
             [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]
+            [cljs.core.async :refer [<! >! chan]]
             [clj-testing.person :as person]
             [reagent.core :as r]
             [reagent.dom :as rdom]))
+
 
 (defonce user-data (r/atom nil))
 (defonce all-hero-stats (r/atom nil))
@@ -288,11 +289,11 @@
   (:hero_id (first @all-hero-stats))
 
   (defn setup []
-    (do-request-for-hero-stats!)
-    (def selected-hero (nth @all-hero-stats @selected-hero-id))
-    (def rank-keys (rest (s/describe :dota/ranks)))
-    (def rank1keys (first (rest (rest (s/describe :dota/rank1)))))
-    (log ((apply juxt (mapv (comp keyword name ) rank1keys)) selected-hero)))
+    (do (do-request-for-hero-stats!)
+        (def selected-hero (nth @all-hero-stats @selected-hero-id))
+        (def rank-keys (rest (s/describe :dota/ranks)))
+        (def rank1keys (first (rest (rest (s/describe :dota/rank1)))))
+        (log ((apply juxt (mapv (comp keyword name ) rank1keys)) selected-hero))))
   (setup)
 
   (defn get-just-keywords-from-rank [sdef]
@@ -327,4 +328,14 @@
   (configure 1)
   (configure 1 :debug true)
   (configure 12222 :debug true 2222 123)
+
+
+  (require '[clojure.core.async :as async :refer [chan >! <! close! go put! take!]])
+  (let [c (chan 10)]
+    (go (>! c "hello"))
+    (def chan-result (go (let [my-val (<! c)]
+    ;; (assert (= "hello" (go (let [my-val '(<! c)])
+                          (log "my-val from channel is: " my-val))))
+    (log "the channel: " c)
+    (go (close! c)))
  ,)
