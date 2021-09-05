@@ -249,11 +249,6 @@
 ;;   :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21,
 ;;   :localized_name "Huskar", :turbo_picks 54811})
 
-;; (s/def :dota/win_7 int?)
-;; (s/def :dota/pick_7 int?)
-;; (s/def :dota/rank7 (s/keys :req [:dota/win_7 :dota/pick_7]))
-;; (s/def ::7_win int?)
-;; (s/def ::7_pick int?)
 (s/def :dota/rank1 (s/keys :req-un [::1_win ::1_pick]))
 (s/def :dota/rank2 (s/keys :req-un [::2_win ::2_pick]))
 (s/def :dota/rank3 (s/keys :req-un [::3_win ::3_pick]))
@@ -292,36 +287,22 @@
     (/ my-wins my-picks)))
   (:hero_id (first @all-hero-stats))
 
-  (do-request-for-hero-stats!)
-  (def selected-hero (nth @all-hero-stats @selected-hero-id))
-  ;; (s/def :dota/win_7 int?)
-  ;; (s/def :dota/pick_7 int?)
-  ;; (s/def :dota/rank7 (s/keys :req-un [:dota/win_7 :dota/pick_7]))
-  ;; (s/def :dota/rank7 (s/keys :req-un [::7_win ::7_pick]))
-  (log (s/unform :dota/rank7 selected-hero))
-  (log (s/conform :dota/rank7 selected-hero))
-  (s/conform :dota/rank7 selected-hero)
-  (s/explain :dota/rank7 selected-hero)
+  (defn setup []
+    (do-request-for-hero-stats!)
+    (def selected-hero (nth @all-hero-stats @selected-hero-id))
+    (def rank-keys (rest (s/describe :dota/ranks)))
+    (def rank1keys (first (rest (rest (s/describe :dota/rank1)))))
+    (log ((apply juxt (mapv (comp keyword name ) rank1keys)) selected-hero)))
+  (setup)
 
-  (select-keys selected-hero :dota/ranks)
-  (log (s/form :dota/ranks))
-  (log (s/describe :dota/ranks))
-  (log (apply hash-map (rest (s/describe :dota/ranks))))
-  ;; (def rank-keys (apply hash-map (rest (s/describe :dota/ranks))))
-  (def rank-keys (rest (s/describe :dota/ranks)))
-  (log (rest (s/describe :dota/ranks)))
-  (log rank-keys)
-  (log (s/explain (first rank-keys) selected-hero))
-  (log ((s/describe (first rank-keys))))
-  (log ((juxt rank-keys) selected-hero))
-  (def juxted (vector (juxt rank-keys)))
-  (log juxted)
-  (log (juxted selected-hero))
-  (log ((apply juxt rank-keys) selected-hero))
+  (defn get-just-keywords-from-rank [sdef]
+      (first (rest (rest (s/describe sdef)))))
+  (def all-rank-keys
+    (flatten (map get-just-keywords-from-rank rank-keys)))
 
-  (log (s/valid? :dota/ranks selected-hero))
-  (log (s/conform :dota/ranks selected-hero))
-  (log (s/explain :dota/ranks selected-hero))
+  (defn get-rank-values [rank-keys]
+    ((apply juxt (mapv (comp keyword name ) rank-keys)) selected-hero))
+  ;; (log (get-just-keywords-from-rank :dota/rank1))
 
   ;; (defn say-hi
   ;;   ([] (println "hello no args"))
@@ -342,8 +323,8 @@
   ;;     (println "val =" val " debug =" debug " verbose =" verbose)))
   (defn configure [val & {:keys [debug verbose]
                           :or {debug false, verbose false}}]
-    (println "val =" val " debug =" debug " verbose =" verbose))
+   (println "val =" val " debug =" debug " verbose =" verbose))
   (configure 1)
   (configure 1 :debug true)
   (configure 12222 :debug true 2222 123)
-  ,)
+ ,)
