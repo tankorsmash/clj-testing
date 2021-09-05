@@ -17,7 +17,7 @@
 
 (defonce user-data (r/atom nil))
 (defonce all-hero-stats (r/atom nil))
-(defonce selected-hero-id (r/atom 0))
+(defonce selected-hero-id (r/atom 1))
 
 (defn sum [& args]
  (apply #(reduce + %) args))
@@ -66,21 +66,29 @@
 (s/def :dota/hero-stats (s/keys :req (vector hero-stats-keys)))
 (s/def :dota/hero-stats-unq (s/keys :req-unq (vector hero-stats-keys)))
 
-;; h2 { width:100%; text-align:center; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 0 20px; }
-;;     h2 span { background:#fff}}; padding:0 10px; color:red}
+(defn divider-with-text [text & chilcren]
+  (let [is-open (r/atom true)]
+    (fn [text & children]
+      "basically -------text-----"
+      (log "text: " text)
+      (log "children: " children)
+      [:div
+        [:div {:style
+               {:width "100%"
+                :text-align :center
+                :border-bottom "1px solid grey"
+                :line-height "0.1em"
+                :margin "10px 0 20px"
+                :user-select :none
+                :cursor :pointer}
+               :on-click #(reset! is-open (not @is-open))}
+         [:small.text-muted {:style
+                             {:background "white"
+                              :padding "0 10px"
+                              :color "red"}}
+          text]]
+        (when @is-open children)])))
 
-(defn divider-with-text [text]
-  "basically -------text-----"
-  [:div {:style
-         {:width "100%"
-          :text-align :center
-          :border-bottom "1px solid grey"
-          :line-height "0.1em"
-          :margin "10px 0 20px"}}
-   [:small.text-muted {:style
-                       {:background "white"
-                        :padding "0 10px"
-                        :color "red"}} text]])
 
 (defn do-request-for-player-data! []
   "makes a request for player data"
@@ -235,8 +243,8 @@
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
               (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
-             [divider-with-text "raw user-data"]
-             [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]])
+             [divider-with-text "raw user-data"
+               [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]]])
            [ :div "no hero stats downloaded"
             [:br]
             [:input request-btn-cfg-hero-stats]])]])))
