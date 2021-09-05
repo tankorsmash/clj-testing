@@ -168,6 +168,10 @@
     picks :7_pick :as hero-stats}]
   (/ wins picks))
 
+(defn change-selected-hero-id [new-hero-id]
+  (log "new-hero-id: " new-hero-id)
+  (reset! selected-hero-id new-hero-id))
+
 (defn render-single-hero-stat [ahs hero-stat]
   (let [all-wins (sum-7_wins ahs)
         my-wins (:7_win hero-stat)
@@ -179,7 +183,8 @@
     [:div.row.row-cols-auto
       [:div.col
        [:img.img-fluid {:src (str "https://steamcdn-a.akamaihd.net/" img-icon)}]
-       [:b (str (:localized_name hero-stat))]]
+       [:b (str " " (:localized_name hero-stat))]]
+     [:div.col "ID: " (str (:hero_id hero-stat))]
      [:div.col "Wins: " (str my-wins)]
      [:div.col "Losses: " (str my-losses)]
      [:div.col "Matches: " (str my-picks)]]]))
@@ -192,7 +197,7 @@
                               hero-name :localized_name
                               :as hero-stat}]
  (let [winrate (get-winrate hero-stat)]
-  [:div {:key hero-id}
+  [:div {:key hero-id :on-click #( change-selected-hero-id (:hero_id hero-stat))}
      ;; [:span "#" hero-id]
      [:progress {:value winrate :max 1} winrate]
      " "
@@ -208,19 +213,23 @@
    [:br]]))
 
 
+(defn get-selected-hero [sid ahs]
+  (first (filter #(= (:hero_id %) sid) ahs)))
+
 (defn render-hero-stats [all-hero-stats]
   (fn [all-hero-stats]
-    (let [ahs @all-hero-stats]
+    (let [ahs @all-hero-stats
+          sid @selected-hero-id]
       [:div
         [:h4 "OPEN DATA HERO STATS"]
-        [:div "the selected hero id " @selected-hero-id]
+        [:div "the selected hero id " sid]
         [:input.btn.btn-outline-secondary {:type :button
                                            :value "Next Hero ID"
                                            :on-click #(swap! selected-hero-id inc)}]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
         [:div
          (if-not (nil? ahs)
-           (let [selected-hero (nth ahs @selected-hero-id)]
+           (let [selected-hero (get-selected-hero sid ahs)]
             [:div
              [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
@@ -338,4 +347,6 @@
                           (log "my-val from channel is: " my-val))))
     (log "the channel: " c)
     (go (close! c)))
+
+  (log (mapv :hero_id @all-hero-stats))
  ,)
