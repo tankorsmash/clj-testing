@@ -231,22 +231,31 @@
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
 
+
 (defn render-hero-stats [all-hero-stats]
   (fn [all-hero-stats]
     (let [ahs @all-hero-stats
           sid @selected-hero-id
-          ashi all-selected-hero-ids]
+          filter-by-selection? (r/atom false)
+          ashi all-selected-hero-ids
+          filter-by-selection (fn [ashi hero-stat] (contains? ashi (:hero_id hero-stat)))
+          filter-fn (partial filter-by-selection ahs)
+          displayed-heroes #(filter filter-fn ahs)
+          toggle-filter-by-hids #(swap! filter-by-selection? not)]
       [:div
        [:h4 "OPEN DATA HERO STATS"]
        [:div.row.row-cols-auto
         [:div.col
          [:input.btn.btn-outline-secondary {:type :button
                                             :value "Next Hero ID"
-                                            ::on-click #(swap! selected-hero-id inc)}]]
+                                            :on-click #(swap! selected-hero-id inc)}]]
         [:div.col
          [:div "the @selected-hero-id: " sid]
          [:div "the @all-selected-hero-ids: " (clojure.string/join ", " @ashi)]]
-        [:div.col "asd"]]
+        [:div.col
+         [:input.btn.btn-primary {:value "Filter"
+                                  :type :button
+                                  :on-click toggle-filter-by-hids}]]]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
        [:div
         (if-not (nil? ahs)
@@ -255,8 +264,14 @@
              [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
-              (map #(render-single-hero-winrates %1 ashi)
-                   (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
+              (let [coll (if (= true @filter-by-selection?)
+                             (displayed-heroes)
+                             ahs)
+                    sort-fn (sort
+                              #(> (get-winrate %1) (get-winrate %2))
+                              coll)]
+                (map #(render-single-hero-winrates %1 ashi)
+                      sort-fn))]
 
              [divider-with-text "raw user-data"
               [:pre {:key 1 :style {:white-space "break-spaces"}}
