@@ -19,6 +19,14 @@
 (defonce selected-hero-id (r/atom 1))
 (defonce all-selected-hero-ids (r/atom (set [])))
 
+(defn add-selected-hero [all-selected-hero-ids hero-id]
+  (swap! all-selected-hero-ids #(conj %1 hero-id)))
+(defn remove-selected-hero [all-selected-hero-ids hero-id]
+  (swap! all-selected-hero-ids #(disj %1 hero-id)))
+(defn clear-selected-hero-ids [all-selected-hero-ids]
+  (reset! all-selected-hero-ids #{}))
+
+
 (defn sum [& args]
   (apply #(reduce + %) args))
 
@@ -199,36 +207,34 @@
     hero-id :hero_id
     hero-name :localized_name
     :as hero-stat}]
-  (let [winrate (get-winrate hero-stat)]
-    [:div {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
-     ;; [:span "#" hero-id]
-     [:progress {:value winrate :max 1} winrate]
+  (let [winrate (get-winrate hero-stat)
+        ashi all-selected-hero-ids] ;;TODO move this up to its parent, rather than accessing a global
+    [:div.row
+     {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
+     [:div.col-3 [:progress {:value winrate :max 1} winrate]]
      " "
-     [:span
+     [:div.col.align-self-begin
       [:strong hero-name]
       " "
       [:span
-       [:span {:style {:color :green}} wins]
-       "/"
-       [:span picks]]
+       [:span {:style {:color :green}} wins] "/" [:span picks]]
       " "
       [:span " (" (float-to-percentage-str (get-winrate hero-stat)) ")"]]
+     [:div.col.align-self-end
+       [:div.row.row-cols-auto
+         [:div.col {:on-click #(add-selected-hero ashi hero-id)}"Add"]
+         [:div.col {:on-click #(remove-selected-hero ashi hero-id)} "Remove"]
+         [:div.col {:on-click #(clear-selected-hero-ids ashi)} "Clear"]]]
      [:br]]))
 
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
 
-(defn add-selected-hero [all-selected-hero-ids hero-id]
-  (swap! all-selected-hero-ids #(conj %1 hero-id)))
-(defn remove-selected-hero [all-selected-hero-ids hero-id]
-  (swap! all-selected-hero-ids #(disj %1 hero-id)))
-(defn clear-selected-hero-ids [all-selected-hero-ids]
-  (reset! all-selected-hero-ids #{}))
-
 (defn render-hero-stats [all-hero-stats]
   (fn [all-hero-stats]
     (let [ahs @all-hero-stats
-          sid @selected-hero-id]
+          sid @selected-hero-id
+          ashi @all-selected-hero-ids]
       [:div
        [:h4 "OPEN DATA HERO STATS"]
        [:div.row.row-cols-auto
@@ -236,7 +242,9 @@
          [:input.btn.btn-outline-secondary {:type :button
                                             :value "Next Hero ID"
                                             ::on-click #(swap! selected-hero-id inc)}]]
-        [:div.col "the selected hero id " sid]
+        [:div.col
+         [:div "the @selected-hero-id: " sid]
+         [:div "the @all-selected-hero-ids: " ashi]]
         [:div.col "asd"]]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
        [:div
@@ -246,8 +254,9 @@
              [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
-              (map render-single-hero-winrates
+              (map #(render-single-hero-winrates %1)
                    (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
+
              [divider-with-text "raw user-data"
               [:pre {:key 1 :style {:white-space "break-spaces"}}
                (person/pp-str selected-hero)]]])
