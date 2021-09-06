@@ -254,6 +254,9 @@
   (first (filter #(= (:hero_id %) sid) ahs)))
 
 
+(defn lookup-by-hero-id [ahs hero-id]
+  (first (filter #(= (:hero_id %) hero-id) ahs)))
+
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
     (fn [all-hero-stats]
@@ -269,8 +272,10 @@
                                               :value "Next Hero ID"
                                               :on-click #(swap! selected-hero-id inc)}]]
           [:div.col
-           [:div "the @selected-hero-id: " sid]
-           [:div "the @all-selected-hero-ids: " (clojure.string/join ", " ashi)]]
+           [:div "Viewing: " (:localized_name (lookup-by-hero-id ahs sid))]
+           [:div
+            (if-not (empty? ashi)
+              (str "Selected hero ids: " (clojure.string/join ", " ashi)))]]
           [:div.col
            [:input.btn.btn-primary {:value (if-not @should-filter-by-selection "Filter" "Unfilter")
                                     :type :button
@@ -290,8 +295,6 @@
                                       coll)
                       render-a-hero #(render-single-hero-winrates %1 all-selected-hero-ids)
                       all-rendered-heroes (into [] (map render-a-hero) sorted-heroes)]
-                  (def ashi2 all-selected-hero-ids)
-                  (def arh all-rendered-heroes)
                   (for [rendered-hero all-rendered-heroes]
                       rendered-hero))]
 
