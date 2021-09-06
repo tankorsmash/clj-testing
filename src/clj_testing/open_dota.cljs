@@ -92,7 +92,7 @@
 (s/def :dota/hero-stats (s/keys :req (vector hero-stats-keys)))
 (s/def :dota/hero-stats-unq (s/keys :req-unq (vector hero-stats-keys)))
 
-(defn divider-with-text [text & chilcren]
+(defn divider-with-text [text & children]
   (let [is-open (r/atom true)]
     (fn [text & children]
       "basically -------text-----"
@@ -111,7 +111,7 @@
                              :padding "0 10px"
                              :color "red"}}
          text]]
-       (when @is-open children)])))
+       ^{:key text}(when @is-open ^{:key text} children)])))
 
 (defn do-request-for-player-data! []
   "makes a request for player data"
@@ -143,23 +143,25 @@
   [:div
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
-    [divider-with-text "user-data"
-      [:div.row
-       [:div.col "Tracked until " (str (:tracked_until ud))]
-       [:div.col "Rank Tier " (str (:rank_tier ud))]]]
+    ^{:key "user-data"} [divider-with-text "user-data"]
+             [:div.row
+              [:div.col "Tracked until " (str (:tracked_until ud))]
+              [:div.col "Rank Tier " (str (:rank_tier ud))]]
 
-    [divider-with-text "user-data.profile"
+    ^{:key "user-data.profile"} [divider-with-text "user-data.profile"]
       [:div.row
        [:div.col "Persona Name " (str (:personaname p))]
        [:div.col "Account ID " (str (:account_id p))]
        [:div.col-2 "Avatar Full "
         [:img.img-thumbnail {:src (str (:avatarfull p))}]]
        [:div.col "Profile URL "
-        [:a {:href (str (:profileurl p))} "Link"]]]]]
+        [:a {:href (str (:profileurl p))} "Link"]]]
 
-   ;;dump the rest of the data
-   [divider-with-text "raw user-data"
-     [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]]])
+     ;;dump the rest of the data
+     ^{:key "raw-user-data"} [divider-with-text "raw user-data"
+                               ^{:key "raw user-data"}
+                               [:pre {:style {:white-space "break-spaces"}}
+                                     (person/pp-str ud)]]]])
 
 (defn request-btn-cfg [callback]
   {:type "button"
@@ -238,7 +240,7 @@
         ;; ashi all-selected-hero-ids
         btn-style {:style {:cursor :pointer :user-select :none}}]
 
-    [:div.row.show-child-on-hover.w-100
+    [:div.row.show-child-on-hover.mw-100
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      [:div.col-3 [:progress {:value winrate :max 1} winrate]]
      " "
@@ -267,7 +269,6 @@
 
 (defn lookup-by-hero-id [ahs hero-id]
   (first (filter #(= (:hero_id %) hero-id) ahs)))
-
 
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
@@ -359,4 +360,7 @@
 
   (defn get-rank-values [rank-keys]
     ((apply juxt (mapv (comp keyword name) rank-keys)) selected-hero))
+
+
+
   ,)
