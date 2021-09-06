@@ -289,8 +289,8 @@
           [:div.col
            [:div "Viewing: " (:localized_name (lookup-by-hero-id ahs sid))]
            [:div
-            (if-not (empty? ashi)
-              (str "Selected hero ids: " (clojure.string/join ", " ashi)))]]
+            {:style {:visibility (if-not (empty? ashi) :inherit :hidden )}}
+            (str "Selected hero ids: " (clojure.string/join ", " ashi))]]
           [:div.col
            [:input.btn.btn-primary {:value (if-not @should-filter-by-selection "Filter" "Unfilter")
                                     :type :button
