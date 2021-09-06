@@ -232,15 +232,17 @@
   (first (filter #(= (:hero_id %) sid) ahs)))
 
 
+(defn is-hero-in-selection [selection hero-stat]
+  (contains? selection (:hero_id hero-stat)))
+(defn get-displayed-heroes [all-hero-stats selection]
+  (filter #(is-hero-in-selection selection %) all-hero-stats))
+
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
     (fn [all-hero-stats]
       (let [ahs @all-hero-stats
             sid @selected-hero-id
-            ashi all-selected-hero-ids
-            do-filter-by-selection (fn [ashi hero-stat] (contains? ashi (:hero_id hero-stat)))
-            filter-fn (partial do-filter-by-selection @ashi)
-            displayed-heroes #(filter filter-fn ahs)
+            ashi @all-selected-hero-ids
             toggle-filter-by-hids #(swap! should-filter-by-selection not)]
         [:div
          [:h4 "OPEN DATA HERO STATS"]
@@ -251,12 +253,11 @@
                                               :on-click #(swap! selected-hero-id inc)}]]
           [:div.col
            [:div "the @selected-hero-id: " sid]
-           [:div "the @all-selected-hero-ids: " (clojure.string/join ", " @ashi)]]
+           [:div "the @all-selected-hero-ids: " (clojure.string/join ", " ashi)]]
           [:div.col
            [:input.btn.btn-primary {:value "Filter"
                                     :type :button
                                     :on-click toggle-filter-by-hids}]]]
-          ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
          [:div
           (if-not (nil? ahs)
             (let [selected-hero (get-selected-hero sid ahs)]
@@ -265,7 +266,7 @@
                [:div {:style {:max-height "100px"
                               :overflow-y :scroll}}
                 (let [coll (if (= true @should-filter-by-selection)
-                               (displayed-heroes)
+                               (get-displayed-heroes ahs ashi)
                                ahs)
                       sort-fn (sort
                                 #(> (get-winrate %1) (get-winrate %2))
