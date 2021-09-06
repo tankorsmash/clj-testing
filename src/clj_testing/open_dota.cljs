@@ -19,11 +19,16 @@
 (defonce selected-hero-id (r/atom 1))
 (defonce all-selected-hero-ids (r/atom (set [])))
 
-(defn add-selected-hero [all-selected-hero-ids hero-id]
+(defn add-selected-hero! [all-selected-hero-ids hero-id]
+  {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (swap! all-selected-hero-ids conj hero-id))
-(defn remove-selected-hero [all-selected-hero-ids hero-id]
+
+(defn remove-selected-hero! [all-selected-hero-ids hero-id]
+  {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (swap! all-selected-hero-ids disj hero-id))
-(defn clear-selected-hero-ids [all-selected-hero-ids]
+
+(defn clear-selected-hero-ids! [all-selected-hero-ids]
+  {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (reset! all-selected-hero-ids #{}))
 
 
@@ -234,9 +239,9 @@
      [:div.col.align-self-end
       [:div.row.row-cols-auto.show-me-on-hover
          ;;deliberately not using .btn on these buttons because it grows their size too much.
-         (let [add-style (merge btn-style {:on-click #(add-selected-hero all-selected-hero-ids hero-id)})
-               rem-style (merge btn-style {:on-click #(remove-selected-hero all-selected-hero-ids hero-id)})
-               clr-style (merge btn-style {:on-click #(clear-selected-hero-ids all-selected-hero-ids)})
+         (let [add-style (merge btn-style {:on-click #(add-selected-hero! all-selected-hero-ids hero-id)})
+               rem-style (merge btn-style {:on-click #(remove-selected-hero! all-selected-hero-ids hero-id)})
+               clr-style (merge btn-style {:on-click #(clear-selected-hero-ids! all-selected-hero-ids)})
                hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
               [:div.row.ctrl-rows
                 (if-not hero-in-selection
