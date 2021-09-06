@@ -19,6 +19,19 @@
 (defonce selected-hero-id (r/atom 1))
 (defonce all-selected-hero-ids (r/atom (set [])))
 
+(defn event-handler [state [event-name arg1 arg2 arg3 arg4 & args]]
+  (case event-name
+    :print (println event-name args)
+    :log (log event-name args)
+    :add-selected-hero (let [hero-id arg1]
+                          (conj state hero-id))
+    :remove-selected-hero (let [hero-id arg1]
+                             (disj state hero-id))
+    :clear-selected-heroes #{}))
+
+(defn emit [e]
+  (r/rswap! all-selected-hero-ids event-handler e))
+
 (defn add-selected-hero! [all-selected-hero-ids hero-id]
   {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (swap! all-selected-hero-ids conj hero-id))
@@ -239,9 +252,9 @@
      [:div.col.align-self-end
       [:div.row.row-cols-auto.show-me-on-hover
          ;;deliberately not using .btn on these buttons because it grows their size too much.
-         (let [add-style (merge btn-style {:on-click #(add-selected-hero! all-selected-hero-ids hero-id)})
-               rem-style (merge btn-style {:on-click #(remove-selected-hero! all-selected-hero-ids hero-id)})
-               clr-style (merge btn-style {:on-click #(clear-selected-hero-ids! all-selected-hero-ids)})
+         (let [add-style (merge btn-style {:on-click #(emit [:add-selected-hero hero-id])})
+               rem-style (merge btn-style {:on-click #(emit [:remove-selected-hero hero-id])})
+               clr-style (merge btn-style {:on-click #(emit [:clear-selected-heroes])})
                hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
               [:div.row.ctrl-rows
                 (if-not hero-in-selection
@@ -257,16 +270,6 @@
 (defn lookup-by-hero-id [ahs hero-id]
   (first (filter #(= (:hero_id %) hero-id) ahs)))
 
-(defn event-handler [state [event-name arg1 arg2 arg3 arg4 & args]]
-  (case event-name
-    :print (println event-name args)
-    :log (log event-name args)
-    :add-selected-hero (let [hero-id arg1]
-                          (conj state hero-id))
-    :clear-selected-heroes #{}))
-
-(defn emit [e]
-  (r/rswap! all-selected-hero-ids event-handler e))
 
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
