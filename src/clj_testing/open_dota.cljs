@@ -209,7 +209,8 @@
     :as hero-stat}
    all-selected-hero-ids]
   (let [winrate (get-winrate hero-stat)
-        ashi all-selected-hero-ids]
+        ashi all-selected-hero-ids
+        btn-style {:style {:cursor :pointer :user-select :none}}]
     [:div.row.show-child-on-hover
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      [:div.col-3 [:progress {:value winrate :max 1} winrate]]
@@ -222,10 +223,11 @@
       " "
       [:span " (" (float-to-percentage-str (get-winrate hero-stat)) ")"]]
      [:div.col.align-self-end
-       [:div.row.row-cols-auto.show-me-on-hover
-         [:div.col {:on-click #(add-selected-hero ashi hero-id)}"Add"]
-         [:div.col {:on-click #(remove-selected-hero ashi hero-id)} "Remove"]
-         [:div.col {:on-click #(clear-selected-hero-ids ashi)} "Clear"]]]
+      [:div.row.row-cols-auto.show-me-on-hover
+         ;;deliberately not using .btn on these buttons because it grows their size too much.
+         [:div.col.btn-primary (merge btn-style {:on-click #(add-selected-hero ashi hero-id)}) "Add"]
+         [:div.col.btn-primary (merge btn-style {:on-click #(remove-selected-hero ashi hero-id)}) "Remove"]
+         [:div.col.btn-primary (merge btn-style {:on-click #(clear-selected-hero-ids ashi)}) "Clear"]]]
      [:br]]))
 
 (defn get-selected-hero [sid ahs]
