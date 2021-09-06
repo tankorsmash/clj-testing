@@ -262,7 +262,8 @@
     :print (println event-name args)
     :log (log event-name args)
     :add-selected-hero (let [hero-id arg1]
-                          (conj state hero-id))))
+                          (conj state hero-id))
+    :clear-selected-heroes #{}))
 
 (defn emit [e]
   (r/rswap! all-selected-hero-ids event-handler e))
@@ -278,9 +279,9 @@
          [:h4 "OPEN DATA HERO STATS"]
          [:div.row.row-cols-auto
           [:div.col
-           [:input.btn.btn-outline-secondary {:type :button
-                                              :value "Add 123 ID"
-                                              :on-click #(emit [:add-selected-hero 123])}]
+           [:input.btn.btn-outline-danger {:type :button
+                                           :value "Clear"
+                                           :on-click #(emit [:clear-selected-heroes])}]
            [:input.btn.btn-outline-secondary {:type :button
                                               :value "Next Hero ID"
                                               :on-click #(swap! selected-hero-id inc)}]]
