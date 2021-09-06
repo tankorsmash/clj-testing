@@ -143,23 +143,23 @@
   [:div
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
-    [divider-with-text "user-data"]
-    [:div.row
-     [:div.col "Tracked until " (str (:tracked_until ud))]
-     [:div.col "Rank Tier " (str (:rank_tier ud))]]
+    [divider-with-text "user-data"
+      [:div.row
+       [:div.col "Tracked until " (str (:tracked_until ud))]
+       [:div.col "Rank Tier " (str (:rank_tier ud))]]]
 
-    [divider-with-text "user-data.profile"]
-    [:div.row
-     [:div.col "Persona Name " (str (:personaname p))]
-     [:div.col "Account ID " (str (:account_id p))]
-     [:div.col-2 "Avatar Full "
-      [:img.img-thumbnail {:src (str (:avatarfull p))}]]
-     [:div.col "Profile URL "
-      [:a {:href (str (:profileurl p))} "Link"]]]]
+    [divider-with-text "user-data.profile"
+      [:div.row
+       [:div.col "Persona Name " (str (:personaname p))]
+       [:div.col "Account ID " (str (:account_id p))]
+       [:div.col-2 "Avatar Full "
+        [:img.img-thumbnail {:src (str (:avatarfull p))}]]
+       [:div.col "Profile URL "
+        [:a {:href (str (:profileurl p))} "Link"]]]]]
 
    ;;dump the rest of the data
-   [divider-with-text "raw user-data"]
-   [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]])
+   [divider-with-text "raw user-data"
+     [:pre {:style {:white-space "break-spaces"}} (person/pp-str ud)]]])
 
 (defn request-btn-cfg [callback]
   {:type "button"
