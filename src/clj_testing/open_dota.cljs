@@ -106,15 +106,15 @@
 (defn do-request-for-hero-stats! []
   "makes a request for hero stats"
   (go (let [response (<! (http/get hero_stats_url {}))]
-        (log (str "response status: " (:status response)))
+        ;; (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
-          (log body)
+          ;; (log body)
           (if (ct/is (s/coll-of (s/valid? :dota/hero-stats-unq body)))
-            (do (log "heroic mfer is valid, assigning to variable")
-                (reset! all-hero-stats body))
-            (do (log "player-data-unq failed to match")
-                (s/explain :dota/hero-stats-unq body))))
-        (log "in do-request for all-hero-stats" response))))
+            ;; (do (log "heroic mfer is valid, assigning to variable")
+              (reset! all-hero-stats body)
+            ;;do (log "player-data-unq failed to match")
+              (s/explain :dota/hero-stats-unq body))))))
+        ;; (log "in do-request for all-hero-stats" response))))
 
 (defn render-user-data-loaded [ud p]
   [:div
@@ -242,9 +242,11 @@
              [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
-              (map render-hero-winrates (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
+              (map render-hero-winrates
+                   (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
              [divider-with-text "raw user-data"
-               [:pre {:style {:white-space "break-spaces"}} (person/pp-str selected-hero)]]])
+               [:pre {:key 1 :style {:white-space "break-spaces"}}
+                (person/pp-str selected-hero)]]])
            [ :div "no hero stats downloaded"
             [:br]
             [:input request-btn-cfg-hero-stats]])]])))
