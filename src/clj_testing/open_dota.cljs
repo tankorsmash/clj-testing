@@ -32,6 +32,21 @@
 (defn emit [e]
   (r/rswap! all-selected-hero-ids event-handler e))
 
+(defn localstorage-set-item!
+  "Set `key' in browser's localStorage to `val`. Note: stored as strings"
+  [key val]
+  (.setItem (.-localStorage js/window) key val))
+
+(defn localstorage-get-item
+  "Returns value of `key' from browser's localStorage. Note: always strings"
+  [key]
+  (.getItem (.-localStorage js/window) key))
+
+(defn localstorage-remove-item!
+  "Remove the browser's localStorage value for the given `key`"
+  [key]
+  (.removeItem (.-localStorage js/window) key))
+
 (defn add-selected-hero! [all-selected-hero-ids hero-id]
   {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (swap! all-selected-hero-ids conj hero-id))
@@ -92,8 +107,15 @@
 (s/def :dota/hero-stats (s/keys :req (vector hero-stats-keys)))
 (s/def :dota/hero-stats-unq (s/keys :req-unq (vector hero-stats-keys)))
 
+(defn str-to-bool [text]
+  ({:false false :true true} (keyword text)))
+
 (defn divider-with-text [text & children]
-  (let [is-open (r/atom true)]
+  (let [from-ls (localstorage-get-item text)
+        is-open (r/atom (str-to-bool from-ls))
+        click-handler (fn []
+                        (reset! is-open (not @is-open))
+                        (localstorage-set-item! text (str @is-open)))]
     (fn [text & children]
       "basically -------text-----"
       [:div
@@ -105,7 +127,7 @@
                :margin "10px 0 20px"
                :user-select :none
                :cursor :pointer}
-              :on-click #(reset! is-open (not @is-open))}
+              :on-click click-handler}
         [:small.text-muted {:style
                             {:background "white"
                              :padding "0 10px"
@@ -180,6 +202,7 @@
   [:div "No user dota yet" ud
    [:div
     [:input request-btn-cfg-player-stats]]])
+
 
 (defn render-user-data [user-data]
   (fn [user-data]
