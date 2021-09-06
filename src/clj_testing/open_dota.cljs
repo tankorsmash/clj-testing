@@ -318,7 +318,7 @@
                   (for [rendered-hero all-rendered-heroes]
                       rendered-hero))]
 
-               [divider-with-text "raw user-data"
+               [divider-with-text "raw selected-hero data"
                 [:pre {:key 1 :style {:white-space "break-spaces"}}
                  (person/pp-str selected-hero)]]])
             [:div "no hero stats downloaded"
