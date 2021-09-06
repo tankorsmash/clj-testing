@@ -262,9 +262,7 @@
     :print (println event-name args)
     :log (log event-name args)
     :add-selected-hero (let [hero-id arg1]
-                         (do
-                          (log hero-id (type hero-id))
-                          (conj state arg1)))))
+                          (conj state hero-id))))
 
 (defn emit [e]
   (r/rswap! all-selected-hero-ids event-handler e))
@@ -281,9 +279,11 @@
          [:div.row.row-cols-auto
           [:div.col
            [:input.btn.btn-outline-secondary {:type :button
+                                              :value "Add 123 ID"
+                                              :on-click #(emit [:add-selected-hero 123])}]
+           [:input.btn.btn-outline-secondary {:type :button
                                               :value "Next Hero ID"
-                                              ;; :on-click #(swap! selected-hero-id inc)
-                                              :on-click #(emit [:add-selected-hero 123])}]]
+                                              :on-click #(swap! selected-hero-id inc)}]]
           [:div.col
            [:div "Viewing: " (:localized_name (lookup-by-hero-id ahs sid))]
            [:div
