@@ -20,9 +20,9 @@
 (defonce all-selected-hero-ids (r/atom (set [])))
 
 (defn add-selected-hero [all-selected-hero-ids hero-id]
-  (swap! all-selected-hero-ids #(conj %1 hero-id)))
+  (swap! all-selected-hero-ids conj hero-id))
 (defn remove-selected-hero [all-selected-hero-ids hero-id]
-  (swap! all-selected-hero-ids #(disj %1 hero-id)))
+  (swap! all-selected-hero-ids disj hero-id))
 (defn clear-selected-hero-ids [all-selected-hero-ids]
   (reset! all-selected-hero-ids #{}))
 
@@ -272,7 +272,7 @@
                                 #(> (get-winrate %1) (get-winrate %2))
                                 coll)]
                   (log "coll" (count coll) @should-filter-by-selection)
-                  (map #(render-single-hero-winrates %1 ashi)
+                  (map #(render-single-hero-winrates %1 all-selected-hero-ids)
                         sort-fn))]
 
                [divider-with-text "raw user-data"
