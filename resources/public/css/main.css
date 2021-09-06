@@ -1,3 +1,7 @@
-/* body { */
-/*  background: black; */
-/* } */
+.show-me-on-hover {
+ visibility: hidden;
+}
+
+.show-child-on-hover:hover .show-me-on-hover {
+ visibility: inherit;
+}
