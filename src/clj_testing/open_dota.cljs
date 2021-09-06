@@ -238,7 +238,7 @@
         ;; ashi all-selected-hero-ids
         btn-style {:style {:cursor :pointer :user-select :none}}]
 
-    [:div.row.show-child-on-hover
+    [:div.row.show-child-on-hover.w-100
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      [:div.col-3 [:progress {:value winrate :max 1} winrate]]
      " "
@@ -258,8 +258,8 @@
               [:div.row.ctrl-rows
                 (if-not hero-in-selection
                   [:div.col.btn-primary add-style "Add"]
-                  [:div.col.btn-primary rem-style "Remove"])])]]
-     [:br]]))
+                  [:div.col.btn-primary rem-style "Remove"])])]]]))
+
 
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
