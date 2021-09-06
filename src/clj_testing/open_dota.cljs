@@ -272,7 +272,7 @@
            [:div "the @selected-hero-id: " sid]
            [:div "the @all-selected-hero-ids: " (clojure.string/join ", " ashi)]]
           [:div.col
-           [:input.btn.btn-primary {:value "Filter"
+           [:input.btn.btn-primary {:value (if-not @should-filter-by-selection "Filter" "Unfilter")
                                     :type :button
                                     :on-click toggle-filter-by-hids}]]]
          [:div
