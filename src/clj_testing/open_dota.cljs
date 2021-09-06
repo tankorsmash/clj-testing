@@ -233,52 +233,53 @@
 
 
 (defn render-hero-stats [all-hero-stats]
-  (fn [all-hero-stats]
-    (let [ahs @all-hero-stats
-          sid @selected-hero-id
-          filter-by-selection? (r/atom false)
-          ashi all-selected-hero-ids
-          filter-by-selection (fn [ashi hero-stat] (contains? ashi (:hero_id hero-stat)))
-          filter-fn (partial filter-by-selection ahs)
-          displayed-heroes #(filter filter-fn ahs)
-          toggle-filter-by-hids #(swap! filter-by-selection? not)]
-      [:div
-       [:h4 "OPEN DATA HERO STATS"]
-       [:div.row.row-cols-auto
-        [:div.col
-         [:input.btn.btn-outline-secondary {:type :button
-                                            :value "Next Hero ID"
-                                            :on-click #(swap! selected-hero-id inc)}]]
-        [:div.col
-         [:div "the @selected-hero-id: " sid]
-         [:div "the @all-selected-hero-ids: " (clojure.string/join ", " @ashi)]]
-        [:div.col
-         [:input.btn.btn-primary {:value "Filter"
-                                  :type :button
-                                  :on-click toggle-filter-by-hids}]]]
-        ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
-       [:div
-        (if-not (nil? ahs)
-          (let [selected-hero (get-selected-hero sid ahs)]
-            [:div
-             [render-single-hero-stat ahs selected-hero]
-             [:div {:style {:max-height "100px"
-                            :overflow-y :scroll}}
-              (let [coll (if (= true @filter-by-selection?)
-                             (displayed-heroes)
-                             ahs)
-                    sort-fn (sort
-                              #(> (get-winrate %1) (get-winrate %2))
-                              coll)]
-                (map #(render-single-hero-winrates %1 ashi)
-                      sort-fn))]
+  (let [should-filter-by-selection (r/atom false)]
+    (fn [all-hero-stats]
+      (let [ahs @all-hero-stats
+            sid @selected-hero-id
+            ashi all-selected-hero-ids
+            do-filter-by-selection (fn [ashi hero-stat] (contains? ashi (:hero_id hero-stat)))
+            filter-fn (partial do-filter-by-selection @ashi)
+            displayed-heroes #(filter filter-fn ahs)
+            toggle-filter-by-hids #(swap! should-filter-by-selection not)]
+        [:div
+         [:h4 "OPEN DATA HERO STATS"]
+         [:div.row.row-cols-auto
+          [:div.col
+           [:input.btn.btn-outline-secondary {:type :button
+                                              :value "Next Hero ID"
+                                              :on-click #(swap! selected-hero-id inc)}]]
+          [:div.col
+           [:div "the @selected-hero-id: " sid]
+           [:div "the @all-selected-hero-ids: " (clojure.string/join ", " @ashi)]]
+          [:div.col
+           [:input.btn.btn-primary {:value "Filter"
+                                    :type :button
+                                    :on-click toggle-filter-by-hids}]]]
+          ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
+         [:div
+          (if-not (nil? ahs)
+            (let [selected-hero (get-selected-hero sid ahs)]
+              [:div
+               [render-single-hero-stat ahs selected-hero]
+               [:div {:style {:max-height "100px"
+                              :overflow-y :scroll}}
+                (let [coll (if (= true @should-filter-by-selection)
+                               (displayed-heroes)
+                               ahs)
+                      sort-fn (sort
+                                #(> (get-winrate %1) (get-winrate %2))
+                                coll)]
+                  (log "coll" (count coll) @should-filter-by-selection)
+                  (map #(render-single-hero-winrates %1 ashi)
+                        sort-fn))]
 
-             [divider-with-text "raw user-data"
-              [:pre {:key 1 :style {:white-space "break-spaces"}}
-               (person/pp-str selected-hero)]]])
-          [:div "no hero stats downloaded"
-           [:br]
-           [:input request-btn-cfg-hero-stats]])]])))
+               [divider-with-text "raw user-data"
+                [:pre {:key 1 :style {:white-space "break-spaces"}}
+                 (person/pp-str selected-hero)]]])
+            [:div "no hero stats downloaded"
+             [:br]
+             [:input request-btn-cfg-hero-stats]])]]))))
 
 ;; (def sample-hero-stat
 ;;  {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
