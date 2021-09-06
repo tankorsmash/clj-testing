@@ -39,7 +39,8 @@
 
 (defn localstorage-get-item
   "Returns value of `key' from browser's localStorage. Note: always strings"
-  ([key] (.getItem (.-localStorage js/window) key))
+  ([key]
+   (.getItem (.-localStorage js/window) key))
 
   ([key default]
    (let [from-ls (localstorage-get-item key)]
@@ -121,9 +122,11 @@
 (defn divider-with-text [text & children]
   (let [from-ls (localstorage-get-item (to-localstorage-key text) "true")
         is-open (r/atom (str-to-bool from-ls))
-        click-handler (fn []
+        toggle-is-open (fn []
                         (reset! is-open (not @is-open))
-                        (localstorage-set-item! (to-localstorage-key text) (str @is-open)))]
+                        (localstorage-set-item!
+                          (to-localstorage-key text)
+                          (str @is-open)))]
     (fn [text & children]
       "basically -------text-----"
       [:div
@@ -135,7 +138,7 @@
                :margin "10px 0 20px"
                :user-select :none
                :cursor :pointer}
-              :on-click click-handler}
+              :on-click toggle-is-open}
         [:small.text-muted {:style
                             {:background "white"
                              :padding "0 10px"
