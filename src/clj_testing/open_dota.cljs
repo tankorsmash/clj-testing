@@ -206,9 +206,10 @@
     picks :7_pick
     hero-id :hero_id
     hero-name :localized_name
-    :as hero-stat}]
+    :as hero-stat}
+   all-selected-hero-ids]
   (let [winrate (get-winrate hero-stat)
-        ashi all-selected-hero-ids] ;;TODO move this up to its parent, rather than accessing a global
+        ashi all-selected-hero-ids]
     [:div.row
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      [:div.col-3 [:progress {:value winrate :max 1} winrate]]
@@ -234,7 +235,7 @@
   (fn [all-hero-stats]
     (let [ahs @all-hero-stats
           sid @selected-hero-id
-          ashi @all-selected-hero-ids]
+          ashi all-selected-hero-ids]
       [:div
        [:h4 "OPEN DATA HERO STATS"]
        [:div.row.row-cols-auto
@@ -244,7 +245,7 @@
                                             ::on-click #(swap! selected-hero-id inc)}]]
         [:div.col
          [:div "the @selected-hero-id: " sid]
-         [:div "the @all-selected-hero-ids: " ashi]]
+         [:div "the @all-selected-hero-ids: " (clojure.string/join ", " @ashi)]]
         [:div.col "asd"]]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
        [:div
@@ -254,7 +255,7 @@
              [render-single-hero-stat ahs selected-hero]
              [:div {:style {:max-height "100px"
                             :overflow-y :scroll}}
-              (map #(render-single-hero-winrates %1)
+              (map #(render-single-hero-winrates %1 ashi)
                    (sort #(> (get-winrate %1) (get-winrate %2)) ahs))]
 
              [divider-with-text "raw user-data"
@@ -370,10 +371,10 @@
 
 
   (def my-map {:a 123 :b "abc"})
-  (defn learning-destructure 
+  (defn learning-destructure2
     [{a :a b :b :as hero-stat}
-     _p]
+     all-hero]
     (log "hero-stat: " hero-stat, ", a: " a, ", b: " b, ", poop: " _p))
-  (learning-destructure my-map "HAHA POOP")
+  (learning-destructure2 my-map "HAHA POOP")
 
   (log (mapv :hero_id @all-hero-stats)))
