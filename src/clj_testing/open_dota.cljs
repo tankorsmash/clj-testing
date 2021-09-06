@@ -295,22 +295,6 @@
              [:br]
              [:input request-btn-cfg-hero-stats]])]]))))
 
-;; (def sample-hero-stat
-;;  {:5_win 6040, :hero_id 59, :str_gain 3.4, :agi_gain 1.6, :base_mana 75,
-;;   :attack_range 400, :2_pick 22572, :base_armor -1, :2_win 11630,
-;;   :1_pick 17365, :7_win 1202, :move_speed 290, :3_pick 23656, :3_win 12177,
-;;   :1_win 8965, :base_int 18, :name "npc_dota_hero_huskar",
-;;   :roles ["Carry" "Durable" "Initiator"], :base_agi 13,
-;;   :attack_type "Ranged", :8_win 278, :primary_attr "str", :pro_ban 23,
-;;   :icon "/apps/dota2/images/heroes/huskar_icon.png",
-;;   :base_str 21, :8_pick 511, :5_pick 11338, :pro_pick 12, :attack_rate 1.6,
-;;   :pro_win 7, :cm_enabled true, :projectile_speed 1400, :6_win 2609, :4_win 9981,
-;;   :int_gain 1.5, :legs 2, :id 59, :turbo_wins 28578, :base_mana_regen 0,
-;;   :4_pick 19198, :base_attack_max 26, :7_pick 2266, :base_health 200,
-;;   :null_pick 1001867, :base_health_regen nil, :6_pick 4908
-;;   :turn_rate nil, :base_mr 25, :null_win 0,
-;;   :img "/apps/dota2/images/heroes/huskar_full.png?", :base_attack_min 21,
-;;   :localized_name "Huskar", :turbo_picks 54811})
 
 (s/def :dota/rank1 (s/keys :req-un [::1_win ::1_pick]))
 (s/def :dota/rank2 (s/keys :req-un [::2_win ::2_pick]))
@@ -329,25 +313,6 @@
 
 (comment
   (js/console.clear)
-  (sum [1 2 3])
-  (def selected-hero (nth @all-hero-stats @selected-hero-id))
-  (reset! selected-hero-id 16)
-  (swap! selected-hero-id inc)
-  (do-request-for-player-data!)
-  (do-request-for-hero-stats!)
-  (do (do-request-for-hero-stats!)
-      (log "ASD " (count @all-hero-stats))
-      #_(let [ahs @all-hero-stats]
-          wins (map :7_win ahs))
-      log (sum wins)
-      (log "7_wins " (sum-7_wins @all-hero-stats)))
-  (def winrate
-    (let [all-wins (sum-7_wins @all-hero-stats)
-          my-wins (:7_win sample-hero-stat)
-          my-picks (:7_pick sample-hero-stat)
-          my-losses (- my-picks my-wins)]
-      (/ my-wins my-picks)))
-  (:hero_id (first @all-hero-stats))
 
   (defn setup []
     (do (do-request-for-hero-stats!)
@@ -364,47 +329,4 @@
 
   (defn get-rank-values [rank-keys]
     ((apply juxt (mapv (comp keyword name) rank-keys)) selected-hero))
-  ;; (log (get-just-keywords-from-rank :dota/rank1))
-
-  ;; (defn say-hi
-  ;;   ([] (println "hello no args"))
-  ;;   ([a] (println "heya 1 arg"))
-  ;;   ([a b] (println "holla 2 arg"))
-  ;;   ([a b c] (println "hi 3 arg"))
-  ;;   ([a b c d] (println "bonjour 4 arg")))
-  ;;
-  ;; (say-hi)
-  ;; (say-hi "one arg")
-  ;; (say-hi "_" "two args")
-  ;; (say-hi "_" "_" "three args")
-  ;; (say-hi "_" "_" "_" "four args")
-  ;; (apply say-hi [1 2 3 4]) ;; passes a 4 args
-
-  ;; (defn configure [val options]
-  ;;   (let [{:keys [debug verbose] :or {debug false, verbose false}} options]
-  ;;     (println "val =" val " debug =" debug " verbose =" verbose)))
-  (defn configure [val & {:keys [debug verbose]
-                          :or {debug false, verbose false}}]
-    (println "val =" val " debug =" debug " verbose =" verbose))
-  (configure 1)
-  (configure 1 :debug true)
-  (configure 12222 :debug true 2222 123)
-
-  (require '[clojure.core.async :as async :refer [chan >! <! close! go put! take!]])
-  (let [c (chan 10)]
-    (go (>! c "hello"))
-    (def chan-result (go (let [my-val (<! c)]
-    ;; (assert (= "hello" (go (let [my-val '(<! c)])
-                           (log "my-val from channel is: " my-val))))
-    (log "the channel: " c)
-    (go (close! c)))
-
-
-  (def my-map {:a 123 :b "abc"})
-  (defn learning-destructure2
-    [{a :a b :b :as hero-stat}
-     all-hero]
-    (log "hero-stat: " hero-stat, ", a: " a, ", b: " b, ", poop: " _p))
-  (learning-destructure2 my-map "HAHA POOP")
-
-  (log (mapv :hero_id @all-hero-stats)))
+  ,)
