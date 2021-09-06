@@ -201,6 +201,14 @@
       [:div.col "Losses: " (str my-losses)]
       [:div.col "Matches: " (str my-picks)]]]))
 
+(defn is-hero-in-selection
+  [selection {hero-id :hero_id  :as hero-stat}]
+  (contains? selection hero-id))
+
+(defn get-displayed-heroes [all-hero-stats selection]
+  (filter #(is-hero-in-selection selection %) all-hero-stats))
+
+
 (defn render-single-hero-winrates
   [{wins :7_win
     picks :7_pick
@@ -209,8 +217,9 @@
     :as hero-stat}
    all-selected-hero-ids]
   (let [winrate (get-winrate hero-stat)
-        ashi all-selected-hero-ids
+        ;; ashi all-selected-hero-ids
         btn-style {:style {:cursor :pointer :user-select :none}}]
+
     [:div.row.show-child-on-hover
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      [:div.col-3 [:progress {:value winrate :max 1} winrate]]
@@ -225,19 +234,19 @@
      [:div.col.align-self-end
       [:div.row.row-cols-auto.show-me-on-hover
          ;;deliberately not using .btn on these buttons because it grows their size too much.
-         [:div.col.btn-primary (merge btn-style {:on-click #(add-selected-hero ashi hero-id)}) "Add"]
-         [:div.col.btn-primary (merge btn-style {:on-click #(remove-selected-hero ashi hero-id)}) "Remove"]
-         [:div.col.btn-primary (merge btn-style {:on-click #(clear-selected-hero-ids ashi)}) "Clear"]]]
+         (let [styles (merge btn-style
+                             {:on-click #(add-selected-hero all-selected-hero-ids hero-id)})
+               hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
+              (log "hero-in-selection: " hero-in-selection)
+              (if-not hero-in-selection
+                      [:div.col.btn-primary styles "Add"]))
+         [:div.col.btn-primary (merge btn-style {:on-click #(remove-selected-hero all-selected-hero-ids hero-id)}) "Remove"]
+         [:div.col.btn-primary (merge btn-style {:on-click #(clear-selected-hero-ids all-selected-hero-ids)}) "Clear"]]]
      [:br]]))
 
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
 
-
-(defn is-hero-in-selection [selection hero-stat]
-  (contains? selection (:hero_id hero-stat)))
-(defn get-displayed-heroes [all-hero-stats selection]
-  (filter #(is-hero-in-selection selection %) all-hero-stats))
 
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
@@ -270,12 +279,14 @@
                 (let [coll (if (= true @should-filter-by-selection)
                                (get-displayed-heroes ahs ashi)
                                ahs)
-                      sort-fn (sort
-                                #(> (get-winrate %1) (get-winrate %2))
-                                coll)]
-                  (log "coll" (count coll) @should-filter-by-selection)
-                  (map #(render-single-hero-winrates %1 all-selected-hero-ids)
-                        sort-fn))]
+                      sorted-heroes (sort
+                                      #(> (get-winrate %1) (get-winrate %2))
+                                      coll)
+                      render-a-hero #(render-single-hero-winrates %1 all-selected-hero-ids)]
+                  (def ashi2 all-selected-hero-ids)
+                  (log "sorted-heroes " sorted-heroes)
+                  (log "first sorted-heroes " (first sorted-heroes))
+                  (map render-a-hero sorted-heroes))]
 
                [divider-with-text "raw user-data"
                 [:pre {:key 1 :style {:white-space "break-spaces"}}
