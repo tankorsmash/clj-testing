@@ -123,7 +123,7 @@
   (let [from-ls (localstorage-get-item (to-localstorage-key text) "true")
         is-open (r/atom (str-to-bool from-ls))
         toggle-is-open (fn []
-                        (reset! is-open (not @is-open))
+                        (swap! is-open not)
                         (localstorage-set-item!
                           (to-localstorage-key text)
                           (str @is-open)))]
