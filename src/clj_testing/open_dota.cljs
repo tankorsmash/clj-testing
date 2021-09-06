@@ -39,8 +39,13 @@
 
 (defn localstorage-get-item
   "Returns value of `key' from browser's localStorage. Note: always strings"
-  [key]
-  (.getItem (.-localStorage js/window) key))
+  ([key] (.getItem (.-localStorage js/window) key))
+
+  ([key default]
+   (let [from-ls (localstorage-get-item key)]
+    (if (nil? from-ls)
+        default
+        from-ls))))
 
 (defn localstorage-remove-item!
   "Remove the browser's localStorage value for the given `key`"
@@ -114,7 +119,7 @@
   (str "divider-with-text__" text))
 
 (defn divider-with-text [text & children]
-  (let [from-ls (localstorage-get-item (to-localstorage-key text))
+  (let [from-ls (localstorage-get-item (to-localstorage-key text) "true")
         is-open (r/atom (str-to-bool from-ls))
         click-handler (fn []
                         (reset! is-open (not @is-open))
