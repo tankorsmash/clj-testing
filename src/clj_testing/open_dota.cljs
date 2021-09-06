@@ -254,13 +254,11 @@
          ;;deliberately not using .btn on these buttons because it grows their size too much.
          (let [add-style (merge btn-style {:on-click #(emit [:add-selected-hero hero-id])})
                rem-style (merge btn-style {:on-click #(emit [:remove-selected-hero hero-id])})
-               clr-style (merge btn-style {:on-click #(emit [:clear-selected-heroes])})
                hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
               [:div.row.ctrl-rows
                 (if-not hero-in-selection
                   [:div.col.btn-primary add-style "Add"]
-                  [:div.col.btn-primary rem-style "Remove"])
-                [:div.col.btn-primary clr-style "Clear"]])]]
+                  [:div.col.btn-primary rem-style "Remove"])])]]
      [:br]]))
 
 (defn get-selected-hero [sid ahs]
