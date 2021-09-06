@@ -368,4 +368,12 @@
     (log "the channel: " c)
     (go (close! c)))
 
+
+  (def my-map {:a 123 :b "abc"})
+  (defn learning-destructure 
+    [{a :a b :b :as hero-stat}
+     _p]
+    (log "hero-stat: " hero-stat, ", a: " a, ", b: " b, ", poop: " _p))
+  (learning-destructure my-map "HAHA POOP")
+
   (log (mapv :hero_id @all-hero-stats)))
