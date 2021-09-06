@@ -193,11 +193,12 @@
       [:div.col "Losses: " (str my-losses)]
       [:div.col "Matches: " (str my-picks)]]]))
 
-(defn render-single-hero-winrates [{wins :7_win
-                                    picks :7_pick
-                                    hero-id :hero_id
-                                    hero-name :localized_name
-                                    :as hero-stat}]
+(defn render-single-hero-winrates
+  [{wins :7_win
+    picks :7_pick
+    hero-id :hero_id
+    hero-name :localized_name
+    :as hero-stat}]
   (let [winrate (get-winrate hero-stat)]
     [:div {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
      ;; [:span "#" hero-id]
