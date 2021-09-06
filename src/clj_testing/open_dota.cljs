@@ -289,8 +289,13 @@
           [:div.col
            [:div "Viewing: " (:localized_name (lookup-by-hero-id ahs sid))]
            [:div
-            {:style {:visibility (if-not (empty? ashi) :inherit :hidden )}}
-            (str "Selected hero ids: " (clojure.string/join ", " ashi))]]
+            {:style {:visibility (if-not (empty? ashi) :inherit :hidden)}}
+            (str "Selected hero ids: ")
+            [:span (for [selected-hero-id ashi]
+                        (if-not (= (last ashi) selected-hero-id)
+                                [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id ", ")]
+                                [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id)]))]]]
+
           [:div.col
            [:input.btn.btn-primary {:value (if-not @should-filter-by-selection "Filter" "Unfilter")
                                     :type :button
