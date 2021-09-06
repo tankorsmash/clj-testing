@@ -257,6 +257,18 @@
 (defn lookup-by-hero-id [ahs hero-id]
   (first (filter #(= (:hero_id %) hero-id) ahs)))
 
+(defn event-handler [state [event-name arg1 arg2 arg3 arg4 & args]]
+  (case event-name
+    :print (println event-name args)
+    :log (log event-name args)
+    :add-selected-hero (let [hero-id arg1]
+                         (do
+                          (log hero-id (type hero-id))
+                          (conj state arg1)))))
+
+(defn emit [e]
+  (r/rswap! all-selected-hero-ids event-handler e))
+
 (defn render-hero-stats [all-hero-stats]
   (let [should-filter-by-selection (r/atom false)]
     (fn [all-hero-stats]
@@ -270,7 +282,8 @@
           [:div.col
            [:input.btn.btn-outline-secondary {:type :button
                                               :value "Next Hero ID"
-                                              :on-click #(swap! selected-hero-id inc)}]]
+                                              ;; :on-click #(swap! selected-hero-id inc)
+                                              :on-click #(emit [:add-selected-hero 123])}]]
           [:div.col
            [:div "Viewing: " (:localized_name (lookup-by-hero-id ahs sid))]
            [:div
