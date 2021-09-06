@@ -237,7 +237,6 @@
          (let [styles (merge btn-style
                              {:on-click #(add-selected-hero all-selected-hero-ids hero-id)})
                hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
-              (log "hero-in-selection: " hero-in-selection)
               (if-not hero-in-selection
                       [:div.col.btn-primary styles "Add"]))
          [:div.col.btn-primary (merge btn-style {:on-click #(remove-selected-hero all-selected-hero-ids hero-id)}) "Remove"]
@@ -282,11 +281,12 @@
                       sorted-heroes (sort
                                       #(> (get-winrate %1) (get-winrate %2))
                                       coll)
-                      render-a-hero #(render-single-hero-winrates %1 all-selected-hero-ids)]
+                      render-a-hero #(render-single-hero-winrates %1 all-selected-hero-ids)
+                      all-rendered-heroes (into [] (map render-a-hero) sorted-heroes)]
                   (def ashi2 all-selected-hero-ids)
-                  (log "sorted-heroes " sorted-heroes)
-                  (log "first sorted-heroes " (first sorted-heroes))
-                  (map render-a-hero sorted-heroes))]
+                  (def arh all-rendered-heroes)
+                  (for [rendered-hero all-rendered-heroes]
+                      rendered-hero))]
 
                [divider-with-text "raw user-data"
                 [:pre {:key 1 :style {:white-space "break-spaces"}}
