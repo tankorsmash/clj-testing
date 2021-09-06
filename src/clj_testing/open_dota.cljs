@@ -110,12 +110,15 @@
 (defn str-to-bool [text]
   ({:false false :true true} (keyword text)))
 
+(defn to-localstorage-key [text]
+  (str "divider-with-text__" text))
+
 (defn divider-with-text [text & children]
-  (let [from-ls (localstorage-get-item text)
+  (let [from-ls (localstorage-get-item (to-localstorage-key text))
         is-open (r/atom (str-to-bool from-ls))
         click-handler (fn []
                         (reset! is-open (not @is-open))
-                        (localstorage-set-item! text (str @is-open)))]
+                        (localstorage-set-item! (to-localstorage-key text) (str @is-open)))]
     (fn [text & children]
       "basically -------text-----"
       [:div
