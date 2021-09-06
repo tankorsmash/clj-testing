@@ -18,6 +18,7 @@
 (defonce user-data (r/atom nil))
 (defonce all-hero-stats (r/atom nil))
 (defonce selected-hero-id (r/atom 1))
+(defonce selected-hero-ids (r/atom (set [])))
 
 (defn sum [& args]
  (apply #(reduce + %) args))
@@ -70,8 +71,6 @@
   (let [is-open (r/atom true)]
     (fn [text & children]
       "basically -------text-----"
-      (log "text: " text)
-      (log "children: " children)
       [:div
         [:div {:style
                {:width "100%"
@@ -224,16 +223,26 @@
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
 
+(defn add-selected-hero [selected-hero-ids hero-id]
+  (swap! selected-hero-ids #(conj %1 hero-id)))
+(defn remove-selected-hero [selected-hero-ids hero-id]
+  (swap! selected-hero-ids #(disj %1 hero-id)))
+(defn clear-selected-hero [selected-hero-ids]
+  (reset! selected-hero-ids #{}))
+
 (defn render-hero-stats [all-hero-stats]
   (fn [all-hero-stats]
     (let [ahs @all-hero-stats
           sid @selected-hero-id]
       [:div
         [:h4 "OPEN DATA HERO STATS"]
-        [:div "the selected hero id " sid]
-        [:input.btn.btn-outline-secondary {:type :button
-                                           :value "Next Hero ID"
-                                           :on-click #(swap! selected-hero-id inc)}]
+        [:div.row.row-cols-auto
+         [:div.col
+          [:input.btn.btn-outline-secondary {:type :button
+                                             :value "Next Hero ID"
+                                             ::on-click #(swap! selected-hero-id inc)}]]
+         [:div.col "the selected hero id " sid]
+         [:div.col "asd"]]
         ;; [:div "winrates " (clojure.string/join " " (map float-to-percentage-str (all-winrates ahs)))]
         [:div
          (if-not (nil? ahs)
