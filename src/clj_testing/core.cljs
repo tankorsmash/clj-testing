@@ -12,9 +12,33 @@
             [clj-testing.person :as person]
             [clj-testing.open-dota :as dota]
             [reagent.core :as r]
-            [reagent.dom :as rdom]))
+            [reagent.dom :as rdom]
+            [secretary.core :as secretary :refer-macros [defroute]]
+            [goog.events :as events])
+  (:import [goog History]
+           [goog.history EventType]))
 
 (enable-console-print!)
+
+(defroute "/users/:id" {:as params}
+  (js/console.log (str "User: " (:id params))))
+
+(defroute home-path "/" []
+  (js/console.log "You're home!"))
+
+(secretary/set-config! :prefix "#")
+
+
+(let [h (History.)]
+  (goog.events/listen h EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
+  (doto h
+    (.setEnabled true)))
+
+;; (doto (History.)
+;;   (events/listen EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
+;;   (.setEnabled true))
+
+;; (secretary/dispatch! "/")
 
 ;;   "these are the commands to start up the repl for vim. not sure how to automate this"
 ;; (defmacro set_up_vim_repl []
@@ -111,6 +135,10 @@
      [:input {:type "button" :value "CLICK ME!"
               :on-click on-click}]
      [:span " Seconds elapsed: " @seconds-elapsed]
+     [:div
+      [:a {:href "#"} "Home"]]
+     [:div
+       [:a {:href "#users/123"} "Users 123"]]
      (take 2 (map-indexed clickable-age @atom-people))
      [dota/render-user-data dota/user-data]
      [dota/render-hero-stats dota/all-hero-stats]]))
