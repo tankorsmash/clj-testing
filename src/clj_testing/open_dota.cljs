@@ -149,28 +149,18 @@
 (defn do-request-for-player-data! []
   "makes a request for player data"
   (go (let [response (<! (http/get player_data_url {}))]
-        ;; (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
-             ;; (log body)
           (if (ct/is (s/valid? :dota/player-data-unq body))
-               ;; (do (log "mfer is valid, assigning to variable")
             (reset! user-data body)
-               ;; (do (log "player-data-unq failed to match")
             (s/explain :dota/player-data-unq body))))))
-      ;; (log "in do-requiest" response))))
 
 (defn do-request-for-hero-stats! []
   "makes a request for hero stats"
   (go (let [response (<! (http/get hero_stats_url {}))]
-        ;; (log (str "response status: " (:status response)))
         (let [body (get-in response [:body])]
-          ;; (log body)
           (if (ct/is (s/coll-of (s/valid? :dota/hero-stats-unq body)))
-            ;; (do (log "heroic mfer is valid, assigning to variable")
             (reset! all-hero-stats body)
-            ;;do (log "player-data-unq failed to match")
             (s/explain :dota/hero-stats-unq body))))))
-        ;; (log "in do-request for all-hero-stats" response))))
 
 (defn render-user-data-loaded [ud p]
   [:div
@@ -200,7 +190,6 @@
   {:type "button"
    :value "Download"
    :class ["btn" "btn-outline-secondary"]
-   ;; :on-click do-request-for-player-data!
    :on-click callback})
 
 (def request-btn-cfg-hero-stats
@@ -271,7 +260,6 @@
     :as hero-stat}
    all-selected-hero-ids]
   (let [winrate (get-winrate hero-stat)
-        ;; ashi all-selected-hero-ids
         btn-style {:style {:cursor :pointer :user-select :none :min-width "90px"}}]
 
     [:div.row.show-child-on-hover.mw-100
