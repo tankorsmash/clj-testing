@@ -272,7 +272,7 @@
    all-selected-hero-ids]
   (let [winrate (get-winrate hero-stat)
         ;; ashi all-selected-hero-ids
-        btn-style {:style {:cursor :pointer :user-select :none}}]
+        btn-style {:style {:cursor :pointer :user-select :none :min-width "90px"}}]
 
     [:div.row.show-child-on-hover.mw-100
      {:key hero-id :on-click #(change-selected-hero-id (:hero_id hero-stat))}
@@ -293,8 +293,8 @@
                hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
               [:div.row.ctrl-rows
                 (if-not hero-in-selection
-                  [:div.col.btn-primary add-style "Add"]
-                  [:div.col.btn-primary rem-style "Remove"])])]]]))
+                  [:div.col.btn-primary.text-center add-style "Add"]
+                  [:div.col.btn-danger.text-center rem-style "Remove"])])]]]))
 
 
 (defn get-selected-hero [sid ahs]
