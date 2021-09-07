@@ -144,7 +144,7 @@
                              :padding "0 10px"
                              :color "red"}}
          text]]
-       ^{:key text}(when @is-open ^{:key text} children)])))
+       (do (if @is-open ^{:key text} children))])))
 
 (defn do-request-for-player-data! []
   "makes a request for player data"
@@ -166,28 +166,28 @@
   [:div
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
-    ^{:key "user-data"} [divider-with-text "user-data"]
-             [:div.row
-              [:div.col "Tracked until " (str (:tracked_until ud))]
-              [:div.col "Rank Tier " (str (:rank_tier ud))]]
+    [divider-with-text "user-data"
+     ^{:key "user-data.tracked"}[:div.row
+                                 [:div.col "Tracked until " (str (:tracked_until ud))]
+                                 [:div.col "Rank Tier " (str (:rank_tier ud))]]]
 
-    ^{:key "user-data.profile"} [divider-with-text "user-data.profile"]
-      [:div.row.row-cols-auto
-       [:div.col [:small.text-muted "Persona Name"]
-        [:div (str (:personaname p))]]
-       [:div.col [:small.text-muted "Account ID"]
-        [:div (str (:account_id p))]]
-       [:div.col-2 [:small.text-muted "Avatar Full"]
-        [:img.img-thumbnail {:src (str (:avatarfull p))}]]
-       [:div.col [:small.text-muted "Profile URL"]
-        [:div
-         [:a {:href (str (:profileurl p))} "Link"]]]]
+    [divider-with-text "user-data.profile"
+      ^{:key "user-data.profile"}[:div.row.row-cols-auto
+                                  [:div.col [:small.text-muted "Persona Name"]
+                                   [:div (str (:personaname p))]]
+                                  [:div.col [:small.text-muted "Account ID"]
+                                   [:div (str (:account_id p))]]
+                                  [:div.col-2 [:small.text-muted "Avatar Full"]
+                                   [:img.img-thumbnail {:src (str (:avatarfull p))}]]
+                                  [:div.col [:small.text-muted "Profile URL"]
+                                   [:div
+                                    [:a {:href (str (:profileurl p))} "Link"]]]]]
 
-     ;;dump the rest of the data
-     ^{:key "raw-user-data"} [divider-with-text "raw user-data"
-                               ^{:key "raw user-data"}
-                               [:pre {:style {:white-space "break-spaces"}}
-                                     (person/pp-str ud)]]]])
+    ;;dump the rest of the data
+    [divider-with-text "raw user-data"
+      ^{:key "raw user-data"}
+      [:pre {:style {:white-space "break-spaces"}}
+            (person/pp-str ud)]]]])
 
 (defn request-btn-cfg [callback]
   {:type "button"
