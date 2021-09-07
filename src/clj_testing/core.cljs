@@ -20,10 +20,21 @@
 
 (enable-console-print!)
 
+
+(defn home-page []
+  [:h1 "THIS IS HOME"])
+
+(defn user-page []
+  [:h2 "THIS IS USER"])
+
+(defonce current-page (r/atom #'home-page))
+
 (defroute "/users/:id" {:as params}
+  (reset! current-page #'user-page)
   (js/console.log (str "User: " (:id params))))
 
 (defroute home-path "/" []
+  (reset! current-page #'home-page)
   (js/console.log "You're home!"))
 
 (secretary/set-config! :prefix "#")
@@ -129,6 +140,7 @@
 (defn root-component [innertext]
   (fn []
     [:div.container
+     [@current-page]
      [:span.someclass
       "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
       [:span {:style {:color "red"}} " and red "] "text. "]
