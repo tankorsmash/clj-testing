@@ -172,13 +172,16 @@
               [:div.col "Rank Tier " (str (:rank_tier ud))]]
 
     ^{:key "user-data.profile"} [divider-with-text "user-data.profile"]
-      [:div.row
-       [:div.col "Persona Name " (str (:personaname p))]
-       [:div.col "Account ID " (str (:account_id p))]
-       [:div.col-2 "Avatar Full "
+      [:div.row.row-cols-auto
+       [:div.col [:small.text-muted "Persona Name"]
+        [:div (str (:personaname p))]]
+       [:div.col [:small.text-muted "Account ID"]
+        [:div (str (:account_id p))]]
+       [:div.col-2 [:small.text-muted "Avatar Full"]
         [:img.img-thumbnail {:src (str (:avatarfull p))}]]
-       [:div.col "Profile URL "
-        [:a {:href (str (:profileurl p))} "Link"]]]
+       [:div.col [:small.text-muted "Profile URL"]
+        [:div
+         [:a {:href (str (:profileurl p))} "Link"]]]]
 
      ;;dump the rest of the data
      ^{:key "raw-user-data"} [divider-with-text "raw user-data"
@@ -382,7 +385,6 @@
 
   (defn get-rank-values [rank-keys]
     ((apply juxt (mapv (comp keyword name) rank-keys)) selected-hero))
-
 
 
   ,)
