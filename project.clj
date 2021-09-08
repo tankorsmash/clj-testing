@@ -6,7 +6,9 @@
                  [reagent "1.1.0"]
                  [cljsjs/react "17.0.2-0"]
                  [cljsjs/react-dom "17.0.2-0"]
-                 [clj-commons/secretary "1.2.4"]]
+                 [reagent-catch "0.1.2"]
+                 [clj-commons/secretary "1.2.4"]
+                 [org.clojure/core.match "0.3.0"]]
 
   :compiler {:external-config {:devtools/config
                                {:print-config-overrides true

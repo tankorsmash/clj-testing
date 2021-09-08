@@ -8,6 +8,7 @@
             [clojure.test.check]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]
+            [clojure.core.match :refer-macros [match]]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
 
@@ -67,16 +68,39 @@
             (s/explain :frame-data.weapon-unq/frame body))))))
 
 
+(defn to-battle-row [raw-row]
+  (match [raw-row]
+    [0] "Melee"
+    [1] "Ranged"
+    [2] "Rear"))
+
+(defn to-weapon-damage-type [raw-damage-type]
+  (match [raw-damage-type]
+    [0] "Unset"
+    [1] "Piercing"
+    [2] "Blunt"
+    [3] "Slashing"))
+
+
+(defn render-weapon-frame-row
+  [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
+  ^{:key frame_id}
+  [:div
+     [:span pretty_name] ": "
+     [:span (to-battle-row battle_row_type)] " - "
+     [:span (to-weapon-damage-type damage_type)] " - "
+     [:span frame_id]])
+
 (defn render-root []
   (fn []
     [:div "This is the frame data rootsdsds"
       [:div (str "Count of frames: " (count @all-weapon-frames))]
       [:div
-       (for [{:keys [pretty_name frame_id] :as weapon-frame} @all-weapon-frames]
-        ^{:key frame_id}
-        [:div
-         [:span pretty_name]
-         [:span frame_id]])]]))
+       (for [weapon-frame @all-weapon-frames]
+        ^{:key (:frame_id weapon-frame)}
+        (render-weapon-frame-row weapon-frame))]]))
+
+
 
 (comment
   (do-request-for-weapon-frames!)

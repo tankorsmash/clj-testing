@@ -13,6 +13,7 @@
             [clj-testing.person :as person]
             [clj-testing.open-dota :as dota]
             [clj-testing.router :as router]
+            [reagent-catch.core :as rc]
 
             [reagent.core :as r]
             [reagent.dom :as rdom]
@@ -135,14 +136,16 @@
   (fn []
     (let [page @router/current-page
           current-hash js/location.hash]
-      [:div.container
-       [nav-component current-hash]
-       [page]])))
+      [rc/catch
+       [:div.container
+         [nav-component current-hash]
+         [page]]])))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
 
 (defn render-simple []
+  (log "rendering render-simple")
   (rdom/render
     [root-component "inner text"]
     react-app-elem))
