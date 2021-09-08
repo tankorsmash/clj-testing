@@ -1,3 +1,3 @@
-^{:css-dirs ["resources/public/css"]}
+^{:css-dirs ["resources/public/css"]
+  :ring-handler clj-testing.server/handler}
 {:main clj-testing.core}
-(println "hello from dev.cljs.end")

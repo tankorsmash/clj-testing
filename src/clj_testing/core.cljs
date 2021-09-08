@@ -21,27 +21,37 @@
 (enable-console-print!)
 
 
+(defn unknown-page []
+  [:h1 "WHERE THE F ARE YOU?"])
+
 (defn home-page []
   [:h1 "THIS IS HOME"])
 
 (defn user-page []
   [:h2 "THIS IS USER"])
 
-(defonce current-page (r/atom #'home-page))
+(defonce current-page (r/atom #'unknown-page))
 
-(defroute "/users/:id" {:as params}
+(defroute user-path "/users/:id" {:as params}
   (reset! current-page #'user-page)
-  (js/console.log (str "User: " (:id params))))
+  (js/console.log (str "anon user" "User: " (:id params))))
 
 (defroute home-path "/" []
   (reset! current-page #'home-page)
-  (js/console.log "You're home!"))
+  (js/console.log "You're home-path!"))
+
+(defroute "*" []
+  (reset! current-page #'unknown-page)
+  (js/console.log "You're in unknown territory!"))
 
 (secretary/set-config! :prefix "#")
 
 
 (let [h (History.)]
-  (goog.events/listen h EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
+  (goog.events/listen
+    h
+    EventType.NAVIGATE
+    #(secretary/dispatch! (.-token %))) ;; goog.history only supports #token so I'd need a different solution if i wasn't going to have a url embedded
   (doto h
     (.setEnabled true)))
 
@@ -171,4 +181,8 @@
 (comment
   (js/console.clear)
   (dota-download)
-  (dota/do-request-for-player-data!))
+
+  (dota/do-request-for-player-data!)
+  (defn foo {:as args}
+    (log args))
+  ,)
