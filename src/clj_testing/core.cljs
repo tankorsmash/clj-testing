@@ -120,16 +120,19 @@
    {:path (router/dota-hero-stats-path)
     :text "Dota Hero Stats"}])
 
-(defn render-nav-items
-  [nav-items]
-  [:ul.navbar-nav
-   (for [nav-item nav-items]
-     ^{:key (:path nav-item)}
-     [:li.nav-item
-      [:a.nav-link {:href (:path nav-item)}
-       (:text nav-item)]])])
 
-(defn nav-component []
+(defn render-nav-items
+  [current-hash nav-items]
+  [:ul.navbar-nav
+   (for [{:keys [path text]} nav-items]
+     ^{:key path}
+     [:li.nav-item
+      [:a.nav-link (merge {:href path}
+                          (when (secretary/route-matches path current-hash)
+                            {:class "active"}))
+       text]])])
+
+(defn nav-component [current-hash]
   [:div
    [:span.someclass
     "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
@@ -140,19 +143,18 @@
    [:nav.navbar.navbar-light.navbar-expand
     [:div.container-fluid
      [:div.collapse.navbar-collapse
-        [render-nav-items root-nav-items]]]]
+        [render-nav-items current-hash root-nav-items]]]]
    (take 2 (map-indexed clickable-age @atom-people))])
-   ;; [dota/render-user-data dota/user-data]
-   ;; [dota/render-hero-stats dota/all-hero-stats]]))
 
 
 (defn root-component [innertext]
   (fn []
-    (log @router/current-page)
-    [:div.container
-       [nav-component]
-    ;; (if (= #'router/home-page @router/current-page)
-       [@router/current-page]]))
+    (let [page @router/current-page
+          current-hash js/location.hash]
+      [:div.container
+         [nav-component current-hash]
+      ;; (if (= #'router/home-page @router/current-page)
+         [page]])))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
