@@ -26,6 +26,14 @@
 
 (defonce all-weapon-frames (r/atom []))
 
+(s/def :frame-data.enum/raw-value int?)
+(s/def :frame-data.enum/pretty-name string?)
+(s/def :frame-data.enum/data-name string?)
+
+(s/def :frame-data.enum/enum (s/keys :req [:frame-data.enum/raw-value
+                                           :frame-data.enum/pretty-name
+                                           :frame-data.enum/data-name]))
+
 (s/def :frame-data.weapon/frame_id int?)
 (s/def :frame-data.weapon/pretty_name' string?)
 (s/def :frame-data.weapon/description' string?)
@@ -54,12 +62,12 @@
    :frame-data.weapon/rarity_type
    :frame-data.weapon/carry_weight])
 
-(declare to-weapon-damage-type)
+(declare int-to-weapon-damage-type)
 (declare to-battle-row-type)
 
 (s/def
   :frame-data/weapon-damage-type
-  (s/and (s/int-in 0 4) (s/conformer to-weapon-damage-type)))
+  (s/and (s/int-in 0 4) (s/conformer int-to-weapon-damage-type)))
 
 (s/def
   :frame-data/battle-row-type
@@ -77,22 +85,22 @@
             (s/explain :frame-data.weapon-unq/frame body))))))
 
 
-(defn to-battle-row [raw-row]
-  (match [raw-row]
-    [0] "Melee"
-    [1] "Ranged"
-    [2] "Rear"))
+(defn int-to-battle-row [raw-battle-row]
+  (match [raw-battle-row]
+    [0] {:frame-data.enum/pretty-name "Melee" :frame-data.enum/data-name "melee" :frame-data.enum/raw-value 0}
+    [1] {:frame-data.enum/pretty-name "Ranged":frame-data.enum/data-name "ranged" :frame-data.enum/raw-value 1}
+    [2] {:frame-data.enum/pretty-name "Rear":frame-data.enum/data-name "rear" :frame-data.enum/raw-value 1}))
 
-(defn to-weapon-damage-type [raw-damage-type]
+(defn int-to-weapon-damage-type [raw-damage-type]
   (match [raw-damage-type]
-    [0] "Unset"
-    [1] "Piercing"
-    [2] "Blunt"
-    [3] "Slashing"))
+    [0] {:frame-data.enum/pretty-name "Unset" :frame-data.enum/data-name "unset" :frame-data.enum/raw-value 0}
+    [1] {:frame-data.enum/pretty-name "Piercing":frame-data.enum/data-name "piercing" :frame-data.enum/raw-value 1}
+    [2] {:frame-data.enum/pretty-name "Blunt":frame-data.enum/data-name "blunt" :frame-data.enum/raw-value 2}
+    [3] {:frame-data.enum/pretty-name "Slashing" :frame-data.enum/data-name "slashing" :frame-data.enum/raw-value 3}))
 
 
 (comment
-  (s/def ::wdt (s/conform (s/and int? (s/conformer to-weapon-damage-type) 1)))
+  (s/def ::wdt (s/conform (s/and int? (s/conformer int-to-weapon-damage-type) 1)))
   (s/conform ::wdt 1)
   (s/conform ::wdt 10)
   (s/conform ::wdt "ASDASD")
@@ -103,9 +111,9 @@
   [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
   ^{:key frame_id}
   [:div
-     [:span pretty_name] ": "
-     [:span (to-battle-row battle_row_type)] " - "
-     [:span (to-weapon-damage-type damage_type)] " - "
+     [:span (str pretty_name)] ": "
+     [:span (::pretty-name int-to-battle-row battle_row_type)] " - "
+     [:span (::pretty-name int-to-weapon-damage-type damage_type)] " - "
      [:span frame_id]])
 
 (defn render-root []
