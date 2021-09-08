@@ -18,7 +18,9 @@
             [clj-testing.frame-data :as frame-data])
 
   (:import [goog.history Html5History]
+  ;; (:import [goog History]
            [goog.history EventType]))
+
 
 (secretary/set-config! :prefix "#")
 
@@ -82,9 +84,8 @@
     :text "Frame Data"}])
 
 
-
-
 (let [h (Html5History.)]
+;; (let [h (History.)]
   (goog.events/listen
     h
     EventType.NAVIGATE
