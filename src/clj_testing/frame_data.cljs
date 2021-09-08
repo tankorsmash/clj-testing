@@ -74,7 +74,19 @@
   (s/and (s/int-in 0 4) (s/conformer to-battle-row-type)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
-(s/def :frame-data.weapon-unq/frame (s/keys :req-unq (vector weapon-frame-keys)))
+(s/def :frame-data.weapon-unq/frame (s/and
+                                      (s/keys :req-unq [:frame-data/battle-row-type
+                                                        :frame-data/weapon-damage-type])
+                                      (s/keys :req-unq (vector weapon-frame-keys))))
+
+;; (log (s/conform :frame-data.weapon/frame (first @all-weapon-frames)))
+(comment
+  (log (s/explain :frame-data/weapon-damage-type (first @all-weapon-frames)))
+  (log (s/conform (s/keys :req-unq [:frame-data/weapon-damage-type]) (first @all-weapon-frames)))
+  (def val (:damage_type (first @all-weapon-frames)))
+  (log (s/explain :frame-data/weapon-damage-type val))
+  (log (s/conform :frame-data/weapon-damage-type (:damage_type (first @all-weapon-frames))))
+  ,)
 
 (defn do-request-for-weapon-frames! []
   "makes a request for weapon frames"
@@ -111,10 +123,10 @@
   [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
   ^{:key frame_id}
   [:div
-     [:span (str pretty_name)] ": "
-     [:span (::pretty-name int-to-battle-row battle_row_type)] " - "
-     [:span (::pretty-name int-to-weapon-damage-type damage_type)] " - "
-     [:span frame_id]])
+     [:span "#" frame_id " "]
+     [:span "Name is: " pretty_name] ": "
+     [:span (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))] " - "
+     [:span (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))] " - "])
 
 (defn render-root []
   (fn []
