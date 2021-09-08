@@ -73,9 +73,10 @@
       [:div (str "Count of frames: " (count @all-weapon-frames))]
       [:div
        (for [{:keys [pretty_name frame_id] :as weapon-frame} @all-weapon-frames]
-        ^{:key (int frame_id)} [:div
-                                [:span pretty_name]
-                                [:span frame_id]])]]))
+        ^{:key frame_id}
+        [:div
+         [:span pretty_name]
+         [:span frame_id]])]]))
 
 (comment
   (do-request-for-weapon-frames!)
