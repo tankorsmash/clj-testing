@@ -11,6 +11,7 @@
             [clojure.core.match :refer-macros [match]]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
+            [reagent-catch.core :as rc]
 
             [clj-testing.person :as person]
             [clj-testing.open-dota :as dota]
@@ -53,6 +54,17 @@
    :frame-data.weapon/rarity_type
    :frame-data.weapon/carry_weight])
 
+(declare to-weapon-damage-type)
+(declare to-battle-row-type)
+
+(s/def
+  :frame-data/weapon-damage-type
+  (s/and (s/int-in 0 4) (s/conformer to-weapon-damage-type)))
+
+(s/def
+  :frame-data/battle-row-type
+  (s/and (s/int-in 0 4) (s/conformer to-battle-row-type)))
+
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
 (s/def :frame-data.weapon-unq/frame (s/keys :req-unq (vector weapon-frame-keys)))
 
@@ -79,6 +91,14 @@
     [3] "Slashing"))
 
 
+(comment
+  (s/def ::wdt (s/conform (s/and int? (s/conformer to-weapon-damage-type) 1)))
+  (s/conform ::wdt 1)
+  (s/conform ::wdt 10)
+  (s/conform ::wdt "ASDASD")
+  ,)
+
+
 (defn render-weapon-frame-row
   [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
   ^{:key frame_id}
@@ -90,12 +110,13 @@
 
 (defn render-root []
   (fn []
-    [:div "This is the frame data root"
-      [:div (str "Count of frames: " (count @all-weapon-frames))]
-      [:div
-       (for [weapon-frame @all-weapon-frames]
-        ^{:key (:frame_id weapon-frame)}
-        (render-weapon-frame-row weapon-frame))]]))
+    [rc/catch
+      [:div "This is the frame data root"
+        [:div (str "Count of frames: " (count @all-weapon-frames))]
+        [:div
+         (for [weapon-frame @all-weapon-frames]
+          ^{:key (:frame_id weapon-frame)}
+          (render-weapon-frame-row weapon-frame))]]]))
 
 
 
