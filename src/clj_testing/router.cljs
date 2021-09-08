@@ -26,7 +26,9 @@
   [:h1 "WHERE THE F ARE YOU?"])
 
 (defn home-page []
-  [:h1 "THIS IS HOME"])
+  [:div
+    [:h1 "THIS IS HOME"]
+    [:div "an unset page from router"]])
 
 (defn dota-page []
    [dota/render-user-data dota/user-data])

@@ -126,17 +126,10 @@
 
 (defn nav-component [current-hash]
   [:div
-   [:span.someclass
-    "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
-    [:span {:style {:color "red"}} " and red "] "text. "]
-   [:input {:type "button" :value "CLICK ME!"
-            :on-click on-click}]
-   [:span " Seconds elapsed: " @seconds-elapsed]
    [:nav.navbar.navbar-light.navbar-expand
     [:div.container-fluid
      [:div.collapse.navbar-collapse
-      [render-nav-items current-hash router/root-nav-items]]]]
-   (take 2 (map-indexed clickable-age @atom-people))])
+      [render-nav-items current-hash router/root-nav-items]]]]])
 
 
 (defn root-component [innertext]
