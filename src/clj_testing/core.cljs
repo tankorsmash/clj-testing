@@ -106,7 +106,9 @@
     (swap! atom-people #(swap-person % idx new-person))))
 
 (defn clickable-age [idx person]
-  [:div {:key idx :on-click #(on-click-change-person idx person)}
+  [:div {:key idx
+         :on-click #(on-click-change-person idx person)
+         :style {:user-select :none :cursor :pointer}}
    [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
