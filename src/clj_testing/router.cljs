@@ -12,7 +12,10 @@
             [reagent.core :as r]
             ;; [reagent.dom :as rdom]
             [secretary.core :as secretary :refer-macros [defroute]]
-            [goog.events :as events])
+            [goog.events :as events]
+
+            [clj-testing.open-dota :as dota])
+
   (:import [goog History]
            [goog.history EventType]))
 
@@ -21,6 +24,15 @@
 
 (defn home-page []
   [:h1 "THIS IS HOME"])
+
+(defn dota-page []
+   [dota/render-user-data dota/user-data])
+
+(defn dota-user-page []
+   [dota/render-user-data dota/user-data])
+
+(defn dota-hero-stats-page []
+   [dota/render-hero-stats dota/all-hero-stats])
 
 (defn user-page []
   [:h2 "THIS IS USER"])
@@ -34,6 +46,15 @@
 (defroute home-path "/" []
   (reset! current-page #'home-page)
   (js/console.log "You're home-path!"))
+
+(defroute dota-path "/dota" []
+  (reset! current-page #'dota-page))
+
+(defroute dota-user-path "/dota/user" []
+  (reset! current-page #'dota-user-page))
+
+(defroute dota-hero-stats-path "/dota/hero-stats" []
+  (reset! current-page #'dota-hero-stats-page))
 
 (defroute "*" []
   (reset! current-page #'unknown-page)

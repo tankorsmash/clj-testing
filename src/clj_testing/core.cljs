@@ -110,23 +110,34 @@
    [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
+(defn nav-component []
+  [:div
+   [:span.someclass
+    "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
+    [:span {:style {:color "red"}} " and red "] "text. "]
+   [:input {:type "button" :value "CLICK ME!"
+            :on-click on-click}]
+   [:span " Seconds elapsed: " @seconds-elapsed]
+   [:div
+    [:a {:href (router/home-path)} "Home"]]
+   [:div
+     [:a {:href (router/user-path {:id 123} )} "Users 123"]]
+   [:div
+     [:a {:href (clj-testing.router/dota-user-path  )} "Dota User"]]
+   [:div
+     [:a {:href (clj-testing.router/dota-hero-stats-path  )} "Dota Hero Stats"]]
+   (take 2 (map-indexed clickable-age @atom-people))])
+   ;; [dota/render-user-data dota/user-data]
+   ;; [dota/render-hero-stats dota/all-hero-stats]]))
+
+
 (defn root-component [innertext]
   (fn []
+    (log @router/current-page)
     [:div.container
-     [@router/current-page]
-     [:span.someclass
-      "I have " [:strong "bold"] " and the click-count of: " (str @click-count)
-      [:span {:style {:color "red"}} " and red "] "text. "]
-     [:input {:type "button" :value "CLICK ME!"
-              :on-click on-click}]
-     [:span " Seconds elapsed: " @seconds-elapsed]
-     [:div
-      [:a {:href "#"} "Home"]]
-     [:div
-       [:a {:href "#users/123"} "Users 123"]]
-     (take 2 (map-indexed clickable-age @atom-people))
-     [dota/render-user-data dota/user-data]
-     [dota/render-hero-stats dota/all-hero-stats]]))
+       [nav-component]
+    ;; (if (= #'router/home-page @router/current-page)
+       [@router/current-page]]))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
