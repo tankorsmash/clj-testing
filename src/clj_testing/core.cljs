@@ -143,7 +143,7 @@
    [:nav.navbar.navbar-light.navbar-expand
     [:div.container-fluid
      [:div.collapse.navbar-collapse
-        [render-nav-items current-hash root-nav-items]]]]
+      [render-nav-items current-hash root-nav-items]]]]
    (take 2 (map-indexed clickable-age @atom-people))])
 
 
