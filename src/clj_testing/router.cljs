@@ -17,7 +17,7 @@
             [clj-testing.open-dota :as dota]
             [clj-testing.frame-data :as frame-data])
 
-  (:import [goog History]
+  (:import [goog.history Html5History]
            [goog.history EventType]))
 
 (secretary/set-config! :prefix "#")
@@ -86,7 +86,7 @@
 
 
 
-(let [h (History.)]
+(let [h (Html5History.)]
   (goog.events/listen
     h
     EventType.NAVIGATE

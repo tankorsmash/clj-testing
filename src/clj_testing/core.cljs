@@ -17,9 +17,7 @@
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [secretary.core :as secretary :refer-macros [defroute]]
-            [goog.events :as events])
-  (:import [goog History]
-           [goog.history EventType]))
+            [goog.events :as events]))
 
 (enable-console-print!)
 
@@ -100,6 +98,7 @@
 
 (defn swap-person [people idx person]
   (assoc people idx person))
+
 
 (defn on-click-change-person [idx person]
   (let [new-person (change-person-age person)]
