@@ -110,6 +110,25 @@
    [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
+(def root-nav-items
+  [{:path (router/home-path)
+    :text "Home"}
+   {:path (router/user-path {:id 123})
+    :text "Users"}
+   {:path (router/dota-user-path)
+    :text "Dota User"}
+   {:path (router/dota-hero-stats-path)
+    :text "Dota Hero Stats"}])
+
+(defn render-nav-items
+  [nav-items]
+  [:ul.navbar-nav
+   (for [nav-item nav-items]
+     ^{:key (:path nav-item)}
+     [:li.nav-item
+      [:a.nav-link {:href (:path nav-item)}
+       (:text nav-item)]])])
+
 (defn nav-component []
   [:div
    [:span.someclass
@@ -118,14 +137,10 @@
    [:input {:type "button" :value "CLICK ME!"
             :on-click on-click}]
    [:span " Seconds elapsed: " @seconds-elapsed]
-   [:div
-    [:a {:href (router/home-path)} "Home"]]
-   [:div
-     [:a {:href (router/user-path {:id 123} )} "Users 123"]]
-   [:div
-     [:a {:href (clj-testing.router/dota-user-path  )} "Dota User"]]
-   [:div
-     [:a {:href (clj-testing.router/dota-hero-stats-path  )} "Dota Hero Stats"]]
+   [:nav.navbar.navbar-light.navbar-expand
+    [:div.container-fluid
+     [:div.collapse.navbar-collapse
+        [render-nav-items root-nav-items]]]]
    (take 2 (map-indexed clickable-age @atom-people))])
    ;; [dota/render-user-data dota/user-data]
    ;; [dota/render-hero-stats dota/all-hero-stats]]))

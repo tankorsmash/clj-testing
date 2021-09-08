@@ -71,6 +71,15 @@
   (doto h
     (.setEnabled true)))
 
+(comment
+  (def hash js/location.hash)
+  (log hash)
+  (log (str (dota-user-path) " vs hash: " hash))
+  (println (nil? (secretary/route-matches (dota-user-path) js/location.hash)))
+  (println (nil? (secretary/route-matches (dota-user-path) "ASDASD")))
+
+  ,)
+
 ;; (doto (History.)
 ;;   (events/listen EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
 ;;   (.setEnabled true))
