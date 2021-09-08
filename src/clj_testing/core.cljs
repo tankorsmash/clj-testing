@@ -1,4 +1,4 @@
-(ns clj-testing.core
+(ns ^:figwheel-hooks clj-testing.core
   (:require-macros [hiccups.core :as hiccups :refer [html]]
                    [cljs.core.async.macros :refer [go]]
                    [clj-testing.logging :refer [log info]])
@@ -147,7 +147,10 @@
     [root-component "inner text"]
     react-app-elem))
 
-(def start-up (do (render-simple) true))
+(defn ^:after-load start-up []
+  (render-simple))
+
+(defonce do-start-up (do (start-up) true))
 
 (defn dota-download []
   (log "dota channel: " (clj-testing.open-dota/do-request-for-player-data!)))
