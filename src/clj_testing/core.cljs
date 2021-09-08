@@ -31,7 +31,7 @@
 ;;        (figwheel.main.api/cljs-repl "dev"))))
 ;;   ;; :Piggieback! (do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/cljs-repl))
 ;;   `(js/alert "Hello from the ClojureScript REPL"))
-;;
+
 (hiccups/defhtml my-template [link-text]
   [:div]
   [:a {:href "https://github.com/weavejester/hiccup"} link-text])
@@ -59,24 +59,24 @@
 
 (defn handle-person [person]
   (str
-   (person/tryget-person-name person)
-   ": "
-   (person/with-valid-person person get-age-long)))
+    (person/tryget-person-name person)
+    ": "
+    (person/with-valid-person person get-age-long)))
 
 (def raw_people [joshua sandy prem matthew olivia])
 
 (defonce click-count (r/atom 0))
 (defonce seconds-elapsed (r/atom 0))
 (defonce atom-people (r/atom
-                      (mapv #(person/with-valid-person % identity) raw_people)))
+                       (mapv #(person/with-valid-person % identity) raw_people)))
 
 (defonce time-updater (js/setInterval
-                       #(swap! seconds-elapsed inc) 1000))
+                        #(swap! seconds-elapsed inc) 1000))
 
 (def to-output (clojure.string/join
-                "\n"
-                (map handle-person
-                     @atom-people)))
+                 "\n"
+                 (map handle-person
+                      @atom-people)))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
@@ -152,17 +152,16 @@
     (let [page @router/current-page
           current-hash js/location.hash]
       [:div.container
-         [nav-component current-hash]
-      ;; (if (= #'router/home-page @router/current-page)
-         [page]])))
+       [nav-component current-hash]
+       [page]])))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
 
 (defn render-simple []
   (rdom/render
-   [root-component "inner text"]
-   react-app-elem))
+    [root-component "inner text"]
+    react-app-elem))
 
 (def start-up (do (render-simple) true))
 
