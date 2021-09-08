@@ -112,16 +112,6 @@
    [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
 
-(def root-nav-items
-  [{:path (router/home-path)
-    :text "Home"}
-   {:path (router/user-path {:id 123})
-    :text "Users"}
-   {:path (router/dota-user-path)
-    :text "Dota User"}
-   {:path (router/dota-hero-stats-path)
-    :text "Dota Hero Stats"}])
-
 
 (defn render-nav-items
   [current-hash nav-items]
@@ -145,7 +135,7 @@
    [:nav.navbar.navbar-light.navbar-expand
     [:div.container-fluid
      [:div.collapse.navbar-collapse
-      [render-nav-items current-hash root-nav-items]]]]
+      [render-nav-items current-hash router/root-nav-items]]]]
    (take 2 (map-indexed clickable-age @atom-people))])
 
 

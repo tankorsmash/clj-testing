@@ -14,10 +14,13 @@
             [secretary.core :as secretary :refer-macros [defroute]]
             [goog.events :as events]
 
-            [clj-testing.open-dota :as dota])
+            [clj-testing.open-dota :as dota]
+            [clj-testing.frame-data :as frame-data])
 
   (:import [goog History]
            [goog.history EventType]))
+
+(secretary/set-config! :prefix "#")
 
 (defn unknown-page []
   [:h1 "WHERE THE F ARE YOU?"])
@@ -33,6 +36,9 @@
 
 (defn dota-hero-stats-page []
    [dota/render-hero-stats dota/all-hero-stats])
+
+(defn frame-data-root []
+  [frame-data/render-root])
 
 (defn user-page []
   [:h2 "THIS IS USER"])
@@ -56,11 +62,26 @@
 (defroute dota-hero-stats-path "/dota/hero-stats" []
   (reset! current-page #'dota-hero-stats-page))
 
+(defroute frame-data-root-path "/frame_data" []
+  (reset! current-page #'frame-data-root))
+
 (defroute "*" []
   (reset! current-page #'unknown-page)
   (js/console.log "You're in unknown territory!"))
 
-(secretary/set-config! :prefix "#")
+(def root-nav-items
+  [{:path (home-path)
+    :text "Home"}
+   {:path (user-path {:id 123})
+    :text "Users"}
+   {:path (dota-user-path)
+    :text "Dota User"}
+   {:path (dota-hero-stats-path)
+    :text "Dota Hero Stats"}
+   {:path (frame-data-root-path)
+    :text "Frame Data"}])
+
+
 
 
 (let [h (History.)]
