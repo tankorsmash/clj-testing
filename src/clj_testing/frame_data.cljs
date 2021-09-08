@@ -17,10 +17,7 @@
 
             [reagent.core :as r]
             [reagent.dom :as rdom]
-            [secretary.core :as secretary :refer-macros [defroute]]
-            [goog.events :as events])
-  (:import [goog History]
-           [goog.history EventType]))
+            [secretary.core :as secretary :refer-macros [defroute]]))
 
 
 (def root_json_server_url "http://localhost:5021/")
@@ -93,7 +90,7 @@
 
 (defn render-root []
   (fn []
-    [:div "This is the frame data rootsdsds"
+    [:div "This is the frame data root"
       [:div (str "Count of frames: " (count @all-weapon-frames))]
       [:div
        (for [weapon-frame @all-weapon-frames]
