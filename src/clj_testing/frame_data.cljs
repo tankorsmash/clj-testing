@@ -122,11 +122,11 @@
 (defn render-weapon-frame-row
   [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
   ^{:key frame_id}
-  [:div
-     [:span "#" frame_id " "]
-     [:span "Name is: " pretty_name] ": "
-     [:span (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))] " - "
-     [:span (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))] " - "])
+  [:div.row.rows-col-auto
+     [:div.col-1 "#" frame_id " "]
+     [:div.col pretty_name]
+     [:div.col (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))]
+     [:div.col (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))]]) 
 
 (defn render-root []
   (fn []
