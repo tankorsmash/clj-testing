@@ -48,12 +48,10 @@
 (defonce current-page (r/atom #'unknown-page))
 
 (defroute user-path "/users/:id" {:as params}
-  (reset! current-page #'user-page)
-  (js/console.log (str "anon user" "User: " (:id params))))
+  (reset! current-page #'user-page))
 
 (defroute home-path "/" []
-  (reset! current-page #'home-page)
-  (js/console.log "You're home-path!"))
+  (reset! current-page #'home-page))
 
 (defroute dota-path "/dota" []
   (reset! current-page #'dota-page))
