@@ -71,7 +71,7 @@
 
 (s/def
   :frame-data/battle-row-type
-  (s/and (s/int-in 0 4) (s/conformer to-battle-row-type)))
+  (s/and (s/int-in 0 3) (s/conformer to-battle-row-type)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
 (s/def :frame-data.weapon-unq/frame (s/and
@@ -111,8 +111,9 @@
     [3] {:frame-data.enum/pretty-name "Slashing" :frame-data.enum/data-name "slashing" :frame-data.enum/raw-value 3}))
 
 
+(s/def ::wdt (s/and int? #(s/int-in-range? 0 4 %) (s/conformer int-to-weapon-damage-type)))
+
 (comment
-  (s/def ::wdt (s/conform (s/and int? (s/conformer int-to-weapon-damage-type) 1)))
   (s/conform ::wdt 1)
   (s/conform ::wdt 10)
   (s/conform ::wdt "ASDASD")
