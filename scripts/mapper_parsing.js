@@ -1,6 +1,8 @@
 // import esprima from 'esprima-next'
 const esprima = require('esprima-next');
 
+const util = require('util');
+
 const fs = require('fs');
 
 // JS to load a weapon frame
@@ -68,8 +70,9 @@ if (cli_args.length == 0) {
 } else {
     // console.log(cli_args);
     cli_args.forEach((val, idx, arr) => {
-        // console.log(parse_mapper_relative(val));
-        console.log(JSON.stringify(parse_mapper_relative(val)));
+        // console.log(parse_mapper_relative(val)); //simple formatted log
+        // console.log(util.inspect(parse_mapper_relative(val), {depth:null, colors:true})); //expanded formatted log
+        console.log(JSON.stringify(parse_mapper_relative(val))); //dump json
     });
     // console.log(parse_mapper_relative("weaponMapper.js"));
 }
