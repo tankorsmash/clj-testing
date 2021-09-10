@@ -65,9 +65,14 @@
 (declare int-to-weapon-damage-type)
 (declare to-battle-row-type)
 
+(s/def ::wdt (s/and int? #(s/int-in-range? 0 4 %) (s/conformer int-to-weapon-damage-type)))
+
 (s/def
   :frame-data/weapon-damage-type
   (s/and (s/int-in 0 4) (s/conformer int-to-weapon-damage-type)))
+  ;; (s/and (s/int-in 10 14) int?))
+  ;; (s/int-in 10 14))
+
 
 (s/def
   :frame-data/battle-row-type
@@ -111,11 +116,18 @@
     [3] {:frame-data.enum/pretty-name "Slashing" :frame-data.enum/data-name "slashing" :frame-data.enum/raw-value 3}))
 
 
-(s/def ::wdt (s/and int? #(s/int-in-range? 0 4 %) (s/conformer int-to-weapon-damage-type)))
 
 (comment
+  (def weapon-frame (first @all-weapon-frames))
+  (s/describe :frame-data.weapon-unq/frame weapon-frame)
+  (s/def ::damage_type ::wdt)
+  (s/conform ::damage_type weapon-frame)
+  (s/conform ::wdt (:damage_type weapon-frame))
+  (s/explain ::wdt weapon-frame)
   (s/conform ::wdt 1)
+  (s/valid? ::wdt 1)
   (s/conform ::wdt 10)
+  (s/valid? ::wdt 10)
   (s/conform ::wdt "ASDASD")
   ,)
 
