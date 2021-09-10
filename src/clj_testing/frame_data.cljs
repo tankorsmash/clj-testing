@@ -81,14 +81,6 @@
                                                        :frame-data/weapon-damage-type])
                                      (s/keys :req-unq (vector weapon-frame-keys))))
 
-;; (log (s/conform :frame-data.weapon/frame (first @all-weapon-frames)))
-(comment
-  (log (s/explain :frame-data/weapon-damage-type (first @all-weapon-frames)))
-  (log (s/conform (s/keys :req-unq [:frame-data/weapon-damage-type]) (first @all-weapon-frames)))
-  (def val (:damage_type (first @all-weapon-frames)))
-  (log (s/explain :frame-data/weapon-damage-type val))
-  (log (s/conform :frame-data/weapon-damage-type (:damage_type (first @all-weapon-frames)))))
-
 (defn do-request-for-weapon-frames! []
   "makes a request for weapon frames"
   (go (let [response (<! (http/get all_weapon_frames_url {}))]
@@ -110,6 +102,44 @@
     [2] {:frame-data.enum/pretty-name "Blunt" :frame-data.enum/data-name "blunt" :frame-data.enum/raw-value 2}
     [3] {:frame-data.enum/pretty-name "Slashing" :frame-data.enum/data-name "slashing" :frame-data.enum/raw-value 3}))
 
+
+(defn render-weapon-frame-row
+  [{:keys [pretty_name frame_id battle_row_type
+           damage_type bonus_attack bonus_power
+           bonus_encumbrance carry_weight] :as weapon-frame}]
+  ^{:key frame_id}
+  [:div.row.rows-col-auto
+   [:div.col-1 "#" frame_id " "]
+   [:div.col pretty_name]
+   [:div.col-1
+    [:div (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))]
+    [:div (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))]]
+   [:div.col
+    [:div "ATK: " bonus_attack]
+    [:div "PWR: " bonus_power]]
+   [:div.col
+    [:div "ENC: " bonus_encumbrance]
+    [:div "WGT: " carry_weight]]])
+
+(defn render-root []
+  (fn []
+    [rc/catch
+     [:div "This is the frame data root"
+      [:div (str "Count of frames: " (count @all-weapon-frames))]
+      [:div
+       (for [weapon-frame @all-weapon-frames]
+         ^{:key (:frame_id weapon-frame)}
+         (render-weapon-frame-row weapon-frame))]]]))
+
+;; (log (s/conform :frame-data.weapon/frame (first @all-weapon-frames)))
+(comment
+  (log (s/explain :frame-data/weapon-damage-type (first @all-weapon-frames)))
+  (log (s/conform (s/keys :req-unq [:frame-data/weapon-damage-type]) (first @all-weapon-frames)))
+  (def val (:damage_type (first @all-weapon-frames)))
+  (log (s/explain :frame-data/weapon-damage-type val))
+  (log (s/conform :frame-data/weapon-damage-type (:damage_type (first @all-weapon-frames)))))
+
+
 (comment
   (def weapon-frame (first @all-weapon-frames))
   (s/describe :frame-data.weapon-unq/frame weapon-frame)
@@ -122,25 +152,6 @@
   (s/conform ::wdt 10)
   (s/valid? ::wdt 10)
   (s/conform ::wdt "ASDASD"))
-
-(defn render-weapon-frame-row
-  [{:keys [pretty_name frame_id battle_row_type damage_type] :as weapon-frame}]
-  ^{:key frame_id}
-  [:div.row.rows-col-auto
-   [:div.col-1 "#" frame_id " "]
-   [:div.col pretty_name]
-   [:div.col (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))]
-   [:div.col (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))]])
-
-(defn render-root []
-  (fn []
-    [rc/catch
-     [:div "This is the frame data root"
-      [:div (str "Count of frames: " (count @all-weapon-frames))]
-      [:div
-       (for [weapon-frame @all-weapon-frames]
-         ^{:key (:frame_id weapon-frame)}
-         (render-weapon-frame-row weapon-frame))]]]))
 
 (comment
   (do-request-for-weapon-frames!)
