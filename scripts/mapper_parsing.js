@@ -65,14 +65,41 @@ const parse_mapper_relative = (mapper_name) => {
 
 // return parse_mapper_relative("weaponMapper.js");
 let cli_args = process.argv.slice(2);
-if (cli_args.length == 0) {
-    console.log("pass relative names of the frame mappers, ie weaponMapper.js");
+
+let mappers_to_use = [];
+if (cli_args.some(el => el == "--all")) {
+    mappers_to_use.push(...[
+        "weaponMapper.js",
+        "actorMapper.js",
+        "armorMapper.js",
+        "attributeMapper.js",
+        "battleTextStructMapper.js",
+        "encounterMapper.js",
+        "eventChoiceMapper.js",
+        "eventOutcomeMapper.js",
+        "locationMapper.js",
+        "resultTextStructMapper.js",
+        "spellMapper.js",
+        "standardCombatEventMapper.js",
+        "weaponCategoryMapper.js",
+        "weaponMapper.js",
+        "zoneMapper.js",
+    ]);
 } else {
-    // console.log(cli_args);
     cli_args.forEach((val, idx, arr) => {
-        // console.log(parse_mapper_relative(val)); //simple formatted log
-        // console.log(util.inspect(parse_mapper_relative(val), {depth:null, colors:true})); //expanded formatted log
-        console.log(JSON.stringify(parse_mapper_relative(val))); //dump json
+        if (val != "--all") {
+            mappers_to_use.push(val);
+        }
+    })
+}
+if (cli_args.length == 0) {
+    console.log("pass relative names of the frame mappers, ie weaponMapper.js\nOR pass --all to use the premade list, and ignore the specified args");
+} else {
+    mappers_to_use.forEach((val, idx, arr) => {
+        let parsed = parse_mapper_relative(val);
+        let keyed = {[val] : parsed};
+        // console.log(keyed); //simple formatted log
+        // console.log(util.inspect(keyed, {depth:null, colors:true})); //expanded formatted log
+        console.log(JSON.stringify(keyed)); //dump json
     });
-    // console.log(parse_mapper_relative("weaponMapper.js"));
 }
