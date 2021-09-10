@@ -21,7 +21,6 @@
   ;; (:import [goog History]
            [goog.history EventType]))
 
-
 (secretary/set-config! :prefix "#")
 
 (defn unknown-page []
@@ -29,17 +28,17 @@
 
 (defn home-page []
   [:div
-    [:h1 "THIS IS HOME"]
-    [:div "an unset page from router"]])
+   [:h1 "THIS IS HOME"]
+   [:div "an unset page from router"]])
 
 (defn dota-page []
-   [dota/render-user-data dota/user-data])
+  [dota/render-user-data dota/user-data])
 
 (defn dota-user-page []
-   [dota/render-user-data dota/user-data])
+  [dota/render-user-data dota/user-data])
 
 (defn dota-hero-stats-page []
-   [dota/render-hero-stats dota/all-hero-stats])
+  [dota/render-hero-stats dota/all-hero-stats])
 
 (defn frame-data-root []
   [frame-data/render-root])
@@ -83,14 +82,12 @@
    {:path (frame-data-root-path)
     :text "Frame Data"}])
 
-
-
 (let [h (Html5History.)]
 ;; (let [h (History.)]
   (goog.events/listen
-    h
-    EventType.NAVIGATE
-    #(secretary/dispatch! (.-token %))) ;; goog.history only supports #token so I'd need a different solution if i wasn't going to have a url embedded
+   h
+   EventType.NAVIGATE
+   #(secretary/dispatch! (.-token %))) ;; goog.history only supports #token so I'd need a different solution if i wasn't going to have a url embedded
   (doto h
     (.setEnabled true)))
 
@@ -99,9 +96,7 @@
   (log hash)
   (log (str (dota-user-path) " vs hash: " hash))
   (println (nil? (secretary/route-matches (dota-user-path) js/location.hash)))
-  (println (nil? (secretary/route-matches (dota-user-path) "ASDASD")))
-
-  ,)
+  (println (nil? (secretary/route-matches (dota-user-path) "ASDASD"))))
 
 ;; (doto (History.)
 ;;   (events/listen EventType.NAVIGATE #(secretary/dispatch! (.-token %)))

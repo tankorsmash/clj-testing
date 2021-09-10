@@ -22,7 +22,6 @@
 
 (enable-console-print!)
 
-
 ;;   "these are the commands to start up the repl for vim. not sure how to automate this"
 ;; (defmacro set_up_vim_repl []
 ;;   (do (require 'figwheel.main.api
@@ -58,24 +57,24 @@
 
 (defn handle-person [person]
   (str
-    (person/tryget-person-name person)
-    ": "
-    (person/with-valid-person person get-age-long)))
+   (person/tryget-person-name person)
+   ": "
+   (person/with-valid-person person get-age-long)))
 
 (def raw_people [joshua sandy prem matthew olivia])
 
 (defonce click-count (r/atom 0))
 (defonce seconds-elapsed (r/atom 0))
 (defonce atom-people (r/atom
-                       (mapv #(person/with-valid-person % identity) raw_people)))
+                      (mapv #(person/with-valid-person % identity) raw_people)))
 
 (defonce time-updater (js/setInterval
-                        #(swap! seconds-elapsed inc) 1000))
+                       #(swap! seconds-elapsed inc) 1000))
 
 (def to-output (clojure.string/join
-                 "\n"
-                 (map handle-person
-                      @atom-people)))
+                "\n"
+                (map handle-person
+                     @atom-people)))
 
 (defn render_dom "takes nothing and returns a new string for the entire DOM" []
   (html [:h2 {} (str "Generated: " generated)]
@@ -100,7 +99,6 @@
 (defn swap-person [people idx person]
   (assoc people idx person))
 
-
 (defn on-click-change-person [idx person]
   (let [new-person (change-person-age person)]
     (swap! atom-people #(swap-person % idx new-person))))
@@ -111,7 +109,6 @@
          :style {:user-select :none :cursor :pointer}}
    [:div "This is a " [:b "CLICKABLE"] "-age: "
     (person/tryget-person-age person) "-" (person/tryget-person-name person)]])
-
 
 (defn render-nav-items
   [current-hash nav-items]
@@ -131,15 +128,14 @@
      [:div.collapse.navbar-collapse
       [render-nav-items current-hash router/root-nav-items]]]]])
 
-
 (defn root-component [innertext]
   (fn []
     (let [page @router/current-page
           current-hash js/location.hash]
       [rc/catch
        [:div.container
-         [nav-component current-hash]
-         [page]]])))
+        [nav-component current-hash]
+        [page]]])))
 
 (def app-elem (js/document.getElementById "app"))
 (def react-app-elem (js/document.getElementById "react-app"))
@@ -147,8 +143,8 @@
 (defn render-simple []
   (log "rendering render-simple")
   (rdom/render
-    [root-component "inner text"]
-    react-app-elem))
+   [root-component "inner text"]
+   react-app-elem))
 
 (defn ^:after-load start-up []
   (render-simple))
@@ -164,5 +160,4 @@
 
   (dota/do-request-for-player-data!)
   (defn foo {:as args}
-    (log args))
-  ,)
+    (log args)))

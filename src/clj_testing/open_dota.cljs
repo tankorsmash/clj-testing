@@ -24,9 +24,9 @@
     :print (println event-name args)
     :log (log event-name args)
     :add-selected-hero (let [hero-id arg1]
-                          (conj state hero-id))
+                         (conj state hero-id))
     :remove-selected-hero (let [hero-id arg1]
-                             (disj state hero-id))
+                            (disj state hero-id))
     :clear-selected-heroes #{}))
 
 (defn emit [e]
@@ -44,9 +44,9 @@
 
   ([key default]
    (let [from-ls (localstorage-get-item key)]
-    (if (nil? from-ls)
-        default
-        from-ls))))
+     (if (nil? from-ls)
+       default
+       from-ls))))
 
 (defn localstorage-remove-item!
   "Remove the browser's localStorage value for the given `key`"
@@ -64,7 +64,6 @@
 (defn clear-selected-hero-ids! [all-selected-hero-ids]
   {:pre [(= (type all-selected-hero-ids) reagent.ratom/RAtom)]}
   (reset! all-selected-hero-ids #{}))
-
 
 (defn sum [& args]
   (apply #(reduce + %) args))
@@ -123,8 +122,8 @@
   (let [from-ls (localstorage-get-item (to-localstorage-key text) "true")
         is-open (r/atom (str-to-bool from-ls))
         toggle-is-open (fn []
-                        (swap! is-open not)
-                        (localstorage-set-item!
+                         (swap! is-open not)
+                         (localstorage-set-item!
                           (to-localstorage-key text)
                           (str @is-open)))]
     (fn [text & children]
@@ -167,12 +166,12 @@
    [:h5 {:style {:color "green"}} "Data has loaded!"]
    [:div
     [divider-with-text "user-data"
-     ^{:key "user-data.tracked"}[:div.row
-                                 [:div.col "Tracked until " (str (:tracked_until ud))]
-                                 [:div.col "Rank Tier " (str (:rank_tier ud))]]]
+     ^{:key "user-data.tracked"} [:div.row
+                                  [:div.col "Tracked until " (str (:tracked_until ud))]
+                                  [:div.col "Rank Tier " (str (:rank_tier ud))]]]
 
     [divider-with-text "user-data.profile"
-      ^{:key "user-data.profile"}[:div.row.row-cols-auto
+     ^{:key "user-data.profile"} [:div.row.row-cols-auto
                                   [:div.col [:small.text-muted "Persona Name"]
                                    [:div (str (:personaname p))]]
                                   [:div.col [:small.text-muted "Account ID"]
@@ -185,9 +184,9 @@
 
     ;;dump the rest of the data
     [divider-with-text "raw user-data"
-      ^{:key "raw user-data"}
-      [:pre {:style {:white-space "break-spaces"}}
-            (person/pp-str ud)]]]])
+     ^{:key "raw user-data"}
+     [:pre {:style {:white-space "break-spaces"}}
+      (person/pp-str ud)]]]])
 
 (defn request-btn-cfg [callback]
   {:type "button"
@@ -205,7 +204,6 @@
   [:div "No user dota yet" ud
    [:div
     [:input request-btn-cfg-player-stats]]])
-
 
 (defn render-user-data [user-data]
   (fn [user-data]
@@ -254,7 +252,6 @@
 (defn get-displayed-heroes [all-hero-stats selection]
   (filter #(is-hero-in-selection selection %) all-hero-stats))
 
-
 (defn render-single-hero-winrates
   [{wins :7_win
     picks :7_pick
@@ -279,18 +276,16 @@
      [:div.col.align-self-end
       [:div.row.row-cols-auto.show-me-on-hover
          ;;deliberately not using .btn on these buttons because it grows their size too much.
-         (let [add-style (merge btn-style {:on-click #(emit [:add-selected-hero hero-id])})
-               rem-style (merge btn-style {:on-click #(emit [:remove-selected-hero hero-id])})
-               hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
-              [:div.row.ctrl-rows
-                (if-not hero-in-selection
-                  [:div.col.btn-primary.text-center add-style "Add"]
-                  [:div.col.btn-danger.text-center rem-style "Remove"])])]]]))
-
+       (let [add-style (merge btn-style {:on-click #(emit [:add-selected-hero hero-id])})
+             rem-style (merge btn-style {:on-click #(emit [:remove-selected-hero hero-id])})
+             hero-in-selection (is-hero-in-selection @all-selected-hero-ids hero-stat)]
+         [:div.row.ctrl-rows
+          (if-not hero-in-selection
+            [:div.col.btn-primary.text-center add-style "Add"]
+            [:div.col.btn-danger.text-center rem-style "Remove"])])]]]))
 
 (defn get-selected-hero [sid ahs]
   (first (filter #(= (:hero_id %) sid) ahs)))
-
 
 (defn lookup-by-hero-id [ahs hero-id]
   (first (filter #(= (:hero_id %) hero-id) ahs)))
@@ -318,9 +313,9 @@
             {:style {:visibility (if-not (empty? ashi) :inherit :hidden)}}
             (str "Selected hero ids: ")
             [:span (for [selected-hero-id ashi]
-                        (if-not (= (last ashi) selected-hero-id)
-                                [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id ", ")]
-                                [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id)]))]]]
+                     (if-not (= (last ashi) selected-hero-id)
+                       [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id ", ")]
+                       [:span {:key selected-hero-id :on-click #(emit [:remove-selected-hero selected-hero-id])} (str selected-hero-id)]))]]]
 
           [:div.col
            [:input.btn.btn-primary {:value (if-not @should-filter-by-selection "Filter" "Unfilter")
@@ -334,15 +329,15 @@
                [:div {:style {:max-height "100px"
                               :overflow-y :scroll}}
                 (let [coll (if (= true @should-filter-by-selection)
-                               (get-displayed-heroes ahs ashi)
-                               ahs)
+                             (get-displayed-heroes ahs ashi)
+                             ahs)
                       sorted-heroes (sort
-                                      #(> (get-winrate %1) (get-winrate %2))
-                                      coll)
+                                     #(> (get-winrate %1) (get-winrate %2))
+                                     coll)
                       render-a-hero #(render-single-hero-winrates %1 all-selected-hero-ids)
                       all-rendered-heroes (into [] (map render-a-hero) sorted-heroes)]
                   (for [rendered-hero all-rendered-heroes]
-                      rendered-hero))]
+                    rendered-hero))]
 
                [divider-with-text "raw selected-hero data"
                 [:pre {:key 1 :style {:white-space "break-spaces"}}
@@ -350,7 +345,6 @@
             [:div "no hero stats downloaded"
              [:br]
              [:input request-btn-cfg-hero-stats]])]]))))
-
 
 (s/def :dota/rank1 (s/keys :req-un [::1_win ::1_pick]))
 (s/def :dota/rank2 (s/keys :req-un [::2_win ::2_pick]))
@@ -384,7 +378,4 @@
     (flatten (map get-just-keywords-from-rank rank-keys)))
 
   (defn get-rank-values [rank-keys]
-    ((apply juxt (mapv (comp keyword name) rank-keys)) selected-hero))
-
-
-  ,)
+    ((apply juxt (mapv (comp keyword name) rank-keys)) selected-hero)))
