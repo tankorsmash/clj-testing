@@ -102,21 +102,26 @@
     [2] {:frame-data.enum/pretty-name "Blunt" :frame-data.enum/data-name "blunt" :frame-data.enum/raw-value 2}
     [3] {:frame-data.enum/pretty-name "Slashing" :frame-data.enum/data-name "slashing" :frame-data.enum/raw-value 3}))
 
+(defn colored-stat [stat-val text]
+  (cond
+    (pos? stat-val) [:div {:style {:color :green}} text ": "stat-val]
+    (neg? stat-val) [:div {:style {:color :red}} text ": "stat-val]
+    :else [:div text ": "stat-val]))
 
 (defn render-weapon-frame-row
   [{:keys [pretty_name frame_id battle_row_type
            damage_type bonus_attack bonus_power
            bonus_encumbrance carry_weight] :as weapon-frame}]
   ^{:key frame_id}
-  [:div.row.rows-col-auto
+  [:div.row.rows-col-auto.mb-1.pb-1.border-bottom
    [:div.col-1 "#" frame_id " "]
    [:div.col pretty_name]
    [:div.col-1
     [:div (:frame-data.enum/pretty-name (int-to-battle-row battle_row_type))]
     [:div (:frame-data.enum/pretty-name (int-to-weapon-damage-type damage_type))]]
    [:div.col
-    [:div "ATK: " bonus_attack]
-    [:div "PWR: " bonus_power]]
+    [colored-stat bonus_attack "ATK"]
+    [colored-stat bonus_power "PWR"]]
    [:div.col
     [:div "ENC: " bonus_encumbrance]
     [:div "WGT: " carry_weight]]])
