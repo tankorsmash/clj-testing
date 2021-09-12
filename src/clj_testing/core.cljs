@@ -151,6 +151,7 @@
 
 (defonce do-start-up (do (start-up) true))
 
+
 (defn dota-download []
   (log "dota channel: " (clj-testing.open-dota/do-request-for-player-data!)))
 

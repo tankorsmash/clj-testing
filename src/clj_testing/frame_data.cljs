@@ -159,5 +159,13 @@
   (s/conform ::wdt "ASDASD"))
 
 (comment
+
+  (def my-key :this-is-a-test-key)
+  ;; (defmacro define-spec [spec-key validator]
+  ;;   (let [kk spec-key
+  ;;         vv validator]
+  ;;     `(s/def ~kk ~vv)))
+  ;; (define-spec 'my-key int?)
+
   (do-request-for-weapon-frames!)
   (log @all-weapon-frames))
