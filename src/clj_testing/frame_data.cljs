@@ -64,15 +64,15 @@
 (declare to-battle-row-type)
 
 (s/def ::wdtc (s/conformer int-to-weapon-damage-type))
-(s/def :frame-data-conform/damage-type (s/and int? s/conformer int-to-weapon-damage-type))
+(s/def :frame-data-conform/damage_type (s/conformer int-to-weapon-damage-type))
 (s/def :frame-data/weapon-damage-type (s/and int? (s/int-in 0 4)))
 (s/def :frame-data/battle-row-type (s/and int? (s/int-in 0 3)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
 (s/def :frame-data.weapon-unq/frame (s/and
-                                     (s/keys :req-unq [:frame-data/battle-row-type
+                                     (s/keys :req-un [:frame-data/battle-row-type
                                                        :frame-data/weapon-damage-type])
-                                     (s/keys :req-unq (vector weapon-frame-keys))))
+                                     (s/keys :req-un (vector weapon-frame-keys))))
 
 (defn do-request-for-weapon-frames! []
   "makes a request for weapon frames"
@@ -132,7 +132,7 @@
 ;; (log (s/conform :frame-data.weapon/frame (first @all-weapon-frames)))
 (comment
   (log (s/explain :frame-data/weapon-damage-type (first @all-weapon-frames)))
-  (log (s/conform (s/keys :req-unq [:frame-data/weapon-damage-type]) (first @all-weapon-frames)))
+  (log (s/conform (s/keys :req-un [:frame-data/weapon-damage-type]) (first @all-weapon-frames)))
   (def val (:damage_type (first @all-weapon-frames)))
   (log (s/explain :frame-data/weapon-damage-type val))
   (log (s/conform :frame-data/weapon-damage-type (:damage_type (first @all-weapon-frames)))))
@@ -142,8 +142,11 @@
   (def weapon-frame (first @all-weapon-frames))
   (s/describe :frame-data.weapon-unq/frame weapon-frame)
   (s/def ::damage_type ::wdt)
-  (s/valid? (s/keys :req-unq [:frame-data-conform/damage-type]) weapon-frame)
-  (s/conform (s/keys :req-unq [:frame-data-conform/damage-type]) weapon-frame)
+  (s/def ::test (s/keys :req-un [:frame-data-conform/damage_type]))
+  (s/explain ::test weapon-frame)
+  (s/conform ::test weapon-frame)
+  (s/valid? (s/keys :req-un [:frame-data-conform/damage-type :asd]) weapon-frame)
+  (s/conform (s/keys :req-un [:frame-data-conform/damage-type]) weapon-frame)
   (s/conform ::wdt (:damage_type weapon-frame))
   (s/explain ::wdt weapon-frame)
   (s/conform ::wdt 1)
