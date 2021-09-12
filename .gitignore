@@ -116,4 +116,12 @@ reddit_post*
 
 _.* #ignore vim files
 
+# clojure/figwheel/nrepl/lein/rebel-readline stuff
+out/
+.nrepl-port
+.lein-failures
+.lein-repl-history
+.cpcache/
+.rebel_readline_history
+
 target/
