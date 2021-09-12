@@ -1,4 +1,4 @@
-(ns clj-testing.dev)
+(ns scripts.dev-startup)
 
 ;; IDK why this needs to be done at the toplevel and throws a syntax error if its in a function
 ;; (defn setup-vim-cljs-repl []
