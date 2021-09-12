@@ -63,17 +63,9 @@
 (declare int-to-weapon-damage-type)
 (declare to-battle-row-type)
 
-(s/def ::wdt (s/and int? #(s/int-in-range? 0 4 %) (s/conformer int-to-weapon-damage-type)))
-
-(s/def
-  :frame-data/weapon-damage-type
-  (s/and (s/int-in 0 4) (s/conformer int-to-weapon-damage-type)))
-  ;; (s/and (s/int-in 10 14) int?))
-  ;; (s/int-in 10 14))
-
-(s/def
-  :frame-data/battle-row-type
-  (s/and (s/int-in 0 3) (s/conformer to-battle-row-type)))
+(s/def ::wdt (s/and int?  #(s/int-in-range? 0 4 %)))
+(s/def :frame-data/weapon-damage-type (s/and int? (s/int-in 0 4)))
+(s/def :frame-data/battle-row-type (s/and int? (s/int-in 0 3)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
 (s/def :frame-data.weapon-unq/frame (s/and
@@ -153,13 +145,13 @@
   (s/conform ::wdt (:damage_type weapon-frame))
   (s/explain ::wdt weapon-frame)
   (s/conform ::wdt 1)
-  (s/valid? ::wdt 1)
+  (s/valid? :frame-data/weapon-damage-type 1)
+  (s/valid? :frame-data/weapon-damage-type 10)
   (s/conform ::wdt 10)
   (s/valid? ::wdt 10)
   (s/conform ::wdt "ASDASD"))
 
 (comment
-
   (def my-key :this-is-a-test-key)
   ;; (defmacro define-spec [spec-key validator]
   ;;   (let [kk spec-key
