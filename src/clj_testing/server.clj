@@ -1,5 +1,6 @@
 (ns clj-testing.server
   (:require
+   [clojure.string :as string]
    [clojure.pprint :refer [pprint]]
    [ring.util.response :refer [resource-response content-type not-found]]
    [reitit.core :as r]
@@ -51,19 +52,29 @@
        [":frame-type/" ::frames-frame-type]]]]))
 
 
+
+(defn add-missing-slash [uri]
+ (let [endswith-slash? (string/ends-with? uri "/")]
+  (if (not endswith-slash?)
+    (str uri "/")
+    uri)))
+
 (defn handler [req]
  (let [rs (r/routes router)]
   (let [path (map #(first (vector %)) rs)]
     (pprint path)))
 
- (let [match (r/match-by-path router (:uri req))
+ (let [uri (add-missing-slash (:uri req))
+       match (r/match-by-path router uri)
        match-name (get-in match [:data :name])]
-  (println "Name:" match-name "-- URI:" (:uri req) " -- MATCH: " match)
+  ;; (println "Name:" match-name "-- URI:" uri " -- MATCH: " match)
   (or
      (if (= match-name ::ajax)
        (handler-ajax req))
+
      (if (not (nil? match-name))
        (debug-handler req match))
+
    (handler404 req))))
 
 (comment
