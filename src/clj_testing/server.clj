@@ -17,6 +17,14 @@
    :headers {"Content-Type" "text/html"}
    :body "This is a homemade custom path"})
 
+(defonce frame-types-to-filename
+  {:weapon "all_weapon_frames.json"
+   :armor "all_armor_frames.json"
+   :zone "all_zone_frames.json"
+   :weapon_category "all_weapon_category_frames.json"
+   :attribute "all_attribute_frames.json"
+   :battle_text_struct "all_battle_text_struct_frames.json"})
+
 (defn handler-ajax [req]
   (let [txt (json/read-str (:body (client/get "http://httpbin.org/get")))]
     {:status 200
