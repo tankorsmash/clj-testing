@@ -17,10 +17,12 @@
    :body "This is a homemade custom path"})
 
 (defn handler-ajax [req]
-  {:status 200
-   :headers {"Content-Type" "application/json"}
-   ;; :body "{'success': true, 'message': 'THIS WAS A SUCCESS!'}"
-   :body (json/write-str {:success true :message "THIS WAS A SUCCESS FROM JSON!"})})
+  ;; (let [txt (slurp "C:\\Users\\Josh\\temp.txt")])
+  (let [txt "This was a success!!"]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     ;; :body "{'success': true, 'message': 'THIS WAS A SUCCESS!'}"
+     :body (json/write-str {:success true :message txt})}))
 
 
 (defn handler [req]

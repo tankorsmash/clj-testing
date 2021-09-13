@@ -25,12 +25,12 @@
        :clean-targets ^{:protect false} ["target"]
        :dependencies [[org.clojure/clojurescript "1.10.773"]
                       [com.bhauman/figwheel-main "0.2.14"]
-                      [cider/piggieback "0.4.2"]
+                      [cider/piggieback "0.5.2"]
                       [clj-commons/pomegranate "1.2.1"]
                       [org.clojure/test.check "0.10.0"]
                       ;; optional but recommended
-                      [com.bhauman/rebel-readline-cljs "0.1.4"]]}}
-       ;; :repl-options  {
+                      [com.bhauman/rebel-readline-cljs "0.1.4"]]
+       :repl-options  {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
        ;;                 :init (do (println "in init but not josh-test yet")
        ;;                           (load-file "setup_repl_josh.clj")
        ;;                           (set_up_vim_outer_repl))}}}

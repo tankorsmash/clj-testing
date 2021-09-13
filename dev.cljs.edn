@@ -1,3 +1,9 @@
 ^{:css-dirs ["resources/public/css"]
   :ring-handler clj-testing.server/handler}
+  ;; :load-warninged-code true}
+  ;; :log-level :trace} ;;this DOES print the compiler exception. possible a path error
+  ;; :client-log-level :finest} ;;doesnt print the compiler exception
+
+  ;; :bundle-freq :always ;; ':bundle-freq :always' and ':clean-outputs true' solved my Compile Exception 'C' issue _and_ the live reloading server.clj too.
+  ;; :clean-outputs true}
 {:main clj-testing.core}
