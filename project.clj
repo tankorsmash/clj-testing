@@ -8,6 +8,7 @@
                  [cljsjs/react-dom "17.0.2-0"]
                  [reagent-catch "0.1.2"]
                  [clj-commons/secretary "1.2.4"]
+                 [metosin/reitit "0.5.15"]
                  [org.clojure/core.match "0.3.0"]
                  [org.clojure/data.json "2.4.0"]
                  [clj-http "3.12.3"]]
