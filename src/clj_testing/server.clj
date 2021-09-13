@@ -29,8 +29,7 @@
    :battle_text_struct "all_battle_text_struct_frames.json"})
 
 (defn handler-redirect [req to-uri]
- (println "redirect")
- {:status 301
+ {:status 302
   :headers {"Location" to-uri}})
 
 (defn handler-ajax [req]
