@@ -17,15 +17,10 @@
    :headers {"Content-Type" "text/html"}
    :body "This is a homemade custom path"})
 
-(def text-content
-  "LOADING 2sdasda s ")
-
 (defn handler-ajax [req]
-  (let [txt (slurp "C:\\Users\\Josh\\temp.txt")]
-  ;; (let [txt text-content]
+  (let [txt (json/read-str (:body (client/get "http://httpbin.org/get")))]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     ;; :body "{'success': true, 'message': 'THIS WAS A SUCCESS!'}"
      :body (json/write-str {:success true :message txt})}))
 
 
