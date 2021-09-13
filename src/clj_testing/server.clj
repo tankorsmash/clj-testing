@@ -28,6 +28,11 @@
    :attribute "all_attribute_frames.json"
    :battle_text_struct "all_battle_text_struct_frames.json"})
 
+(defn handler-redirect [req to-uri]
+ (println "redirect")
+ {:status 301
+  :headers {"Location" to-uri}})
+
 (defn handler-ajax [req]
   ;; (let [txt (json/read-str (:body (client/get "http://httpbin.org/get")))])
   (let [txt "ASDASD"]
@@ -54,21 +59,23 @@
 
 
 (defn add-missing-slash [uri]
- (let [endswith-slash? (string/ends-with? uri "/")]
-  (if (not endswith-slash?)
-    (str uri "/")
-    uri)))
+  (let [endswith-slash? (string/ends-with? uri "/")]
+    (if (not endswith-slash?)
+      (str uri "/")
+      uri)))
 
 (defn handler [req]
- (let [rs (r/routes router)]
-  (let [path (map #(first (vector %)) rs)]
-    (pprint path)))
+  (let [rs (r/routes router)]
+    (let [path (map #(first (vector %)) rs)]
+      (pprint path)))
 
- (let [uri (add-missing-slash (:uri req))
+ (let [raw-uri (:uri req)
+       uri (add-missing-slash raw-uri)
        match (r/match-by-path router uri)
        match-name (get-in match [:data :name])]
-  ;; (println "Name:" match-name "-- URI:" uri " -- MATCH: " match)
   (or
+     (if (not (= raw-uri uri))
+       (handler-redirect req uri))
      (if (= match-name ::ajax)
        (handler-ajax req))
 
