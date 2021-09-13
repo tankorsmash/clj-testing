@@ -69,10 +69,10 @@
 (s/def :frame-data/battle-row-type (s/and int? (s/int-in 0 3)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
-(s/def :frame-data.weapon-unq/frame (s/and
-                                     (s/keys :req-un [:frame-data/battle-row-type
-                                                       :frame-data/weapon-damage-type])
-                                     (s/keys :req-un (vector weapon-frame-keys))))
+(s/def :frame-data.weapon-un/frame (s/and
+                                    (s/keys :req-un [:frame-data/battle-row-type
+                                                      :frame-data/weapon-damage-type])
+                                    (s/keys :req-un (vector weapon-frame-keys))))
 
 (defn do-request-for-weapon-frames! []
   "makes a request for weapon frames"
@@ -140,7 +140,9 @@
 
 (comment
   (def weapon-frame (first @all-weapon-frames))
-  (s/describe :frame-data.weapon-unq/frame weapon-frame)
+  (s/describe :frame-data.weapon-un/frame weapon-frame)
+  (s/valid? :frame-data.weapon-un/frame weapon-frame)
+  (s/explain :frame-data.weapon-un/frame weapon-frame)
   (s/def ::damage_type ::wdt)
   (s/def ::test (s/keys :req-un [:frame-data-conform/damage_type]))
   (s/explain ::test weapon-frame)
