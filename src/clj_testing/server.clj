@@ -72,30 +72,34 @@
   :body (json/write-str {:success true
                          :message "TEST WTFFF"})})
 
-(defn valid-json-response [message data]
+(defn valid-json-response
   "Returns a valid JSON response.
   Expects a message string, and data of any type"
- {:status 200
-  :headers {"Content-Type" "application/json"}
-  :body (json/write-str {:success true
-                         :message message
-                         :data data})})
+  ([data]
+   {:status 200
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str {:success true
+                           :message "Request successful"
+                           :data data})})
+  ([message data]
+   {:status 200
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str {:success true
+                           :message message
+                           :data data})}))
 
 (defn get-by-frame-type [req]
   (let [match (:reitit.core/match req)
         frame-type (get-in match [:path-params :frame-type])]
-    (def qwe frame-type)
     (if-not (contains? frame-types-to-filename (keyword frame-type))
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do
-        (pprint (:path-params (:reitit.core/match req)))
-        (valid-json-response "SUCCESS" [{:id 1} {:id 2}])))))
-
-(prn (:path-params (:reitit.core/match req)))
-
-(comment
-  (json/read-str (slurp (str root-static-asset-dir "\\" (:weapon frame-types-to-filename))))
-  ,)
+        (let [str-frame-data (slurp
+                               (str root-static-asset-dir
+                                    "\\"
+                                    ((keyword frame-type) frame-types-to-filename)))
+              frame-data (json/read-str str-frame-data)]
+          (valid-json-response  frame-data))))))
 
 
 (defn add-missing-slash [uri]
