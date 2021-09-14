@@ -112,7 +112,8 @@
          ["" {:name ::frames-home :get test-handler}]
          [":frame-type/" {:name ::frames-frame-type :get debug-handler}]]]])
 
-    (default-handler)))
+    ;; (default-handler)))
+    (constantly {:status 404, :body "sdasd"})))
 
 (comment
   (client/head "http://httpbin.org/get")
