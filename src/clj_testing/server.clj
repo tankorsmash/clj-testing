@@ -76,33 +76,6 @@
       (str uri "/")
       uri)))
 
-;; (defn dispatcher [req match]
-;;   if )
-
-(defn handler2 [req]
-  ;; (let [rs (r/routes router)]
-  ;;   (let [path (map #(first (vector %)) rs)]
-  ;;     (pprint path)))
-
- (let [raw-uri (:uri req)
-       uri (add-missing-slash raw-uri)
-       match (r/match-by-path router uri)
-       match-name (get-in match [:data :name])]
-
-   (ring/ring-handler
-    (ring/router
-      ["/" ::home
-       ["api/"
-        ["frames/"
-         ["" {:name ::frames-home :get test-handler}]
-         [":frame-type/" ::frames-frame-type]]]]))))
-     
-     ;; (cond
-     ;;   (not= raw-uri uri) (handler-redirect req uri)
-     ;;   (= match-name ::ajax) (handler-ajax req)
-     ;;   (not (nil? match-name)) (debug-handler req match)
-     ;;   :else (handler404 req))))
-
 (def handler
    (ring/ring-handler
     (ring/router
@@ -112,8 +85,10 @@
          ["" {:name ::frames-home :get test-handler}]
          [":frame-type/" {:name ::frames-frame-type :get debug-handler}]]]])
 
-    ;; (default-handler)))
-    (constantly {:status 404, :body "sdasd"})))
+    (ring/routes
+      (ring/redirect-trailing-slash-handler)
+      (ring/create-default-handler
+        {:not-found handler404}))))
 
 (comment
   (client/head "http://httpbin.org/get")
