@@ -3,7 +3,7 @@
    [clojure.string :as string]
    [clojure.pprint :refer [pprint]]
    [ring.util.response :refer [resource-response content-type not-found]]
-   [reitit.core :as r]
+   [reitit.ring :as ring]
    [clojure.spec.alpha :as s]
    [clojure.data.json :as json]
    [clj-http.client :as client]))
@@ -39,19 +39,33 @@
      :headers {"Content-Type" "application/json"}
      :body (json/write-str {:success true :message txt})}))
 
-(defn debug-handler [req match]
+(defn debug-handler [req]
+  (let [match (:reitit/match req)]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (json/write-str {:success true
+                            :message {:match-name (get-in match [:data :name])
+                                      :match-path (get-in match [:path])}})}))
+
+
+(defn default-handler [] ;;reitit doesnt give you a request for these for some reason i cant possibly understand
  {:status 200
   :headers {"Content-Type" "application/json"}
   :body (json/write-str {:success true
-                         :message {:match-name (get-in match [:data :name])
-                                   :match-path (get-in match [:path])}})})
+                         :message "WTFFF"})})
+
+(defn test-handler [req]
+ {:status 200
+  :headers {"Content-Type" "application/json"}
+  :body (json/write-str {:success true
+                         :message "WTFFF"})})
 
 (def router
-  (r/router
+  (ring/router
     ["/" ::home
      ["api/"
       ["frames/"
-       ["" ::frames-home]
+       ["" {:name ::frames-home :get test-handler}]
        [":frame-type/" ::frames-frame-type]]]]))
 
 
@@ -62,21 +76,42 @@
       (str uri "/")
       uri)))
 
-(defn handler [req]
-  (let [rs (r/routes router)]
-    (let [path (map #(first (vector %)) rs)]
-      (pprint path)))
+;; (defn dispatcher [req match]
+;;   if )
+
+(defn handler2 [req]
+  ;; (let [rs (r/routes router)]
+  ;;   (let [path (map #(first (vector %)) rs)]
+  ;;     (pprint path)))
 
  (let [raw-uri (:uri req)
        uri (add-missing-slash raw-uri)
        match (r/match-by-path router uri)
        match-name (get-in match [:data :name])]
 
-   (cond
-     (not= raw-uri uri)) (handler-redirect req uri)
-     (= match-name ::ajax) (handler-ajax req)
-     (not (nil? match-name)) (debug-handler req match)
-     :else (handler404 req)))
+   (ring/ring-handler
+    (ring/router
+      ["/" ::home
+       ["api/"
+        ["frames/"
+         ["" {:name ::frames-home :get test-handler}]
+         [":frame-type/" ::frames-frame-type]]]]))))
+     
+     ;; (cond
+     ;;   (not= raw-uri uri) (handler-redirect req uri)
+     ;;   (= match-name ::ajax) (handler-ajax req)
+     ;;   (not (nil? match-name)) (debug-handler req match)
+     ;;   :else (handler404 req))))
+
+(def handler
+   (ring/ring-handler
+    (ring/router
+      ["/" ::home
+       ["api/"
+        ["frames/"
+         ["" {:name ::frames-home :get test-handler}]
+         [":frame-type/" {:name ::frames-frame-type :get debug-handler}]]]])
+    (default-handler)))
 
 (comment
   (client/head "http://httpbin.org/get")
