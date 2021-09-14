@@ -40,7 +40,7 @@
      :body (json/write-str {:success true :message txt})}))
 
 (defn debug-handler [req]
-  (let [match (:reitit/match req)]
+  (let [match (:reitit.core/match req)]
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body (json/write-str {:success true
@@ -111,6 +111,7 @@
         ["frames/"
          ["" {:name ::frames-home :get test-handler}]
          [":frame-type/" {:name ::frames-frame-type :get debug-handler}]]]])
+
     (default-handler)))
 
 (comment
