@@ -4,6 +4,8 @@
    [clojure.pprint :refer [pprint]]
    [ring.util.response :refer [resource-response content-type not-found]]
    [reitit.ring :as ring]
+   [reitit.spec :as rs]
+   [reitit.dev.pretty :as pretty]
    [clojure.spec.alpha :as s]
    [clojure.data.json :as json]
    [clj-http.client :as client]))
@@ -15,10 +17,16 @@
   (some-> (resource-response "index.html" {:root "public"})
           (content-type "text/html; charset=utf-8")))
 
-(defn handler404 [req]
-  {:status 404
-   :headers {"Content-Type" "text/html"}
-   :body "This is a homemade custom 404 path"})
+(defn handler404
+  ([] {:status 404
+       :headers {"Content-Type" "text/html"}
+       :body "This is a homemade custom 404 path without args"})
+  ([req] {:status 404
+          :headers {"Content-Type" "text/html"}
+          :body "This is a arg-driven custom 404 path"})
+  ([req message] {:status 404
+                  :headers {"Content-Type" "text/html"}
+                  :body message}))
 
 (defonce frame-types-to-filename
   {:weapon "all_weapon_frames.json"
@@ -27,6 +35,10 @@
    :weapon_category "all_weapon_category_frames.json"
    :attribute "all_attribute_frames.json"
    :battle_text_struct "all_battle_text_struct_frames.json"})
+
+
+(def root-static-asset-dir
+    "C:\\Users\\Josh\\Documents\\cocos_projects\\magnolia_cocos\\Resources\\static_asset_dir")
 
 (defn handler-redirect [req to-uri]
  {:status 302
@@ -58,9 +70,11 @@
  {:status 200
   :headers {"Content-Type" "application/json"}
   :body (json/write-str {:success true
-                         :message "WTFFF"})})
+                         :message "TEST WTFFF"})})
 
 (defn valid-json-response [message data]
+  "Returns a valid JSON response.
+  Expects a message string, and data of any type"
  {:status 200
   :headers {"Content-Type" "application/json"}
   :body (json/write-str {:success true
@@ -68,7 +82,20 @@
                          :data data})})
 
 (defn get-by-frame-type [req]
-  (valid-json-response "SUCCESS" [{:id 1} {:id 2}]))
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])]
+    (def qwe frame-type)
+    (if-not (contains? frame-types-to-filename (keyword frame-type))
+      (handler404 req (str "Unknown frame-type: " frame-type))
+      (do
+        (pprint (:path-params (:reitit.core/match req)))
+        (valid-json-response "SUCCESS" [{:id 1} {:id 2}])))))
+
+(prn (:path-params (:reitit.core/match req)))
+
+(comment
+  (json/read-str (slurp (str root-static-asset-dir "\\" (:weapon frame-types-to-filename))))
+  ,)
 
 
 (defn add-missing-slash [uri]
