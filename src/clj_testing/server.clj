@@ -42,10 +42,9 @@
 (defn debug-handler [req match]
  {:status 200
   :headers {"Content-Type" "application/json"}
-  :body (json/write-str {:success true :message
-                         {
-                          :match-name (get-in match [:data :name])
-                          :match-path (get-in match [:path])}})})
+  :body (json/write-str {:success true
+                         :message {:match-name (get-in match [:data :name])
+                                   :match-path (get-in match [:path])}})})
 
 (def router
   (r/router
@@ -72,16 +71,12 @@
        uri (add-missing-slash raw-uri)
        match (r/match-by-path router uri)
        match-name (get-in match [:data :name])]
-  (or
-     (if (not (= raw-uri uri))
-       (handler-redirect req uri))
-     (if (= match-name ::ajax)
-       (handler-ajax req))
 
-     (if (not (nil? match-name))
-       (debug-handler req match))
-
-   (handler404 req))))
+   (cond
+     (not= raw-uri uri)) (handler-redirect req uri)
+     (= match-name ::ajax) (handler-ajax req)
+     (not (nil? match-name)) (debug-handler req match)
+     :else (handler404 req)))
 
 (comment
   (client/head "http://httpbin.org/get")
