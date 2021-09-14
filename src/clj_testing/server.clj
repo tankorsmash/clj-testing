@@ -60,14 +60,15 @@
   :body (json/write-str {:success true
                          :message "WTFFF"})})
 
-(def router
-  (ring/router
-    ["/" ::home
-     ["api/"
-      ["frames/"
-       ["" {:name ::frames-home :get test-handler}]
-       [":frame-type/" ::frames-frame-type]]]]))
+(defn valid-json-response [message data]
+ {:status 200
+  :headers {"Content-Type" "application/json"}
+  :body (json/write-str {:success true
+                         :message message
+                         :data data})})
 
+(defn get-by-frame-type [req]
+  (valid-json-response "SUCCESS" [{:id 1} {:id 2}]))
 
 
 (defn add-missing-slash [uri]
@@ -83,7 +84,7 @@
        ["api/"
         ["frames/"
          ["" {:name ::frames-home :get test-handler}]
-         [":frame-type/" {:name ::frames-frame-type :get debug-handler}]]]])
+         [":frame-type/" {:name ::frames-frame-type :get get-by-frame-type}]]]])
 
     (ring/routes
       (ring/redirect-trailing-slash-handler)
