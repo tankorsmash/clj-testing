@@ -111,6 +111,18 @@
               (:frame_id target-frame))
           all-frames))
 
+(defn update-existing-frames [all-frames new-frame]
+  "takes all-frames and a single new-frame, then either appends it
+  or updates the existing frames"
+  (let [matching-frames (matching-frame all-frames new-frame)]
+    (if (zero? (count matching-frames))
+      (apply conj all-frames '(new-frame)) ;;append to list
+      (map (fn [existing-frame] ;;update the matching ones
+             (if (frame-ids-match? existing-frame new-frame)
+               (merge existing-frame new-frame)
+               existing-frame))
+           all-frames)))) ;;update the matching ones
+
 
 (comment
   (def raw-json
@@ -122,18 +134,6 @@
   (def new-weapon-frame-to-add
     {:frame_id 1
      :pretty_name "newly added frame"})
-
-  (defn update-existing-frames [all-frames new-frame]
-    "takes all-frames and a single new-frame, then either appends it
-    or updates the existing frames"
-    (let [matching-frames (matching-frame all-frames new-frame)]
-      (if (zero? (count matching-frames))
-        (apply conj all-frames '(new-frame)) ;;append to list
-        (map (fn [existing-frame] ;;update the matching ones
-               (if (frame-ids-match? existing-frame new-frame)
-                 (merge existing-frame new-frame)
-                 existing-frame))
-             all-frames)))) ;;update the matching ones
 
 
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
@@ -221,4 +221,5 @@
 
 (comment
   (client/head "http://httpbin.org/get")
+  (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
   ,)
