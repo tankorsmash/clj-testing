@@ -118,9 +118,6 @@
     {:frame_id 1
      :pretty_name "newly added frame"})
 
-  (def matching-frames
-    (matching-frame all-weapon-frames new-weapon-frame-to-add))
-
   (defn update-existing-frames [all-frames new-frame]
     (let [matching-frames (matching-frame all-frames new-frame)]
       (def qwe matching-frames)
@@ -134,19 +131,30 @@
   (defn map-creator [frame]
     (assoc {} (:frame_id frame) frame))
 
+  (def matching-frames
+    (matching-frame all-weapon-frames new-weapon-frame-to-add))
+
+  (def mapped-matching-frames
+    (reduce conj {} (->> matching-frames
+                         (map map-creator))))
   (def all-mapped-frames
     (reduce conj {} (->> all-weapon-frames
                          (map map-creator))))
 
   (defn if-key-matches-replace-with-new-frame
-    [matching-frames [frame-id frame-data]]
+    [mapped-matching-frames [frame-id frame-data]]
     ;; frame-data)
-    (if (contains? all-weapon-frames frame-id)
-      (merge (get all-weapon-frames frame-id) frame-data)))
+    (def ASD frame-id)
+    (if (contains? mapped-matching-frames frame-id)
+      (merge frame-data (get mapped-matching-frames frame-id))
+      frame-data))
 
-  (map
-    #(if-key-matches-replace-with-new-frame matching-frames %)
-    all-mapped-frames)
+  (def updated-all-frames
+    (map
+     #(if-key-matches-replace-with-new-frame mapped-matching-frames %)
+     all-mapped-frames))
+
+  (doall (filter #(= (:frame_id %) 1 ) updated-all-frames))
 
   (conj [1 2 3] 4) ;; [1 2 3 4]
   (conj [1 2 3] 4 5) ;; [1 2 3 4 5]
