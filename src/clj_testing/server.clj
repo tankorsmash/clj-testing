@@ -139,6 +139,23 @@
 
   (zero? (count nil))
 
+  (defn map-creator [frame]
+    (assoc {} (:frame_id frame) frame))
+
+  (def all-mapped-frames
+    (reduce conj {} (->> all-weapon-frames
+                         (map map-creator))))
+
+  (defn if-key-matches-replace-with-new-frame
+    [matching-frames [frame-id frame-data]]
+    frame-data)
+    ;; (if (contains? all-weapon-frames frame-id)
+    ;;   (merge (get all-weapon-frames frame-id) frame-data)))
+
+  (map
+    #(if-key-matches-replace-with-new-frame matching-frames %)
+    all-mapped-frames)
+
   (def a {:name "josh" :age 21 :house "asd"})
   (def b {:name "matt" :age 123})
   (def c
