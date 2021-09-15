@@ -155,11 +155,14 @@
 ;; (defmacro define-spec [spec-key validator]
 ;;   '(s/def @spec-key `validator))
 
-(def my-key :frame-data.weapon/pretty_name)
+(def my-key :frame-data.weapon/frame_id)
 (def validator string?)
 (define-spec my-key validator)
-(s/def (var my-key) string?)
-(s/describe (resolve my-key))
+(eval `(s/def ~my-key validator))
+(s/describe my-key)
+(s/describe :frame-data.weapon/frame_id)
+(s/valid? :frame-data.weapon/frame_id 123)
+(s/valid? :frame-data.weapon/frame_id "ASD")
 
 (s/def :frame-data.weapon/pretty_name123 string?)
 
