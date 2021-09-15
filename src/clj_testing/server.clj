@@ -124,21 +124,13 @@
   (defn update-existing-frames [all-frames new-frame]
     (let [matching-frames (matching-frame all-frames new-frame)]
       (def qwe matching-frames)
-      (conj all-frames
+      (apply conj all-frames
             (if (zero? (count matching-frames))
              '(new-frame) ;;append to list
              (map #(merge % new-frame) matching-frames))))) ;;update the matching ones
 
 
   (last (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
-
-  (conj [1 2 3] 4) ;; [1 2 3 4]
-  (conj [1 2 3] 4 5) ;; [1 2 3 4 5]
-  (conj [1 2 3] [4 5]) ;; [1 2 3 [4 5]]
-  (apply conj [1 2 3] [4 5]) ;; [1 2 3 4 5]
-
-  (zero? (count nil))
-
   (defn map-creator [frame]
     (assoc {} (:frame_id frame) frame))
 
@@ -148,13 +140,20 @@
 
   (defn if-key-matches-replace-with-new-frame
     [matching-frames [frame-id frame-data]]
-    frame-data)
-    ;; (if (contains? all-weapon-frames frame-id)
-    ;;   (merge (get all-weapon-frames frame-id) frame-data)))
+    ;; frame-data)
+    (if (contains? all-weapon-frames frame-id)
+      (merge (get all-weapon-frames frame-id) frame-data)))
 
   (map
     #(if-key-matches-replace-with-new-frame matching-frames %)
     all-mapped-frames)
+
+  (conj [1 2 3] 4) ;; [1 2 3 4]
+  (conj [1 2 3] 4 5) ;; [1 2 3 4 5]
+  (conj [1 2 3] [4 5]) ;; [1 2 3 [4 5]]
+  (apply conj [1 2 3] [4 5]) ;; [1 2 3 4 5]
+
+  (zero? (count nil))
 
   (def a {:name "josh" :age 21 :house "asd"})
   (def b {:name "matt" :age 123})
