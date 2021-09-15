@@ -176,7 +176,10 @@
         filename (first (keys parsed-mapper))
         fields (filename parsed-mapper)]
     (println "The filename of the mapped file is:" (name filename))
-    (map (partial parse-field namespace_) (vec fields))))
+    (let [field-specs (map (partial parse-field namespace_) (vec fields))]
+      (println "Registered count specs:" (count field-specs))
+      (println "Wrapped in:" (define-spec (keyword namespace_ "frame") (s/keys :req (vector field-specs))))
+      (println "Wrapped in un:" (define-spec (keyword namespace_ "frame-un") (s/keys :req-un (vector field-specs)))))))
 
 (defn register-specs [filename namespace_]
   (let [result (node "scripts/mapper_parsing.js" filename)]
@@ -200,6 +203,7 @@
     (register-specs "battleTextStructMapper.js" "frame-data.battle-text-struct"))
 
   (s/describe :frame-data.zone/location_data_names_in_the_zone)
+  (s/describe :frame-data.zone/frame)
 
   (client/head "http://httpbin.org/get")
 
@@ -207,6 +211,15 @@
 
   (def raw-json
         "[{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1,\"pretty_name\":\"TEST SPEARss test TEST!\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":2,\"pretty_name\":\"TEST WEAPON whose category is without specified attributes\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1000,\"pretty_name\":\"Spear\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":1,\"bonus_attack\":1,\"frame_id\":1001,\"pretty_name\":\"Shortbow\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":2,\"frame_image_path\":\"combined_shortbow.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":3,\"bonus_attack\":0,\"frame_id\":1002,\"pretty_name\":\"Claw\",\"bonus_power\":1,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":0,\"frame_image_path\":\"combined_claw.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1003,\"pretty_name\":\"Flail\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":10,\"frame_image_path\":\"combined_flail.png\",\"description\":\"\",\"bonus_encumbrance\":8},{\"damage_type\":2,\"bonus_attack\":-1,\"frame_id\":1004,\"pretty_name\":\"Two-Handed Club\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":4,\"frame_image_path\":\"combined_oaken_club.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1005,\"pretty_name\":\"Arming Sword (Ulfburt)\",\"bonus_power\":0,\"rarity_type\":1,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":3,\"frame_image_path\":\"combined_blunt_cutlass.png\",\"description\":\"\",\"bonus_encumbrance\":2}]")
+
+  (def raw-single-zone-frame-json
+    "{ \"name\": \"The Greater Capital Area\", \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
+  (def invalid-raw-single-zone-frame-json
+    "{ \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
+
+  (def single-zone-frame
+    (json/read-str raw-single-zone-frame-json :key-fn keyword))
+  (s/valid? :frame-data.zone/frame-un single-zone-frame)
 
   (def all-weapon-frames
     (json/read-str raw-json :key-fn keyword))
