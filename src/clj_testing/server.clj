@@ -159,7 +159,9 @@
                    {:keys [attrName prettyName type] :as field}]
   (let [vvvalidator (match [type]
                           ["string"] #'string?
+                          ["string[]"] '(s/coll-of string?)
                           ["number"] #'number?
+                          ["number[]"] '(s/coll-of number?)
                           ["enum"] #'number?
                           ["hidden"] #'number?)]
     ;; (def validator validator)
@@ -188,10 +190,19 @@
       (handle-mapper-json (:out result))
       (println "\nERROR!!!\n\n" result)))
 
-  (register-specs "weaponMapper.js" "frame-data.weapon")
+  (do
+    (register-specs "weaponMapper.js" "frame-data.weapon")
+    (register-specs "armorMapper.js" "frame-data.armor")
+    (register-specs "zoneMapper.js" "frame-data.zone")
+    (register-specs "zoneMapper.js" "frame-data.zone")
+    (register-specs "weaponCategoryMapper.js" "frame-data.weapon-category")
+    (register-specs "attributeMapper.js" "frame-data.attribute")
+    (register-specs "battleTextStructMapper.js" "frame-data.battle-text-struct"))
 
+  (s/describe :frame-data.zone/location_data_names_in_the_zone)
 
   (client/head "http://httpbin.org/get")
+
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
   (def raw-json
