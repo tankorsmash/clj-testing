@@ -14,14 +14,15 @@
     `(s/def ~kk validator)))
 
 (defmacro define-spec [spec-key validator]
-  `(s/def ~spec-key ~validator))
+  `(eval `(s/def ~~spec-key validator)))
 
 
-(def my-key :frame-data.weapon/pretty_name)
-(def validator string?)
-(define-spec my-key validator)
-(s/def (eval my-key) validator)
-(s/describe my-key)
-(s/describe (resolve my-key))
-
-
+(comment
+  (def my-key :frame-data.weapon/poop)
+  (def validator string?)
+  (define-spec my-key validator)
+  (s/def (eval my-key) validator)
+  (s/describe my-key)
+  (s/describe :frame-data.weapon/poop)
+  (s/describe (resolve my-key))
+  ,)
