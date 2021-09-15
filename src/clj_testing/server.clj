@@ -1,5 +1,6 @@
 (ns clj-testing.server
   (:require
+   [spec-utils :refer [define-spec]]
    [clojure.string :as string]
    [clojure.pprint :refer [pprint]]
    [ring.util.response :refer [resource-response content-type not-found]]
@@ -8,7 +9,9 @@
    [reitit.dev.pretty :as pretty]
    [clojure.spec.alpha :as s]
    [clojure.data.json :as json]
-   [clj-http.client :as client]))
+   [clj-http.client :as client]
+   [clojure.java.shell :refer [sh]]
+   [clojure.core.match :refer [match]]))
 
 ;; the routes that we want to be resolved to index.html
 (def route-set #{"/" "/contact" "/menu" "/about /testme" "/ajax"})
@@ -143,7 +146,52 @@
       (ring/create-default-handler
         {:not-found handler404}))))
 
+
+(defn node [& args]
+  (apply sh "node" args))
+
+
+
+;; (defmacro define-spec [spec-key validator]
+;;   '(s/def @spec-key `validator))
+
+(def my-key :frame-data.weapon/pretty_name)
+(def validator string?)
+(define-spec my-key validator)
+(s/def (var my-key) string?)
+(s/describe (resolve my-key))
+
+(s/def :frame-data.weapon/pretty_name123 string?)
+
+(defn parse-field [spec-ns
+                   {:keys [attrName prettyName type] :as field}]
+  (let [validator (match [type]
+                        ["string"] #'string?
+                        ["number"] #'number?
+                        ["enum"] #'number?
+                        ["hidden"] #'number?)]
+    (def validator validator)
+    (let [spec-kw (keyword spec-ns attrName)
+          new-def (define-spec spec-kw validator)]
+      (println "registered:" new-def)
+      (println (s/valid? new-def 10))
+      (prn new-def))))
+        ;; (println attrName " - " prettyName " <> " type)
+        ;; (prn field))
+
+(defn handle-mapper-json [mapper-json]
+  (let [parsed-mapper (json/read-str mapper-json :key-fn keyword)
+        filename (first (keys parsed-mapper))
+        fields (filename parsed-mapper)]
+    (println "The filename of the mapped file is:" (name filename))
+    (map (partial parse-field "frame-data.weapon") (vec fields))))
+
+
 (comment
+  (let [result (node "scripts/mapper_parsing.js" "weaponMapper.js")]
+    (if (zero? (:exit result))
+      (handle-mapper-json (:out result))
+      (println "\nERROR!!!\n\n" result)))
   (client/head "http://httpbin.org/get")
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
