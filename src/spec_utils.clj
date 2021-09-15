@@ -8,13 +8,13 @@
 ;;     ;; `(s/def ~kk ~vv)))
 ;;     `(s/def ~spec-key ~validator)))
 
-(defmacro define-spec-inner [raw validator]
-  (println raw)
+(defmacro define-spec-inner [raw validator3]
+  ;; (println raw)
   (let [kk raw]
-    `(s/def ~kk validator)))
+    `(s/def ~kk validator3)))
 
-(defmacro define-spec [spec-key validator]
-  `(eval `(s/def ~~spec-key validator)))
+(defmacro define-spec [spec-key validator2]
+  `(eval `(s/def ~~spec-key ~~validator2)))
 
 
 (comment

@@ -155,46 +155,42 @@
 ;; (defmacro define-spec [spec-key validator]
 ;;   '(s/def @spec-key `validator))
 
-(def my-key :frame-data.weapon/frame_id)
-(def validator string?)
-(define-spec my-key validator)
-(eval `(s/def ~my-key validator))
-(s/describe my-key)
-(s/describe :frame-data.weapon/frame_id)
-(s/valid? :frame-data.weapon/frame_id 123)
-(s/valid? :frame-data.weapon/frame_id "ASD")
-
-(s/def :frame-data.weapon/pretty_name123 string?)
-
 (defn parse-field [spec-ns
                    {:keys [attrName prettyName type] :as field}]
-  (let [validator (match [type]
-                        ["string"] #'string?
-                        ["number"] #'number?
-                        ["enum"] #'number?
-                        ["hidden"] #'number?)]
-    (def validator validator)
+  (let [vvvalidator (match [type]
+                          ["string"] #'string?
+                          ["number"] #'number?
+                          ["enum"] #'number?
+                          ["hidden"] #'number?)]
+    ;; (def validator validator)
     (let [spec-kw (keyword spec-ns attrName)
-          new-def (define-spec spec-kw validator)]
-      (println "registered:" new-def)
-      (println (s/valid? new-def 10))
-      (prn new-def))))
+          new-def (define-spec spec-kw vvvalidator)]
+      (prn "The new spec: " new-def))))
         ;; (println attrName " - " prettyName " <> " type)
         ;; (prn field))
 
-(defn handle-mapper-json [mapper-json]
+(defn handle-mapper-json [mapper-json namespace_]
   (let [parsed-mapper (json/read-str mapper-json :key-fn keyword)
         filename (first (keys parsed-mapper))
         fields (filename parsed-mapper)]
     (println "The filename of the mapped file is:" (name filename))
-    (map (partial parse-field "frame-data.weapon") (vec fields))))
+    (map (partial parse-field namespace_) (vec fields))))
 
+(defn register-specs [filename namespace_]
+  (let [result (node "scripts/mapper_parsing.js" filename)]
+    (if (zero? (:exit result))
+      (handle-mapper-json (:out result) namespace_)
+      (println "\nERROR!!!\n\n" result))))
 
 (comment
   (let [result (node "scripts/mapper_parsing.js" "weaponMapper.js")]
     (if (zero? (:exit result))
       (handle-mapper-json (:out result))
       (println "\nERROR!!!\n\n" result)))
+
+  (register-specs "weaponMapper.js" "frame-data.weapon")
+
+
   (client/head "http://httpbin.org/get")
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
@@ -209,6 +205,17 @@
      :pretty_name "newly added frame"})
 
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+
+  ;; (def my-key :frame-data.weapon/frame_id)
+  ;; (def validator string?)
+  ;; (define-spec my-key validator)
+  ;; (eval `(s/def ~my-key validator))
+  (s/describe my-key)
+  (s/describe :frame-data.weapon/affects_morale)
+  (s/valid? :frame-data.weapon/frame_id 123)
+  (s/valid? :frame-data.weapon/frame_id "ASD")
+
+  (s/def :frame-data.weapon/pretty_name123 string?)
 
 
   ,)
