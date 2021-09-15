@@ -178,8 +178,14 @@
     (println "The filename of the mapped file is:" (name filename))
     (let [field-specs (map (partial parse-field namespace_) (vec fields))]
       (println "Registered count specs:" (count field-specs))
-      (println "Wrapped in:" (define-spec (keyword namespace_ "frame") (s/keys :req (vector field-specs))))
-      (println "Wrapped in un:" (define-spec (keyword namespace_ "frame-un") (s/keys :req-un (vector field-specs)))))))
+      (println "Wrapped in:"
+               (define-spec
+                 (keyword namespace_ "frame")
+                 (s/keys :req (vector field-specs))))
+      (println "Wrapped in un:"
+               (define-spec
+                 (keyword namespace_ "frame-un")
+                 (s/keys :req-un (vector field-specs)))))))
 
 (defn register-specs [filename namespace_]
   (let [result (node "scripts/mapper_parsing.js" filename)]
@@ -214,12 +220,18 @@
 
   (def raw-single-zone-frame-json
     "{ \"name\": \"The Greater Capital Area\", \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
-  (def invalid-raw-single-zone-frame-json
-    "{ \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
-
   (def single-zone-frame
     (json/read-str raw-single-zone-frame-json :key-fn keyword))
+
+  (def invalid-raw-single-zone-frame-json
+    "{ \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
+  (def invalid-single-zone-frame
+    (json/read-str invalid-raw-single-zone-frame-json :key-fn keyword))
+
   (s/valid? :frame-data.zone/frame-un single-zone-frame)
+  (s/valid? :frame-data.zone/frame-un invalid-single-zone-frame)
+  (s/valid? :frame-data.zone/frame-un {})
+  (s/valid? :frame-data.zone/frame-un 0)
 
   (def all-weapon-frames
     (json/read-str raw-json :key-fn keyword))
