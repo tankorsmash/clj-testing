@@ -123,82 +123,6 @@
                existing-frame))
            all-frames)))) ;;update the matching ones
 
-
-(comment
-  (def raw-json
-        "[{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1,\"pretty_name\":\"TEST SPEARss test TEST!\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":2,\"pretty_name\":\"TEST WEAPON whose category is without specified attributes\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1000,\"pretty_name\":\"Spear\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":1,\"bonus_attack\":1,\"frame_id\":1001,\"pretty_name\":\"Shortbow\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":2,\"frame_image_path\":\"combined_shortbow.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":3,\"bonus_attack\":0,\"frame_id\":1002,\"pretty_name\":\"Claw\",\"bonus_power\":1,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":0,\"frame_image_path\":\"combined_claw.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1003,\"pretty_name\":\"Flail\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":10,\"frame_image_path\":\"combined_flail.png\",\"description\":\"\",\"bonus_encumbrance\":8},{\"damage_type\":2,\"bonus_attack\":-1,\"frame_id\":1004,\"pretty_name\":\"Two-Handed Club\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":4,\"frame_image_path\":\"combined_oaken_club.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1005,\"pretty_name\":\"Arming Sword (Ulfburt)\",\"bonus_power\":0,\"rarity_type\":1,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":3,\"frame_image_path\":\"combined_blunt_cutlass.png\",\"description\":\"\",\"bonus_encumbrance\":2}]")
-
-  (def all-weapon-frames
-    (json/read-str raw-json :key-fn keyword))
-
-  (def new-weapon-frame-to-add
-    {:frame_id 1
-     :pretty_name "newly added frame"})
-
-
-  (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
-
-  (defn map-creator [frame]
-    (assoc {} (:frame_id frame) frame))
-
-  (def matching-frames
-    (matching-frame all-weapon-frames new-weapon-frame-to-add))
-
-  (def mapped-matching-frames
-    (reduce conj {} (->> matching-frames
-                         (map map-creator))))
-  (def all-mapped-frames
-    (reduce conj {} (->> all-weapon-frames
-                         (map map-creator))))
-
-  (defn if-key-matches-replace-with-new-frame
-    [mapped-matching-frames [frame-id existing-frame-data]]
-    (if (contains? mapped-matching-frames frame-id)
-      (do
-        (println "does contain")
-        (let [new-frame (get mapped-matching-frames frame-id)
-              updated-frame (merge
-                              existing-frame-data
-                              new-frame)]
-          (println "new-frame:" new-frame)
-          (println "existing-frame-data" existing-frame-data)
-          (println "updated-frame:" updated-frame)
-          updated-frame))
-      (do
-        (println "does NOT contain")
-        existing-frame-data)))
-
-  (def updated-matching-frames
-    (doall (map
-             #(if-key-matches-replace-with-new-frame mapped-matching-frames %)
-             all-mapped-frames)))
-
-  (doall (filter #(= (:frame_id %) 1 ) updated-all-frames))
-
-  ;;I want to take a list of updated frame datas and update the global list of all-frames
-  ;; so I want to be able to either add the new frames or update the old ones
-  ;; if the new ones share a frame id with an existing one, i want to merge the
-  ;; old and new
-  (defn frame-id-matches? [frame other-frame]
-    (= (:frame_id frame) (:frame_id other-frame)))
-
-  (defn update-frames [new-frames all-frames]
-    (map #()))
-
-  (conj [1 2 3] 4) ;; [1 2 3 4]
-  (conj [1 2 3] 4 5) ;; [1 2 3 4 5]
-  (conj [1 2 3] [4 5]) ;; [1 2 3 [4 5]]
-  (apply conj [1 2 3] [4 5]) ;; [1 2 3 4 5]
-
-  (zero? (count nil))
-
-  (def a {:name "josh" :age 21 :house "asd"})
-  (def b {:name "matt" :age 123})
-  (def c
-    (merge b a))
-  (println c)
-  ,)
-
 (defn add-missing-slash [uri]
   (let [endswith-slash? (string/ends-with? uri "/")]
     (if (not endswith-slash?)
@@ -222,4 +146,18 @@
 (comment
   (client/head "http://httpbin.org/get")
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
+
+  (def raw-json
+        "[{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1,\"pretty_name\":\"TEST SPEARss test TEST!\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":2,\"pretty_name\":\"TEST WEAPON whose category is without specified attributes\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":2,\"bonus_attack\":1,\"frame_id\":1000,\"pretty_name\":\"Spear\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":4,\"frame_image_path\":\"combined_spear.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":1,\"bonus_attack\":1,\"frame_id\":1001,\"pretty_name\":\"Shortbow\",\"bonus_power\":0,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":1,\"carry_weight\":2,\"frame_image_path\":\"combined_shortbow.png\",\"description\":\"\",\"bonus_encumbrance\":4},{\"damage_type\":3,\"bonus_attack\":0,\"frame_id\":1002,\"pretty_name\":\"Claw\",\"bonus_power\":1,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":0,\"frame_image_path\":\"combined_claw.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1003,\"pretty_name\":\"Flail\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":10,\"frame_image_path\":\"combined_flail.png\",\"description\":\"\",\"bonus_encumbrance\":8},{\"damage_type\":2,\"bonus_attack\":-1,\"frame_id\":1004,\"pretty_name\":\"Two-Handed Club\",\"bonus_power\":2,\"rarity_type\":0,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":4,\"frame_image_path\":\"combined_oaken_club.png\",\"description\":\"\",\"bonus_encumbrance\":5},{\"damage_type\":3,\"bonus_attack\":1,\"frame_id\":1005,\"pretty_name\":\"Arming Sword (Ulfburt)\",\"bonus_power\":0,\"rarity_type\":1,\"affects_morale\":false,\"battle_row_type\":0,\"carry_weight\":3,\"frame_image_path\":\"combined_blunt_cutlass.png\",\"description\":\"\",\"bonus_encumbrance\":2}]")
+
+  (def all-weapon-frames
+    (json/read-str raw-json :key-fn keyword))
+
+  (def new-weapon-frame-to-add
+    {:frame_id 1
+     :pretty_name "newly added frame"})
+
+  (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+
+
   ,)
