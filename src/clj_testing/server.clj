@@ -101,6 +101,11 @@
               frame-data (json/read-str str-frame-data)]
           (valid-json-response  frame-data))))))
 
+
+(defn frame-ids-match? [frame other-frame]
+  (= (:frame_id frame)
+     (:frame_id other-frame)))
+
 (defn matching-frame [all-frames target-frame]
   (filter #(= (:frame_id %)
               (:frame_id target-frame))
@@ -119,15 +124,20 @@
      :pretty_name "newly added frame"})
 
   (defn update-existing-frames [all-frames new-frame]
+    "takes all-frames and a single new-frame, then either appends it
+    or updates the existing frames"
     (let [matching-frames (matching-frame all-frames new-frame)]
-      (def qwe matching-frames)
-      (apply conj all-frames
-            (if (zero? (count matching-frames))
-             '(new-frame) ;;append to list
-             (map #(merge % new-frame) matching-frames))))) ;;update the matching ones
+      (if (zero? (count matching-frames))
+        (apply conj all-frames '(new-frame)) ;;append to list
+        (map (fn [existing-frame] ;;update the matching ones
+               (if (frame-ids-match? existing-frame new-frame)
+                 (merge existing-frame new-frame)
+                 existing-frame))
+             all-frames)))) ;;update the matching ones
 
 
-  (last (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+  (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+
   (defn map-creator [frame]
     (assoc {} (:frame_id frame) frame))
 
@@ -142,19 +152,38 @@
                          (map map-creator))))
 
   (defn if-key-matches-replace-with-new-frame
-    [mapped-matching-frames [frame-id frame-data]]
-    ;; frame-data)
-    (def ASD frame-id)
+    [mapped-matching-frames [frame-id existing-frame-data]]
     (if (contains? mapped-matching-frames frame-id)
-      (merge frame-data (get mapped-matching-frames frame-id))
-      frame-data))
+      (do
+        (println "does contain")
+        (let [new-frame (get mapped-matching-frames frame-id)
+              updated-frame (merge
+                              existing-frame-data
+                              new-frame)]
+          (println "new-frame:" new-frame)
+          (println "existing-frame-data" existing-frame-data)
+          (println "updated-frame:" updated-frame)
+          updated-frame))
+      (do
+        (println "does NOT contain")
+        existing-frame-data)))
 
-  (def updated-all-frames
-    (map
-     #(if-key-matches-replace-with-new-frame mapped-matching-frames %)
-     all-mapped-frames))
+  (def updated-matching-frames
+    (doall (map
+             #(if-key-matches-replace-with-new-frame mapped-matching-frames %)
+             all-mapped-frames)))
 
   (doall (filter #(= (:frame_id %) 1 ) updated-all-frames))
+
+  ;;I want to take a list of updated frame datas and update the global list of all-frames
+  ;; so I want to be able to either add the new frames or update the old ones
+  ;; if the new ones share a frame id with an existing one, i want to merge the
+  ;; old and new
+  (defn frame-id-matches? [frame other-frame]
+    (= (:frame_id frame) (:frame_id other-frame)))
+
+  (defn update-frames [new-frames all-frames]
+    (map #()))
 
   (conj [1 2 3] 4) ;; [1 2 3 4]
   (conj [1 2 3] 4 5) ;; [1 2 3 4 5]
