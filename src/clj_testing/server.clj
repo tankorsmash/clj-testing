@@ -96,10 +96,10 @@
         frame-type-kw (keyword frame-type)]
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
-      (do (let [str-frame-data (slurp (str root-static-asset-dir
-                                           "\\"
-                                           (frame-type-kw
-                                             frame-types-to-filename)))
+      (do (let [str-frame-data (slurp
+                                 (str root-static-asset-dir
+                                      "\\"
+                                      (frame-type-kw frame-types-to-filename)))
                 frame-data (json/read-str str-frame-data)]
             (valid-json-response frame-data))))))
 
