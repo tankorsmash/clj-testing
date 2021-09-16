@@ -97,8 +97,8 @@
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [str-frame-data (slurp (str root-static-asset-dir
                                            "\\"
-                                           ((keyword frame-type
-                                             frame-types-to-filename))))
+                                           ((keyword frame-type)
+                                             frame-types-to-filename)))
                 frame-data (json/read-str str-frame-data)]
             (valid-json-response frame-data))))))
 
