@@ -18,23 +18,24 @@
 
 (defmacro defspec [k spec-form]
   `(s/def-impl ~k (quote ~spec-form) ~spec-form))
+
+(defn def-keys-req [& req-keys]
+  "calls `s/keys :req <args>` for you"
+  (eval `(s/keys :req [~@req-keys])))
+
+(defn def-keys-req-un [& req-keys]
+  "calls `s/keys :req-un <args>` for you"
+  (eval `(s/keys :req-un [~@req-keys])))
+
 (comment
 
-  (defmacro defkeys [& req-keys]
-    `(s/keys :req [~@req-keys]))
-
-  (defn defkeys-nomacro [& req-keys]
-    (eval `(s/keys :req [~@req-keys])))
-
-  (defmacro outer-defkeys [& ks]
-    ;; `(defkeys ks)
-    `(s/keys :req ~@ks))
-
   (defkeys [::a ::b])
+  (defkeys required-keys)
   (s/def ::asd (defkeys-nomacro [::a ::b]))
   (s/def ::asd (defkeys-nomacro required-keys))
   (outer-defkeys [::a ::b])
-  (s/def ::qwe (outer-defkeys [::a ::b]))
+  (s/def ::qwe (defkeys [::a ::b]))
+  (s/def ::qwe (defkeys required-keys))
   (s/describe ::qwe)
   (s/describe ::asd)
 
