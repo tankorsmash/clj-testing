@@ -21,11 +21,11 @@
 
 (defn def-keys-req [& req-keys]
   "calls `s/keys :req <args>` for you"
-  (eval `(s/keys :req [~@req-keys])))
+  (eval `(s/keys :req ~@req-keys)))
 
 (defn def-keys-req-un [& req-keys]
   "calls `s/keys :req-un <args>` for you"
-  (eval `(s/keys :req-un [~@req-keys])))
+  (eval `(s/keys :req-un ~@req-keys)))
 
 (comment
 

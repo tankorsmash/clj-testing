@@ -178,6 +178,7 @@
         fields (filename parsed-mapper)]
     (println "The filename of the mapped file is:" (name filename))
     (let [field-specs (map (partial parse-field namespace_) (vec fields))]
+      (pprint fields)
       (println "Registered count specs:" (count field-specs))
       (println "...and wrapped keys in:"
                (define-spec
@@ -210,6 +211,7 @@
 
   (s/describe :frame-data.zone/location_data_names_in_the_zone)
   (s/describe :frame-data.zone/frame)
+  (s/describe :frame-data.armor/frame)
 
   (client/head "http://httpbin.org/get")
 
@@ -224,13 +226,14 @@
     (json/read-str raw-single-zone-frame-json :key-fn keyword))
 
   (def invalid-raw-single-zone-frame-json
-    "{ \"data_name\": \"the_greater_capital_area\", \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
+    "{ \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
   (def invalid-single-zone-frame
     (json/read-str invalid-raw-single-zone-frame-json :key-fn keyword))
 
   (s/describe :frame-data.zone/frame-un)
   (s/valid? :frame-data.zone/frame-un single-zone-frame)
   (s/valid? :frame-data.zone/frame-un invalid-single-zone-frame)
+  (s/explain :frame-data.zone/frame-un invalid-single-zone-frame)
   (s/valid? :frame-data.zone/frame-un {})
   (s/valid? :frame-data.zone/frame-un 0)
 
