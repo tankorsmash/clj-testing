@@ -1,6 +1,6 @@
 (ns clj-testing.server
   (:require
-   [spec-utils :refer [define-spec]]
+   [spec-utils :refer [define-spec def-keys-req def-keys-req-un]]
    [clojure.string :as string]
    [clojure.pprint :refer [pprint]]
    [ring.util.response :refer [resource-response content-type not-found]]
@@ -167,7 +167,8 @@
     ;; (def validator validator)
     (let [spec-kw (keyword spec-ns attrName)
           new-def (define-spec spec-kw vvvalidator)]
-      (prn "The new spec: " new-def))))
+      (prn "The new spec: " new-def)
+      new-def)))
         ;; (println attrName " - " prettyName " <> " type)
         ;; (prn field))
 
@@ -178,14 +179,14 @@
     (println "The filename of the mapped file is:" (name filename))
     (let [field-specs (map (partial parse-field namespace_) (vec fields))]
       (println "Registered count specs:" (count field-specs))
-      (println "Wrapped in:"
+      (println "...and wrapped keys in:"
                (define-spec
                  (keyword namespace_ "frame")
-                 (s/keys :req (vector field-specs))))
-      (println "Wrapped in un:"
+                 (def-keys-req field-specs)))
+      (println "...and wrapped keys in un:"
                (define-spec
                  (keyword namespace_ "frame-un")
-                 (s/keys :req-un (vector field-specs)))))))
+                 (def-keys-req-un field-specs))))))
 
 (defn register-specs [filename namespace_]
   (let [result (node "scripts/mapper_parsing.js" filename)]
