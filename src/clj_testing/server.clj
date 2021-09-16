@@ -183,6 +183,7 @@
     (if (zero? (:exit result))
       (handle-mapper-json (:out result))
       (println "\nERROR!!!\n\n" result)))
+
   (do (register-specs "weaponMapper.js" "frame-data.weapon")
       (register-specs "armorMapper.js" "frame-data.armor")
       (register-specs "zoneMapper.js" "frame-data.zone")
@@ -190,11 +191,15 @@
       (register-specs "attributeMapper.js" "frame-data.attribute")
       (register-specs "battleTextStructMapper.js"
                       "frame-data.battle-text-struct"))
+
   (s/describe :frame-data.zone/location_data_names_in_the_zone)
   (s/describe :frame-data.zone/frame)
   (s/describe :frame-data.armor/frame)
+
   (client/head "http://httpbin.org/get")
+
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
+
   (def all-weapon-frames
     [{:bonus_attack 1,
       :description "",
@@ -302,14 +307,17 @@
     "{ \"required_zone_data_name_to_unlock\": \"\", \"location_data_names_in_the_zone\": [ \"the_forest\", \"the_mountains\", \"the_plains\" ] }")
   (def invalid-single-zone-frame
     (json/read-str invalid-raw-single-zone-frame-json :key-fn keyword))
+
   (s/describe :frame-data.zone/frame-un)
   (s/valid? :frame-data.zone/frame-un single-zone-frame)
   (s/valid? :frame-data.zone/frame-un invalid-single-zone-frame)
   (s/explain-data :frame-data.zone/frame-un invalid-single-zone-frame)
   (s/valid? :frame-data.zone/frame-un {})
   (s/valid? :frame-data.zone/frame-un 0)
+
   (def new-weapon-frame-to-add {:frame_id 1, :pretty_name "newly added frame"})
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+
   (s/describe my-key)
   (s/describe :frame-data.weapon/affects_morale)
   (s/valid? :frame-data.weapon/frame_id 123)
