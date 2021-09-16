@@ -23,6 +23,9 @@ const fs = require('fs');
 // prop.map(el => {Object.assign(result, {[el.key.name]: el.value.value})})
 
 // let props = formfields.splice(1, formfields.length)
+const pprint = (obj) => {
+    console.log(util.inspect(obj, {depth:null, colors:true}));
+}
 
 const parse_mapper = (mapper_filename) => {
     let weapon_frame_js = fs.readFileSync(mapper_filename, "utf-8")
@@ -58,7 +61,7 @@ const parse_fields = (props) => {
 const parse_mapper_relative = (mapper_name) => {
     let raw_form_fields = parse_mapper(`C:\\Users\\Josh\\Documents\\cocos_projects\\buildup_graph\\assets\\js\\main\\magnolia\\frame_mappers\\${mapper_name}`);
 
-    let toplevel_fields = parse_fields(raw_form_fields.splice(1, raw_form_fields.length));
+    let toplevel_fields = parse_fields(raw_form_fields.splice(0, raw_form_fields.length));
 
     return toplevel_fields;
 }

@@ -233,7 +233,7 @@
   (s/describe :frame-data.zone/frame-un)
   (s/valid? :frame-data.zone/frame-un single-zone-frame)
   (s/valid? :frame-data.zone/frame-un invalid-single-zone-frame)
-  (s/explain :frame-data.zone/frame-un invalid-single-zone-frame)
+  (s/explain-data :frame-data.zone/frame-un invalid-single-zone-frame)
   (s/valid? :frame-data.zone/frame-un {})
   (s/valid? :frame-data.zone/frame-un 0)
 
