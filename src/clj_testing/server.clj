@@ -203,7 +203,6 @@
     (register-specs "weaponMapper.js" "frame-data.weapon")
     (register-specs "armorMapper.js" "frame-data.armor")
     (register-specs "zoneMapper.js" "frame-data.zone")
-    (register-specs "zoneMapper.js" "frame-data.zone")
     (register-specs "weaponCategoryMapper.js" "frame-data.weapon-category")
     (register-specs "attributeMapper.js" "frame-data.attribute")
     (register-specs "battleTextStructMapper.js" "frame-data.battle-text-struct"))
@@ -228,6 +227,7 @@
   (def invalid-single-zone-frame
     (json/read-str invalid-raw-single-zone-frame-json :key-fn keyword))
 
+  (s/describe :frame-data.zone/frame-un)
   (s/valid? :frame-data.zone/frame-un single-zone-frame)
   (s/valid? :frame-data.zone/frame-un invalid-single-zone-frame)
   (s/valid? :frame-data.zone/frame-un {})

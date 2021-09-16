@@ -21,7 +21,7 @@
   (def my-key :frame-data.weapon/poop)
   (def validator string?)
   (define-spec my-key validator)
-  (s/def (eval my-key) validator)
+  (s/def (eval `my-key) validator)
   (s/describe my-key)
   (s/describe :frame-data.weapon/poop)
   (s/describe (resolve my-key))
