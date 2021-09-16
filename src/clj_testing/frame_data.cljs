@@ -69,9 +69,12 @@
 (s/def :frame-data/battle-row-type (s/and int? (s/int-in 0 3)))
 
 (s/def :frame-data.weapon/frame (s/keys :req (vector weapon-frame-keys)))
+(comment
+  (s/describe :frame-data.weapon/frame)
+  (s/valid? :frame-data.weapon/frame {}))
 (s/def :frame-data.weapon-un/frame (s/and
                                     (s/keys :req-un [:frame-data/battle-row-type
-                                                      :frame-data/weapon-damage-type])
+                                                     :frame-data/weapon-damage-type])
                                     (s/keys :req-un (vector weapon-frame-keys))))
 
 (defn do-request-for-weapon-frames! []
@@ -97,9 +100,9 @@
 
 (defn colored-stat [stat-val text]
   (cond
-    (pos? stat-val) [:div {:style {:color :green}} text ": "stat-val]
-    (neg? stat-val) [:div {:style {:color :red}} text ": "stat-val]
-    :else [:div text ": "stat-val]))
+    (pos? stat-val) [:div {:style {:color :green}} text ": " stat-val]
+    (neg? stat-val) [:div {:style {:color :red}} text ": " stat-val]
+    :else [:div text ": " stat-val]))
 
 (defn render-weapon-frame-row
   [{:keys [pretty_name frame_id battle_row_type
@@ -136,7 +139,6 @@
   (def val (:damage_type (first @all-weapon-frames)))
   (log (s/explain :frame-data/weapon-damage-type val))
   (log (s/conform :frame-data/weapon-damage-type (:damage_type (first @all-weapon-frames)))))
-
 
 (comment
   (def weapon-frame (first @all-weapon-frames))

@@ -79,5 +79,4 @@
   (s/def (eval `my-key) validator)
   (s/describe my-key)
   (s/describe :frame-data.weapon/poop)
-  (s/describe (resolve my-key))
-  ,)
+  (s/describe (resolve my-key)))
