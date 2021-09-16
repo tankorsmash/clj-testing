@@ -92,12 +92,13 @@
 (defn get-by-frame-type
   [req]
   (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])]
-    (if-not (contains? frame-types-to-filename (keyword frame-type))
+        frame-type (get-in match [:path-params :frame-type])
+        frame-type-kw (keyword frame-type)]
+    (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [str-frame-data (slurp (str root-static-asset-dir
                                            "\\"
-                                           ((keyword frame-type)
+                                           (frame-type-kw
                                              frame-types-to-filename)))
                 frame-data (json/read-str str-frame-data)]
             (valid-json-response frame-data))))))
