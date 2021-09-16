@@ -21,7 +21,20 @@
 (comment
 
   (defmacro defkeys [req-keys]
-    `(s/keys :req ~@req-keys))
+    `(s/keys :req [~@req-keys]))
+
+  (defmacro outer-defkeys [& ks]
+    ;; `(defkeys ks)
+    `(s/keys :req ~@ks))
+
+  (defkeys [::a ::b])
+  (outer-defkeys [::a ::b])
+  (s/def ::qwe (outer-defkeys [::a ::b]))
+  (s/describe ::qwe)
+
+  (s/def ::test (s/keys :req [::a ::b]))
+  (s/valid? ::test {::a 123 ::b "asd"})
+  (s/valid? ::test {})
 
   (def my-key :frame-data.weapon/poop)
   (def validator string?)
