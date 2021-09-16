@@ -20,17 +20,29 @@
   `(s/def-impl ~k (quote ~spec-form) ~spec-form))
 (comment
 
-  (defmacro defkeys [req-keys]
+  (defmacro defkeys [& req-keys]
     `(s/keys :req [~@req-keys]))
+
+  (defn defkeys-nomacro [& req-keys]
+    (eval `(s/keys :req [~@req-keys])))
 
   (defmacro outer-defkeys [& ks]
     ;; `(defkeys ks)
     `(s/keys :req ~@ks))
 
   (defkeys [::a ::b])
+  (s/def ::asd (defkeys-nomacro [::a ::b]))
+  (s/def ::asd (defkeys-nomacro required-keys))
   (outer-defkeys [::a ::b])
   (s/def ::qwe (outer-defkeys [::a ::b]))
   (s/describe ::qwe)
+  (s/describe ::asd)
+
+  (s/valid? ::asd {:frame-data.weapon/pretty_name 123
+                   :frame-data.weapon/affects_morale "asd"})
+  (s/valid? ::asd {:frame-data.weapon/pretty_name "ASD"
+                   :frame-data.weapon/affects_morale 0})
+  (s/valid? ::asd {})
 
   (s/def ::test (s/keys :req [::a ::b]))
   (s/valid? ::test {::a 123 ::b "asd"})
@@ -48,7 +60,8 @@
   (s/valid? new-key ["asd"])
   (s/valid? new-key ["asd", 123])
 
-  (def required-keys [:frame-data.weapon/pretty_name])
+  (def required-keys [:frame-data.weapon/pretty_name
+                      :frame-data.weapon/affects_morale])
   ;; (s/def ::list-of-keys (s/keys :req-un [:frame-data.weapon/pretty_name]))
   (s/def ::list-of-keys (s/keys :req-un required-keys))
   (s/def ::dyn-list-of-keys (defkeys required-keys))
