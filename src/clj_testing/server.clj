@@ -30,7 +30,7 @@
   ([req]
    {:status 404
     :headers {"Content-Type" "text/html"}
-    :body "This is a arg-driven custom 404 path"})
+    :body (str "This is a arg-driven custom 404 path: " (:uri req))})
   ([req message]
    {:status 404 :headers {"Content-Type" "text/html"} :body message}))
 
@@ -199,14 +199,14 @@
 (def inner-handler
     (ring/ring-handler
       (ring/router
-        ["/" ::home
-         ["api/"
-          ["frames/" ["" {:name ::frames-home :get test-handler}]
-           [":frame-type/" {:name ::frames-frame-type
+        ["" ::home
+         ["/api"
+          ["/frames" ["" {:name ::frames-home :get test-handler}]
+           ["/:frame-type" {:name ::frames-frame-type
                             :get get-by-frame-type
-                            :post update-by-frame-type}
-              [":frame-id/" {:name ::frames-single-frame
-                             :get get-single-frame}]]]]])
+                            :post update-by-frame-type}]
+           ["/:frame-type/:frame-id" {:name ::frames-single-frame
+                                      :get get-single-frame}]]]])
       (ring/routes (ring/redirect-trailing-slash-handler)
                    (ring/create-default-handler {:not-found handler404}))))
 
@@ -215,7 +215,7 @@
     inner-handler
     {:keywords? true}))
 
-    
+
 
 (defn node [& args] (apply sh "node" args))
 
