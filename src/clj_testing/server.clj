@@ -89,6 +89,19 @@
     :headers {"Content-Type" "application/json"}
     :body (json/write-str {:success true :message message :data data})}))
 
+(defn read-frames-from-file
+  [relative-filename]
+  (let [str-frame-data (slurp
+                         (str root-static-asset-dir
+                              "\\"
+                              relative-filename))]
+      (json/read-str str-frame-data)))
+
+(defn read-frames-from-frame-type
+  [frame-type-kw]
+  (read-frames-from-file
+    (frame-type-kw frame-types-to-filename)))
+
 (defn get-by-frame-type
   [req]
   (let [match (:reitit.core/match req)
@@ -96,12 +109,17 @@
         frame-type-kw (keyword frame-type)]
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
-      (do (let [str-frame-data (slurp
-                                 (str root-static-asset-dir
-                                      "\\"
-                                      (frame-type-kw frame-types-to-filename)))
-                frame-data (json/read-str str-frame-data)]
+      (do (let [frame-data (read-frames-from-frame-type frame-type-kw)]
             (valid-json-response frame-data))))))
+
+(defn update-by-frame-type
+  [req]
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])
+        frame-type-kw (keyword frame-type)]
+    (if-not (contains? frame-types-to-filename frame-type-kw)
+      (handler404 req (str "Unknown frame-type: " frame-type))
+      (do ()))))
 
 (defn frame-ids-match?
   [frame other-frame]
@@ -135,7 +153,9 @@
       ["/" ::home
        ["api/"
         ["frames/" ["" {:name ::frames-home :get test-handler}]
-         [":frame-type/" {:name ::frames-frame-type :get get-by-frame-type}]]]])
+         [":frame-type/" {:name ::frames-frame-type
+                          :get get-by-frame-type
+                          :post update-by-frame-type}]]]])
     (ring/routes (ring/redirect-trailing-slash-handler)
                  (ring/create-default-handler {:not-found handler404}))))
 
