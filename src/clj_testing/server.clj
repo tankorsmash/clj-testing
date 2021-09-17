@@ -119,7 +119,16 @@
         frame-type-kw (keyword frame-type)]
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
-      (do ()))))
+      (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
+                post-body (json/read-str (:body req))]
+            (do (println "post-map:" post-body)
+                (valid-json-response frame-data)))))))
+
+(comment
+  (def qwe
+    (update-by-frame-type {:reitit.core/match {:path-params {:frame-type :weapon}}
+                           :body (json/write-str {:name "josh" :age 21})}))
+  ,)
 
 (defn frame-ids-match?
   [frame other-frame]
