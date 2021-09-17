@@ -23,71 +23,71 @@
 
 (defn handler404
   ([]
-   {:status 404,
-    :headers {"Content-Type" "text/html"},
+   {:status 404
+    :headers {"Content-Type" "text/html"}
     :body "This is a homemade custom 404 path without args"})
   ([req]
-   {:status 404,
-    :headers {"Content-Type" "text/html"},
+   {:status 404
+    :headers {"Content-Type" "text/html"}
     :body "This is a arg-driven custom 404 path"})
   ([req message]
-   {:status 404, :headers {"Content-Type" "text/html"}, :body message}))
+   {:status 404 :headers {"Content-Type" "text/html"} :body message}))
 
 (defonce frame-types-to-filename
-         {:weapon "all_weapon_frames.json",
-          :armor "all_armor_frames.json",
-          :zone "all_zone_frames.json",
-          :weapon_category "all_weapon_category_frames.json",
-          :attribute "all_attribute_frames.json",
+         {:weapon "all_weapon_frames.json"
+          :armor "all_armor_frames.json"
+          :zone "all_zone_frames.json"
+          :weapon_category "all_weapon_category_frames.json"
+          :attribute "all_attribute_frames.json"
           :battle_text_struct "all_battle_text_struct_frames.json"})
 
 (def root-static-asset-dir
   "C:\\Users\\Josh\\Documents\\cocos_projects\\magnolia_cocos\\Resources\\static_asset_dir")
 
-(defn handler-redirect [req to-uri] {:status 302, :headers {"Location" to-uri}})
+(defn handler-redirect [req to-uri] {:status 302 :headers {"Location" to-uri}})
 
 (defn handler-ajax
   [req]
   ;; (let [txt (json/read-str (:body (client/get "http://httpbin.org/get")))])
   (let [txt "ASDASD"]
-    {:status 200,
-     :headers {"Content-Type" "application/json"},
-     :body (json/write-str {:success true, :message txt})}))
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (json/write-str {:success true :message txt})}))
 
 (defn debug-handler
   [req]
   (let [match (:reitit.core/match req)]
-    {:status 200,
-     :headers {"Content-Type" "application/json"},
-     :body (json/write-str {:success true,
-                            :message {:match-name (get-in match [:data :name]),
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (json/write-str {:success true
+                            :message {:match-name (get-in match [:data :name])
                                       :match-path (get-in match [:path])}})}))
 
 (defn default-handler
   [] ;;reitit doesnt give you a request for these for some reason i cant
      ;;possibly understand
-  {:status 200,
-   :headers {"Content-Type" "application/json"},
-   :body (json/write-str {:success true, :message "WTFFF"})})
+  {:status 200
+   :headers {"Content-Type" "application/json"}
+   :body (json/write-str {:success true :message "WTFFF"})})
 
 (defn test-handler
   [req]
-  {:status 200,
-   :headers {"Content-Type" "application/json"},
-   :body (json/write-str {:success true, :message "TEST WTFFF"})})
+  {:status 200
+   :headers {"Content-Type" "application/json"}
+   :body (json/write-str {:success true :message "TEST WTFFF"})})
 
 (defn valid-json-response
   "Returns a valid JSON response.
   Expects a message string, and data of any type"
   ([data]
-   {:status 200,
-    :headers {"Content-Type" "application/json"},
+   {:status 200
+    :headers {"Content-Type" "application/json"}
     :body (json/write-str
-            {:success true, :message "Request successful", :data data})})
+            {:success true :message "Request successful" :data data})})
   ([message data]
-   {:status 200,
-    :headers {"Content-Type" "application/json"},
-    :body (json/write-str {:success true, :message message, :data data})}))
+   {:status 200
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str {:success true :message message :data data})}))
 
 (defn get-by-frame-type
   [req]
@@ -131,18 +131,18 @@
 
 (def handler
   (ring/ring-handler
-    (ring/router ["/" ::home
-                  ["api/"
-                   ["frames/" ["" {:name ::frames-home, :get test-handler}]
-                    [":frame-type/"
-                     {:name ::frames-frame-type, :get get-by-frame-type}]]]])
+    (ring/router
+      ["/" ::home
+       ["api/"
+        ["frames/" ["" {:name ::frames-home :get test-handler}]
+         [":frame-type/" {:name ::frames-frame-type :get get-by-frame-type}]]]])
     (ring/routes (ring/redirect-trailing-slash-handler)
                  (ring/create-default-handler {:not-found handler404}))))
 
 (defn node [& args] (apply sh "node" args))
 
 (defn parse-field
-  [spec-ns {:keys [attrName prettyName type], :as field}]
+  [spec-ns {:keys [attrName prettyName type] :as field}]
   (let [vvvalidator (match [type]
                       ["string"] #'string?
                       ["string[]"] '(s/coll-of string?)
@@ -201,106 +201,106 @@
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
   (def all-weapon-frames
-    [{:bonus_attack 1,
-      :description "",
-      :frame_id 1,
-      :pretty_name "TEST SPEARss test TEST!",
-      :rarity_type 0,
-      :damage_type 2,
-      :bonus_encumbrance 4,
-      :frame_image_path "combined_spear.png",
-      :affects_morale false,
-      :carry_weight 4,
-      :bonus_power 0,
+    [{:bonus_attack 1
+      :description ""
+      :frame_id 1
+      :pretty_name "TEST SPEARss test TEST!"
+      :rarity_type 0
+      :damage_type 2
+      :bonus_encumbrance 4
+      :frame_image_path "combined_spear.png"
+      :affects_morale false
+      :carry_weight 4
+      :bonus_power 0
       :battle_row_type 1}
-     {:bonus_attack 1,
-      :description "",
-      :frame_id 2,
-      :pretty_name "TEST WEAPON whose category is without specified attributes",
-      :rarity_type 0,
-      :damage_type 2,
-      :bonus_encumbrance 4,
-      :frame_image_path "combined_spear.png",
-      :affects_morale false,
-      :carry_weight 4,
-      :bonus_power 0,
+     {:bonus_attack 1
+      :description ""
+      :frame_id 2
+      :pretty_name "TEST WEAPON whose category is without specified attributes"
+      :rarity_type 0
+      :damage_type 2
+      :bonus_encumbrance 4
+      :frame_image_path "combined_spear.png"
+      :affects_morale false
+      :carry_weight 4
+      :bonus_power 0
       :battle_row_type 1}
-     {:bonus_attack 1,
-      :description "",
-      :frame_id 1000,
-      :pretty_name "Spear",
-      :rarity_type 0,
-      :damage_type 2,
-      :bonus_encumbrance 4,
-      :frame_image_path "combined_spear.png",
-      :affects_morale false,
-      :carry_weight 4,
-      :bonus_power 0,
+     {:bonus_attack 1
+      :description ""
+      :frame_id 1000
+      :pretty_name "Spear"
+      :rarity_type 0
+      :damage_type 2
+      :bonus_encumbrance 4
+      :frame_image_path "combined_spear.png"
+      :affects_morale false
+      :carry_weight 4
+      :bonus_power 0
       :battle_row_type 1}
-     {:bonus_attack 1,
-      :description "",
-      :frame_id 1001,
-      :pretty_name "Shortbow",
-      :rarity_type 0,
-      :damage_type 1,
-      :bonus_encumbrance 4,
-      :frame_image_path "combined_shortbow.png",
-      :affects_morale false,
-      :carry_weight 2,
-      :bonus_power 0,
+     {:bonus_attack 1
+      :description ""
+      :frame_id 1001
+      :pretty_name "Shortbow"
+      :rarity_type 0
+      :damage_type 1
+      :bonus_encumbrance 4
+      :frame_image_path "combined_shortbow.png"
+      :affects_morale false
+      :carry_weight 2
+      :bonus_power 0
       :battle_row_type 1}
-     {:bonus_attack 0,
-      :description "",
-      :frame_id 1002,
-      :pretty_name "Claw",
-      :rarity_type 0,
-      :damage_type 3,
-      :bonus_encumbrance 5,
-      :frame_image_path "combined_claw.png",
-      :affects_morale false,
-      :carry_weight 0,
-      :bonus_power 1,
+     {:bonus_attack 0
+      :description ""
+      :frame_id 1002
+      :pretty_name "Claw"
+      :rarity_type 0
+      :damage_type 3
+      :bonus_encumbrance 5
+      :frame_image_path "combined_claw.png"
+      :affects_morale false
+      :carry_weight 0
+      :bonus_power 1
       :battle_row_type 0}
-     {:bonus_attack 1,
-      :description "",
-      :frame_id 1003,
-      :pretty_name "Flail",
-      :rarity_type 0,
-      :damage_type 3,
-      :bonus_encumbrance 8,
-      :frame_image_path "combined_flail.png",
-      :affects_morale false,
-      :carry_weight 10,
-      :bonus_power 2,
+     {:bonus_attack 1
+      :description ""
+      :frame_id 1003
+      :pretty_name "Flail"
+      :rarity_type 0
+      :damage_type 3
+      :bonus_encumbrance 8
+      :frame_image_path "combined_flail.png"
+      :affects_morale false
+      :carry_weight 10
+      :bonus_power 2
       :battle_row_type 0}
-     {:bonus_attack -1,
-      :description "",
-      :frame_id 1004,
-      :pretty_name "Two-Handed Club",
-      :rarity_type 0,
-      :damage_type 2,
-      :bonus_encumbrance 5,
-      :frame_image_path "combined_oaken_club.png",
-      :affects_morale false,
-      :carry_weight 4,
-      :bonus_power 2,
+     {:bonus_attack -1
+      :description ""
+      :frame_id 1004
+      :pretty_name "Two-Handed Club"
+      :rarity_type 0
+      :damage_type 2
+      :bonus_encumbrance 5
+      :frame_image_path "combined_oaken_club.png"
+      :affects_morale false
+      :carry_weight 4
+      :bonus_power 2
       :battle_row_type 0}
-     {:bonus_attack 1,
-      :description "",
-      :frame_id 1005,
-      :pretty_name "Arming Sword (Ulfburt)",
-      :rarity_type 1,
-      :damage_type 3,
-      :bonus_encumbrance 2,
-      :frame_image_path "combined_blunt_cutlass.png",
-      :affects_morale false,
-      :carry_weight 3,
-      :bonus_power 0,
+     {:bonus_attack 1
+      :description ""
+      :frame_id 1005
+      :pretty_name "Arming Sword (Ulfburt)"
+      :rarity_type 1
+      :damage_type 3
+      :bonus_encumbrance 2
+      :frame_image_path "combined_blunt_cutlass.png"
+      :affects_morale false
+      :carry_weight 3
+      :bonus_power 0
       :battle_row_type 0}])
   (def single-zone-frame
-    {:name "The Greater Capital Area",
-     :data_name "the_greater_capital_area",
-     :required_zone_data_name_to_unlock "",
+    {:name "The Greater Capital Area"
+     :data_name "the_greater_capital_area"
+     :required_zone_data_name_to_unlock ""
      :location_data_names_in_the_zone ["the_forest" "the_mountains"
                                        "the_plains"]})
   (def invalid-raw-single-zone-frame-json
@@ -315,7 +315,7 @@
   (s/valid? :frame-data.zone/frame-un {})
   (s/valid? :frame-data.zone/frame-un 0)
 
-  (def new-weapon-frame-to-add {:frame_id 1, :pretty_name "newly added frame"})
+  (def new-weapon-frame-to-add {:frame_id 1 :pretty_name "newly added frame"})
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
 
   (s/describe my-key)
