@@ -9,6 +9,7 @@
             [reitit.spec :as rs]
             [reitit.dev.pretty :as pretty]
             [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]
             [clojure.data.json :as json]
             [clj-http.client :as client]
             [clojure.java.shell :refer [sh]]
@@ -400,4 +401,24 @@
   (s/describe :frame-data.weapon/affects_morale)
   (s/valid? :frame-data.weapon/frame_id 123)
   (s/valid? :frame-data.weapon/frame_id "ASD")
-  (s/def :frame-data.weapon/pretty_name123 string?))
+  (s/def :frame-data.weapon/pretty_name123 string?)
+
+  (defn my-inc [x] (inc x))
+  (s/fdef my-inc
+          :args (s/cat :x number?)
+          :ret number?)
+  (stest/check `my-inc)
+
+  (defn generate-list [num]
+    (doall (map my-inc (range num))))
+  (s/fdef generate-list ;;idk why this doesnt work
+          :args (s/cat :num (s/and
+                              number?
+                              pos-int?
+                              #(<= (:num %) 10)))
+          :ret (s/coll-of number?))
+  (generate-list 10)
+  (stest/check `generate-list)
+  (my-inc nil)
+
+  ,)
