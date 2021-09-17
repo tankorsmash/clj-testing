@@ -4,6 +4,7 @@
             [clojure.pprint :refer [pprint]]
             [ring.util.response :refer
              [resource-response content-type not-found]]
+            [ring.middleware.json :only [wrap-json-body]]
             [reitit.ring :as ring]
             [reitit.spec :as rs]
             [reitit.dev.pretty :as pretty]
@@ -124,10 +125,43 @@
             (do (println "post-map:" post-body)
                 (valid-json-response frame-data)))))))
 
+(defn get-single-frame
+  [req]
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])
+        frame-id (get-in match [:path-params :frame-id])
+        frame-type-kw (keyword frame-type)]
+    (if-not (contains? frame-types-to-filename frame-type-kw)
+      (handler404 req (str "Unknown frame-type: " frame-type))
+      (do (println "\n\nTHE TYPE:" (type (:body req)) "\n\n\n")
+          (let [frame-data (read-frames-from-frame-type frame-type-kw)]
+            (if (zero? (count frame-data))
+              (handler404 req (str "No matching frame id of type: " frame-type " for frame-id: " frame-id))
+              (if (= (count frame-data) 1)
+                (valid-json-response frame-data)
+                (handler404 req (str "More than one matching frame of frame-type: " frame-type " for frame-id: " frame-id)))))))))
+
+(defn update-single-frame
+  [req]
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])
+        frame-type-kw (keyword frame-type)]
+    (if-not (contains? frame-types-to-filename frame-type-kw)
+      (handler404 req (str "Unknown frame-type: " frame-type))
+      (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
+                post-body (json/read-str {:key-fn keyword} (:body req))]
+            (do (println "post-map:" post-body)
+                (valid-json-response frame-data)))))))
+
 (comment
+  (def example-post-req
+    {:reitit.core/match {:path-params {:frame-type :weapon}}
+     :body (json/write-str {:name "josh" :age 21})})
+
+  (:body example-post-req)
+
   (def qwe
-    (update-by-frame-type {:reitit.core/match {:path-params {:frame-type :weapon}}
-                           :body (json/write-str {:name "josh" :age 21})}))
+    (update-single-frame example-post-req))
   ,)
 
 (defn frame-ids-match?
@@ -156,17 +190,26 @@
   (let [endswith-slash? (string/ends-with? uri "/")]
     (if (not endswith-slash?) (str uri "/") uri)))
 
+(def inner-handler
+    (ring/ring-handler
+      (ring/router
+        ["/" ::home
+         ["api/"
+          ["frames/" ["" {:name ::frames-home :get test-handler}]
+           [":frame-type/" {:name ::frames-frame-type
+                            :get get-by-frame-type
+                            :post update-by-frame-type}
+              [":frame-id/" {:name ::frames-single-frame
+                             :get get-single-frame}]]]]])
+      (ring/routes (ring/redirect-trailing-slash-handler)
+                   (ring/create-default-handler {:not-found handler404}))))
+
 (def handler
-  (ring/ring-handler
-    (ring/router
-      ["/" ::home
-       ["api/"
-        ["frames/" ["" {:name ::frames-home :get test-handler}]
-         [":frame-type/" {:name ::frames-frame-type
-                          :get get-by-frame-type
-                          :post update-by-frame-type}]]]])
-    (ring/routes (ring/redirect-trailing-slash-handler)
-                 (ring/create-default-handler {:not-found handler404}))))
+  (ring.middleware.json/wrap-json-body
+    inner-handler
+    {:keywords? true}))
+
+    
 
 (defn node [& args] (apply sh "node" args))
 

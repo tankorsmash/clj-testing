@@ -11,7 +11,8 @@
                  [metosin/reitit "0.5.15"]
                  [org.clojure/core.match "0.3.0"]
                  [org.clojure/data.json "2.4.0"]
-                 [clj-http "3.12.3"]]
+                 [clj-http "3.12.3"]
+                 [ring/ring-json "0.5.1"]]
 
   :compiler {:external-config {:devtools/config
                                {:print-config-overrides true
