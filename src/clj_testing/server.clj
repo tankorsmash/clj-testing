@@ -96,12 +96,15 @@
                          (str root-static-asset-dir
                               "\\"
                               relative-filename))]
-      (json/read-str str-frame-data)))
+      (json/read-str str-frame-data :key-fn keyword)))
 
 (defn read-frames-from-frame-type
   [frame-type-kw]
-  (read-frames-from-file
-    (frame-type-kw frame-types-to-filename)))
+  (let [full-frame-data (read-frames-from-file (frame-type-kw frame-types-to-filename))
+        frame-key (keyword (str "all_" (name frame-type-kw) "_frames"))
+        all-frames (frame-key full-frame-data)]
+    (println "found" (count all-frames) " total frames")
+    all-frames))
 
 (defn get-by-frame-type
   [req]
@@ -129,12 +132,15 @@
   [req]
   (let [match (:reitit.core/match req)
         frame-type (get-in match [:path-params :frame-type])
-        frame-id (get-in match [:path-params :frame-id])
+        frame-id (Integer/parseInt (get-in match [:path-params :frame-id]))
         frame-type-kw (keyword frame-type)]
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
-      (do (println "\n\nTHE TYPE:" (type (:body req)) "\n\n\n")
-          (let [frame-data (read-frames-from-frame-type frame-type-kw)]
+      (do (let [all-frames (read-frames-from-frame-type frame-type-kw)
+                frame-data (filter #(= (:frame_id %) frame-id) all-frames)]
+            (def QWE all-frames)
+            (def ASD frame-data)
+            (println "type frame-id:" (type frame-id) "frame-id:" frame-id "frame-data:" frame-data "count all-frames:" (count all-frames))
             (if (zero? (count frame-data))
               (handler404 req (str "No matching frame id of type: " frame-type " for frame-id: " frame-id))
               (if (= (count frame-data) 1)
