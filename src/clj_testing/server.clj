@@ -197,17 +197,26 @@
   (let [endswith-slash? (string/ends-with? uri "/")]
     (if (not endswith-slash?) (str uri "/") uri)))
 
+
+(defn hardware-root
+  [req]
+  (valid-json-response "Hardware root"))
+
 (def inner-handler
     (ring/ring-handler
       (ring/router
         ["" ::home
          ["/api"
-          ["/frames" ["" {:name ::frames-home :get test-handler}]
+          ["/frames"
+           ["" {:name ::frames-home :get test-handler}]
            ["/:frame-type" {:name ::frames-frame-type
                             :get get-by-frame-type
                             :post update-by-frame-type}]
            ["/:frame-type/:frame-id" {:name ::frames-single-frame
-                                      :get get-single-frame}]]]])
+                                      :get get-single-frame}]]
+          ["/hardware"
+           ["" {:name ::hardware-root
+                :get hardware-root}]]]])
       (ring/routes (ring/redirect-trailing-slash-handler)
                    (ring/create-default-handler {:not-found handler404}))))
 
