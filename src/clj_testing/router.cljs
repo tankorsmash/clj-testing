@@ -26,11 +26,12 @@
 (defn unknown-page []
   [:h1 "WHERE THE F ARE YOU?"])
 
+(declare get-vol)
 
 (defn set-vol [vol-pct]
   (go (let [response (<! (http/get (str "api/hardware/volume/" vol-pct) {}))]
         (let [body (get-in response [:body])]
-          (log body)))))
+          (get-vol)))))
 
 (defonce current-vol (r/atom 0))
 
@@ -48,20 +49,23 @@
         [:div.row.row-cols-auto
          [:div.col
           [:div.btn.btn-outline-secondary
-           {:on-click get-vol } "Get time"]]
+           {:on-click get-vol } "Check volume"]]
          [:div.col
-          [:div (str "Current volume: " @current-vol)]]]
+          [:div (str "Current volume: " (* 100 @current-vol) "%")]]]
+        [:div.row.row-cols-auto
+          [:div.col
+           "Set Volume:"]]
         [:div.row.row-cols-auto
          [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0"]]
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0%"]]
          [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 0.25"]]
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 25%"]]
          [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 0.50"]]
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 50%"]]
          [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 0.75"]]
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 75%"]]
          [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 1.00"]]]]]))
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 100%"]]]]]))
 
 (defn dota-page []
   [dota/render-user-data dota/user-data])
