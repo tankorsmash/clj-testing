@@ -202,6 +202,21 @@
   [req]
   (valid-json-response "Hardware root"))
 
+
+(defn full-keys [my-map]
+  (map str (keys my-map)))
+
+
+(defn hardware-volume
+  [{{template :template
+     {vol-pct :vol-pct
+      :as params} :path-params
+     :as match} :reitit.core/match
+    :as req}]
+  (let [from-python (sh "python39" "./scripts/volume_setter.py" "-v" vol-pct)]
+    (valid-json-response from-python)))
+  ;; (valid-json-response template)) 
+
 (def inner-handler
     (ring/ring-handler
       (ring/router
@@ -216,7 +231,9 @@
                                       :get get-single-frame}]]
           ["/hardware"
            ["" {:name ::hardware-root
-                :get hardware-root}]]]])
+                :get hardware-root}]
+           ["/volume/:vol-pct" {:name ::hardware-volume
+                                :get hardware-volume}]]]])
       (ring/routes (ring/redirect-trailing-slash-handler)
                    (ring/create-default-handler {:not-found handler404}))))
 

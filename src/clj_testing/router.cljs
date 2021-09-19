@@ -26,10 +26,27 @@
 (defn unknown-page []
   [:h1 "WHERE THE F ARE YOU?"])
 
+
+(defn set-vol [vol-pct]
+  (go (let [response (<! (http/get (str "api/hardware/volume/" vol-pct) {}))]
+        (let [body (get-in response [:body])]
+          (log body)))))
+
 (defn home-page []
   [:div
    [:h1 "THIS IS HOME"]
-   [:div "an unset page from router"]])
+   [:div "an unset page from router"
+    [:div.row.row-cols-auto
+     [:div.col
+      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0"]]
+     [:div.col
+      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 0.25"]]
+     [:div.col
+      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 0.50"]]
+     [:div.col
+      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 0.75"]]
+     [:div.col
+      [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 1.00"]]]]])
 
 (defn dota-page []
   [dota/render-user-data dota/user-data])
