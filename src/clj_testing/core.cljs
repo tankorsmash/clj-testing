@@ -99,6 +99,8 @@
 (defn swap-person [people idx person]
   (assoc people idx person))
 
+
+
 (defn on-click-change-person [idx person]
   (let [new-person (change-person-age person)]
     (swap! atom-people #(swap-person % idx new-person))))

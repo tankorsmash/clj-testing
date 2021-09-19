@@ -243,8 +243,8 @@
                 :get hardware-root}]
            ["/volume/:vol-pct" {:name ::hardware-volume
                                 :get hardware-volume}]
-           ["/volume/:vol-pct/get" {:name ::hardware-volume-get
-                                    :get hardware-volume-get}]]]])
+           ["/volume-get" {:name ::hardware-volume-get
+                           :get hardware-volume-get}]]]])
       (ring/routes (ring/redirect-trailing-slash-handler)
                    (ring/create-default-handler {:not-found handler404}))))
 

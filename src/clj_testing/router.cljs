@@ -32,21 +32,36 @@
         (let [body (get-in response [:body])]
           (log body)))))
 
+(defonce current-vol (r/atom 0))
+
+(defn get-vol []
+  (go (let [response (<! (http/get "api/hardware/volume-get" {}))]
+        (let [body (get-in response [:body])
+              current-vol-from-server (get-in body [:data :out])]
+          (reset! current-vol current-vol-from-server)))))
+
 (defn home-page []
-  [:div
-   [:h1 "THIS IS HOME"]
-   [:div "an unset page from router"
-    [:div.row.row-cols-auto
-     [:div.col
-      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0"]]
-     [:div.col
-      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 0.25"]]
-     [:div.col
-      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 0.50"]]
-     [:div.col
-      [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 0.75"]]
-     [:div.col
-      [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 1.00"]]]]])
+    (fn []
+      [:div
+       [:h1 "THIS IS HOME"]
+       [:div "an unset page from router"
+        [:div.row.row-cols-auto
+         [:div.col
+          [:div.btn.btn-outline-secondary
+           {:on-click get-vol } "Get time"]]
+         [:div.col
+          [:div (str "Current volume: " @current-vol)]]]
+        [:div.row.row-cols-auto
+         [:div.col
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0"]]
+         [:div.col
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 0.25"]]
+         [:div.col
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 0.50"]]
+         [:div.col
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 0.75"]]
+         [:div.col
+          [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 1.00"]]]]]))
 
 (defn dota-page []
   [dota/render-user-data dota/user-data])
