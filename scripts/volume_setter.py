@@ -9,7 +9,6 @@ def set_volume_to_pct(volume, vol_pct):
         return
 
     volume.SetMasterVolume(vol_pct, None)
-    import ipdb; ipdb.set_trace(); #TODO
 
 def filter_sessions_by_procname(procname):
     sessions = AudioUtilities.GetAllSessions()
