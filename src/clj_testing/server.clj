@@ -217,6 +217,15 @@
     (valid-json-response from-python)))
   ;; (valid-json-response template)) 
 
+(defn hardware-volume-get
+  [{{{vol-pct :vol-pct
+      :as params} :path-params
+     :as match} :reitit.core/match
+    :as req}]
+  (let [from-python (sh "python39" "./scripts/volume_setter.py" "-g")]
+    (valid-json-response from-python)))
+  ;; (valid-json-response template)) 
+
 (def inner-handler
     (ring/ring-handler
       (ring/router
@@ -233,7 +242,9 @@
            ["" {:name ::hardware-root
                 :get hardware-root}]
            ["/volume/:vol-pct" {:name ::hardware-volume
-                                :get hardware-volume}]]]])
+                                :get hardware-volume}]
+           ["/volume/:vol-pct/get" {:name ::hardware-volume-get
+                                    :get hardware-volume-get}]]]])
       (ring/routes (ring/redirect-trailing-slash-handler)
                    (ring/create-default-handler {:not-found handler404}))))
 

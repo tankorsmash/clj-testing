@@ -9,6 +9,7 @@ def set_volume_to_pct(volume, vol_pct):
         return
 
     volume.SetMasterVolume(vol_pct, None)
+    import ipdb; ipdb.set_trace(); #TODO
 
 def filter_sessions_by_procname(procname):
     sessions = AudioUtilities.GetAllSessions()
@@ -18,9 +19,12 @@ def filter_sessions_by_procname(procname):
 
     return matches
 
-def set_volume_for_procs(procname="Discord.exe", vol_pct=1.0):
+def set_volume_for_procs(procname="Discord.exe", vol_pct=1.0, get_vol=False):
     for session in filter_sessions_by_procname("Discord.exe"):
         volume = session.SimpleAudioVolume
+        if get_vol:
+            return volume.GetMasterVolume()
+
         set_volume_to_pct(volume, vol_pct)
 
     return f"Volume set to {vol_pct}"
