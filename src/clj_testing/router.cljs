@@ -44,27 +44,27 @@
 (defn home-page []
     (fn []
       [:div
-       [:h1 "THIS IS HOME"
-        [:div.row.row-cols-auto
+       [:h1 "THIS IS HOME"]
+       [:div.row.row-cols-auto
+        [:div.col
+         [:div.btn.btn-outline-secondary
+          {:on-click get-vol } "Check volume"]]
+        [:div.col
+         [:div (str "Current volume: " (* 100 @current-vol) "%")]]]
+       [:div.row.row-cols-auto
          [:div.col
-          [:div.btn.btn-outline-secondary
-           {:on-click get-vol } "Check volume"]]
-         [:div.col
-          [:div (str "Current volume: " (* 100 @current-vol) "%")]]]
-        [:div.row.row-cols-auto
-          [:div.col
-           "Set Volume:"]]
-        [:div.row.row-cols-auto
-         [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0%"]]
-         [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 25%"]]
-         [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 50%"]]
-         [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 75%"]]
-         [:div.col
-          [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 100%"]]]]]))
+          "Set Volume:"]]
+       [:div.row.row-cols-auto
+        [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0%"]]
+        [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 25%"]]
+        [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 50%"]]
+        [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.75) } "Vol 75%"]]
+        [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 1.00) } "Vol 100%"]]]]))
 
 (defn dota-page []
   [dota/render-user-data dota/user-data])
