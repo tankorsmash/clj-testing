@@ -320,6 +320,7 @@
                       ["string[]"] '(s/coll-of string?)
                       ["number"] #'number?
                       ["number[]"] '(s/coll-of number?)
+                      ["boolean"] #'boolean?
                       ["enum"] #'number?
                       ["hidden"] #'number?)]
     (let [spec-kw (keyword spec-ns attrName)
