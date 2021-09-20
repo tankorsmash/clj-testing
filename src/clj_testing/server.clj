@@ -175,6 +175,12 @@
                 (valid-json-response frame-data)
                 (handler404 req (str "More than one matching frame of frame-type: " frame-type " for frame-id: " frame-id)))))))))
 
+
+(defn write-frame-data-to-disk [frame-type frame-data]
+  (if-not (zero? (count frame-data))
+    (let [final-data {(frame-type-to-toplevel-key frame-type) frame-data}]
+      (spit (json/write-str final-data)))))
+
 (defn update-single-frame
   [req]
   (let [match (:reitit.core/match req)
