@@ -206,6 +206,13 @@
                existing-frame))
         all-frames))));;update the matching ones
 
+(defn try-update-existing-frames [frame-type all-frames new-frame]
+  "makes sure new-frame is valid, and then updates all-frames if it is
+  otherwise, it explains the spec failure"
+  (if-not (valid-by-frame-type-un? frame-type new-frame)
+    (explain-by-frame-type-un frame-type new-frame)
+    (update-existing-frames all-frames new-frame)))
+
 (defn valid-by-frame-type-un? [frame-type frame]
   (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
     (s/valid? req-un-spec frame)))
@@ -461,6 +468,8 @@
   (valid-by-frame-type-un? :weapon new-weapon-frame-to-add)
   (explain-by-frame-type-un :weapon new-weapon-frame-to-add)
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
+  (try-update-existing-frames :weapon all-weapon-frames new-weapon-frame-to-add)
+  (try-update-existing-frames :weapon all-weapon-frames (first all-weapon-frames))
 
   (s/describe my-key)
   (s/describe :frame-data.weapon/affects_morale)
