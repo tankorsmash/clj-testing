@@ -411,6 +411,23 @@
 
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
+  (def raw-frame-str-data
+    "{ \"frame_id\": 1,
+        \"pretty_name\": \"TEST SPEARss test TEST!\",
+        \"description\": \"\",
+        \"frame_image_path\": \"combined_spear.png\",
+        \"damage_type\": 2,
+        \"bonus_power\": 0,
+        \"bonus_attack\": 1,
+        \"bonus_encumbrance\": 4,
+        \"carry_weight\": 4,
+        \"affects_morale\": false,
+        \"battle_row_type\": 1,
+        \"rarity_type\": 0}")
+  (println (json/read-str raw-frame-str-data))
+  (println (ches/parse-string raw-frame-str-data))
+  ,
+
   ;; (def all-weapon-frames
   ;;   [{:bonus_attack 1
   ;;     :description ""
