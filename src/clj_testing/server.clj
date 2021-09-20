@@ -413,6 +413,7 @@
       :carry_weight 3
       :bonus_power 0
       :battle_row_type 0}])
+
   (def single-zone-frame
     {:name "The Greater Capital Area"
      :data_name "the_greater_capital_area"
@@ -432,6 +433,9 @@
   (s/valid? :frame-data.zone/frame-un 0)
 
   (def new-weapon-frame-to-add {:frame_id 1 :pretty_name "newly added frame"})
+  (s/valid? :frame-data.weapon/frame-un new-weapon-frame-to-add)
+  (s/explain :frame-data.weapon/frame-un new-weapon-frame-to-add)
+
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
 
   (s/describe my-key)
