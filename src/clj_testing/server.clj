@@ -105,6 +105,19 @@
     :headers {"Content-Type" "application/json"}
     :body (json/write-str {:success true :message message :data data})}))
 
+(defn invalid-json-response
+  "Returns a failed JSON response.
+  Expects a message string, and data of any type"
+  ([data]
+   {:status 400
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str
+            {:success false :message "Request unsuccessful" :data data})})
+  ([message data]
+   {:status 400
+    :headers {"Content-Type" "application/json"}
+    :body (json/write-str {:success false :message message :data data})}))
+
 (defn read-frames-from-file
   [relative-filename]
   (let [str-frame-data (slurp
@@ -166,13 +179,17 @@
   [req]
   (let [match (:reitit.core/match req)
         frame-type (get-in match [:path-params :frame-type])
+        frame-id (get-in match [:path-params :frame-id])
         frame-type-kw (keyword frame-type)]
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
                 post-body (json/read-str (:body req) :key-fn keyword)]
             (do (println "post-map:" post-body)
-                (valid-json-response frame-data)))))))
+                (let [new-data (try-update-existing-frames frame-type-kw frame-data post-body)]
+                  (if (map? new-data) ;;explain-data returns a map
+                    (invalid-json-response "New data didn't conform to spec" new-data)
+                    (valid-json-response new-data)))))))))
 
 (comment
   (def example-post-req
@@ -182,7 +199,8 @@
   (:body example-post-req)
 
   (def qwe
-    (update-single-frame example-post-req))
+    (update-single-frame example-post-req)
+    (update-single-frame (assoc example-post-req :body (json/write-str (first all-weapon-frames)))))
   ,)
 
 (defn frame-ids-match?
@@ -206,11 +224,15 @@
                existing-frame))
         all-frames))));;update the matching ones
 
+(declare explain-by-frame-type-un)
+(declare explain-data-by-frame-type-un)
+
 (defn try-update-existing-frames [frame-type all-frames new-frame]
   "makes sure new-frame is valid, and then updates all-frames if it is
   otherwise, it explains the spec failure"
   (if-not (valid-by-frame-type-un? frame-type new-frame)
-    (explain-by-frame-type-un frame-type new-frame)
+    (do (explain-by-frame-type-un frame-type new-frame)
+        (explain-data-by-frame-type-un frame-type new-frame))
     (update-existing-frames all-frames new-frame)))
 
 (defn valid-by-frame-type-un? [frame-type frame]
@@ -220,6 +242,10 @@
 (defn explain-by-frame-type-un [frame-type frame]
   (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
     (s/explain req-un-spec frame)))
+
+(defn explain-data-by-frame-type-un [frame-type frame]
+  (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
+    (s/explain-data req-un-spec frame)))
 
 (defn add-missing-slash
   [uri]
@@ -266,7 +292,8 @@
                           :get get-by-frame-type
                           :post update-by-frame-type}]
          ["/:frame-type/:frame-id" {:name ::frames-single-frame
-                                    :get get-single-frame}]]
+                                    :get get-single-frame
+                                    :post update-single-frame}]]
         ["/hardware"
          ["" {:name ::hardware-root
               :get hardware-root}]
