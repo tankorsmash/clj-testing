@@ -43,6 +43,20 @@
           :attribute "all_attribute_frames.json"
           :battle_text_struct "all_battle_text_struct_frames.json"})
 
+(defonce frame-types-to-frame-spec
+  {:weapon {:req :frame-data.weapon/frame
+            :req-un :frame-data.weapon/frame-un}
+   :armor {:req :frame-data.armor/frame
+           :req-un :frame-data.armor/frame-un}
+   ::zone {:req :frame-data.zone/frame
+           :req-un :frame-data.zone/frame-un}
+   ::weapon_category_category {:req :frame-data.weapon-category/frame
+                               :req-un :frame-data.weapon-category/frame-un}
+   ::attribute {:req :frame-data.attribute/frame
+                :req-un :frame-data.attribute/frame-un}
+   ::battle_text_struct {:req :frame-data.battle-text-struct/frame
+                         :req-un :frame-data.battle-text-struct/frame-un}})
+
 (def root-static-asset-dir
   "C:\\Users\\Josh\\Documents\\cocos_projects\\magnolia_cocos\\Resources\\static_asset_dir")
 
@@ -191,6 +205,14 @@
                (merge existing-frame new-frame)
                existing-frame))
         all-frames))));;update the matching ones
+
+(defn valid-by-frame-type-un? [frame-type frame]
+  (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
+    (s/valid? req-un-spec frame)))
+
+(defn explain-by-frame-type-un [frame-type frame]
+  (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
+    (s/explain req-un-spec frame)))
 
 (defn add-missing-slash
   [uri]
@@ -436,6 +458,8 @@
   (s/valid? :frame-data.weapon/frame-un new-weapon-frame-to-add)
   (s/explain :frame-data.weapon/frame-un new-weapon-frame-to-add)
 
+  (valid-by-frame-type-un? :weapon new-weapon-frame-to-add)
+  (explain-by-frame-type-un :weapon new-weapon-frame-to-add)
   (first (update-existing-frames all-weapon-frames new-weapon-frame-to-add))
 
   (s/describe my-key)
