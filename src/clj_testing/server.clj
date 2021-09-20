@@ -200,8 +200,9 @@
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
                 post-body (json/read-str (:body req) :key-fn keyword)]
-            (do (println "post-map:" post-body)
-                (let [new-data (try-update-existing-frames frame-type-kw frame-data post-body)]
+            (do (let [new-data (try-update-existing-frames
+                                 frame-type-kw
+                                 frame-data post-body)]
                   (if (map? new-data) ;;explain-data returns a map
                     (invalid-json-response "New data didn't conform to spec" new-data)
                     (do (write-frame-data-to-disk frame-type-kw new-data)
