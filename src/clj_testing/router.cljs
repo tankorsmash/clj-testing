@@ -44,8 +44,7 @@
 (defn home-page []
     (fn []
       [:div
-       [:h1 "THIS IS HOME"]
-       [:div "an unset page from router"
+       [:h1 "THIS IS HOME"
         [:div.row.row-cols-auto
          [:div.col
           [:div.btn.btn-outline-secondary
