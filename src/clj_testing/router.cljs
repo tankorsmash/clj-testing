@@ -58,6 +58,8 @@
         [:div.col
          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0) } "Vol 0%"]]
         [:div.col
+         [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.10) } "Vol 10%"]]
+        [:div.col
          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.25) } "Vol 25%"]]
         [:div.col
          [:div.btn.btn-outline-secondary {:on-click #(set-vol 0.50) } "Vol 50%"]]
