@@ -118,6 +118,12 @@
     :headers {"Content-Type" "application/json"}
     :body (json/write-str {:success false :message message :data data})}))
 
+(defn frame-type-to-abs-path [frame-type]
+  (str
+    root-static-asset-dir
+    "\\"
+    (frame-type frame-types-to-filename)))
+
 (defn read-frames-from-file
   [relative-filename]
   (let [str-frame-data (slurp
@@ -182,7 +188,7 @@
           (s/coll-of (:req-un (frame-types-to-frame-spec frame-type)))
           frame-data)
       (let [final-data {(frame-type-to-toplevel-key frame-type) frame-data}]
-        (spit "tmp.json" (with-out-str (json/pprint final-data))))))) ;;TODO use the actual filepath
+        (spit (frame-type-to-abs-path frame-type) (with-out-str (json/pprint final-data)))))))
 
 (defn update-single-frame
   [req]
