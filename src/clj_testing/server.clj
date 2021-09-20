@@ -224,29 +224,29 @@
     :as req}]
   (let [from-python (sh "python39" "./scripts/volume_setter.py" "-g")]
     (valid-json-response from-python)))
-  ;; (valid-json-response template)) 
+;; (valid-json-response template)) 
 
 (def inner-handler
-    (ring/ring-handler
-      (ring/router
-        ["" ::home
-         ["/api"
-          ["/frames"
-           ["" {:name ::frames-home :get test-handler}]
-           ["/:frame-type" {:name ::frames-frame-type
-                            :get get-by-frame-type
-                            :post update-by-frame-type}]
-           ["/:frame-type/:frame-id" {:name ::frames-single-frame
-                                      :get get-single-frame}]]
-          ["/hardware"
-           ["" {:name ::hardware-root
-                :get hardware-root}]
-           ["/volume/:vol-pct" {:name ::hardware-volume
-                                :get hardware-volume}]
-           ["/volume-get" {:name ::hardware-volume-get
-                           :get hardware-volume-get}]]]])
-      (ring/routes (ring/redirect-trailing-slash-handler)
-                   (ring/create-default-handler {:not-found handler404}))))
+  (ring/ring-handler
+    (ring/router
+      ["" ::home
+       ["/api"
+        ["/frames"
+         ["" {:name ::frames-home :get test-handler}]
+         ["/:frame-type" {:name ::frames-frame-type
+                          :get get-by-frame-type
+                          :post update-by-frame-type}]
+         ["/:frame-type/:frame-id" {:name ::frames-single-frame
+                                    :get get-single-frame}]]
+        ["/hardware"
+         ["" {:name ::hardware-root
+              :get hardware-root}]
+         ["/volume/:vol-pct" {:name ::hardware-volume
+                              :get hardware-volume}]
+         ["/volume-get" {:name ::hardware-volume-get
+                         :get hardware-volume-get}]]]])
+    (ring/routes (ring/redirect-trailing-slash-handler)
+                 (ring/create-default-handler {:not-found handler404}))))
 
 (def handler
   (ring.middleware.json/wrap-json-body
