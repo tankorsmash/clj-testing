@@ -178,8 +178,11 @@
 
 (defn write-frame-data-to-disk [frame-type frame-data]
   (if-not (zero? (count frame-data))
-    (let [final-data {(frame-type-to-toplevel-key frame-type) frame-data}]
-      (spit (json/write-str final-data)))))
+    (if (s/valid?
+          (s/coll-of ((:req-un (frame-types-to-frame-spec frame-type))))
+          frame-data)
+      (let [final-data {(frame-type-to-toplevel-key frame-type) frame-data}]
+        (spit "tmp.json" (json/write-str final-data)))))) ;;TODO use the actual filepath
 
 (defn update-single-frame
   [req]
