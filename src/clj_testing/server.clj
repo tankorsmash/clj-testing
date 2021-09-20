@@ -220,6 +220,8 @@
     (update-single-frame (assoc example-post-req :body (json/write-str
                                                          (assoc
                                                            (first all-weapon-frames)
+                                                           :frame_id
+                                                           1001
                                                            :pretty_name
                                                            "QWEQWE")))))
   ,)
