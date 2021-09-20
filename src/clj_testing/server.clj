@@ -208,9 +208,20 @@
 
   (:body example-post-req)
 
+  (def example-frame
+    (assoc
+      (first all-weapon-frames)
+      :frame_id
+      122))
+  (update-existing-frames all-weapon-frames example-frame)
+
   (def qwe
     (update-single-frame example-post-req)
-    (update-single-frame (assoc example-post-req :body (json/write-str (first all-weapon-frames)))))
+    (update-single-frame (assoc example-post-req :body (json/write-str
+                                                         (assoc
+                                                           (first all-weapon-frames)
+                                                           :pretty_name
+                                                           "QWEQWE")))))
   ,)
 
 (defn frame-ids-match?
@@ -227,7 +238,7 @@
   or updates the existing frames"
   (let [matching-frames (matching-frame all-frames new-frame)]
     (if (zero? (count matching-frames))
-      (apply conj all-frames '(new-frame)) ;;append to list
+      (conj all-frames new-frame) ;;append to list
       (map (fn [existing-frame] ;;update the matching ones
              (if (frame-ids-match? existing-frame new-frame)
                (merge existing-frame new-frame)
