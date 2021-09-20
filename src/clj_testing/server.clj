@@ -156,9 +156,6 @@
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [all-frames (read-frames-from-frame-type frame-type-kw)
                 frame-data (filter #(= (:frame_id %) frame-id) all-frames)]
-            (def QWE all-frames)
-            (def ASD frame-data)
-            (println "type frame-id:" (type frame-id) "frame-id:" frame-id "frame-data:" frame-data "count all-frames:" (count all-frames))
             (if (zero? (count frame-data))
               (handler404 req (str "No matching frame id of type: " frame-type " for frame-id: " frame-id))
               (if (= (count frame-data) 1)
