@@ -11,6 +11,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [clojure.data.json :as json]
+            [cheshire.core :as ches]
             [clj-http.client :as client]
             [clojure.java.shell :refer [sh]]
             [clojure.core.match :refer [match]]))
@@ -180,7 +181,10 @@
               (if (= (count frame-data) 1)
                 (valid-json-response frame-data)
                 (handler404 req (str "More than one matching frame of frame-type: " frame-type " for frame-id: " frame-id)))))))))
-
+(defonce my-pretty-printer
+  (ches/create-pretty-printer
+          (assoc ches/default-pretty-print-options
+                 :indentation "    ")))
 
 (defn write-frame-data-to-disk [frame-type frame-data]
   (if-not (zero? (count frame-data))
@@ -188,7 +192,10 @@
           (s/coll-of (:req-un (frame-types-to-frame-spec frame-type)))
           frame-data)
       (let [final-data {(frame-type-to-toplevel-key frame-type) frame-data}]
-        (spit (frame-type-to-abs-path frame-type) (with-out-str (json/pprint final-data)))))))
+        (spit
+          ;; (frame-type-to-abs-path frame-type)
+          "tmp.json"
+          (ches/generate-string final-data {:pretty my-pretty-printer}))))))
 
 (defn update-single-frame
   [req]
@@ -225,12 +232,13 @@
   (def qwe
     (update-single-frame example-post-req)
     (update-single-frame (assoc example-post-req :body (json/write-str
-                                                         (assoc
-                                                           (first all-weapon-frames)
-                                                           :frame_id
-                                                           1001
-                                                           :pretty_name
-                                                           "QWEQWE")))))
+                                                         (first all-weapon-frames)))))
+                                                         ;; (assoc
+                                                         ;;   (first all-weapon-frames)
+                                                         ;;   :frame_id
+                                                         ;;   1001
+                                                         ;;   :pretty_name
+                                                         ;;   "QWEQWE")))))
   ,)
 
 (defn frame-ids-match?
