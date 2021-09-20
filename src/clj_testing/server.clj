@@ -113,10 +113,13 @@
                               relative-filename))]
       (json/read-str str-frame-data :key-fn keyword)))
 
+(defn frame-type-to-toplevel-key [frame-type-kw]
+  (keyword (str "all_" (name frame-type-kw) "_frames")))
+
 (defn read-frames-from-frame-type
   [frame-type-kw]
   (let [full-frame-data (read-frames-from-file (frame-type-kw frame-types-to-filename))
-        frame-key (keyword (str "all_" (name frame-type-kw) "_frames"))
+        frame-key (frame-type-to-toplevel-key frame-type-kw)
         all-frames (frame-key full-frame-data)]
     (println "found" (count all-frames) " total frames")
     all-frames))
@@ -170,7 +173,7 @@
     (if-not (contains? frame-types-to-filename frame-type-kw)
       (handler404 req (str "Unknown frame-type: " frame-type))
       (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
-                post-body (json/read-str {:key-fn keyword} (:body req))]
+                post-body (json/read-str (:body req) :key-fn keyword)]
             (do (println "post-map:" post-body)
                 (valid-json-response frame-data)))))))
 
