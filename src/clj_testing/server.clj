@@ -338,103 +338,103 @@
 
   (map #(ns-unmap *ns* %) (keys (ns-interns *ns*))) ;;clean namespace entirely
 
-  (def all-weapon-frames
-    [{:bonus_attack 1
-      :description ""
-      :frame_id 1
-      :pretty_name "TEST SPEARss test TEST!"
-      :rarity_type 0
-      :damage_type 2
-      :bonus_encumbrance 4
-      :frame_image_path "combined_spear.png"
-      :affects_morale false
-      :carry_weight 4
-      :bonus_power 0
-      :battle_row_type 1}
-     {:bonus_attack 1
-      :description ""
-      :frame_id 2
-      :pretty_name "TEST WEAPON whose category is without specified attributes"
-      :rarity_type 0
-      :damage_type 2
-      :bonus_encumbrance 4
-      :frame_image_path "combined_spear.png"
-      :affects_morale false
-      :carry_weight 4
-      :bonus_power 0
-      :battle_row_type 1}
-     {:bonus_attack 1
-      :description ""
-      :frame_id 1000
-      :pretty_name "Spear"
-      :rarity_type 0
-      :damage_type 2
-      :bonus_encumbrance 4
-      :frame_image_path "combined_spear.png"
-      :affects_morale false
-      :carry_weight 4
-      :bonus_power 0
-      :battle_row_type 1}
-     {:bonus_attack 1
-      :description ""
-      :frame_id 1001
-      :pretty_name "Shortbow"
-      :rarity_type 0
-      :damage_type 1
-      :bonus_encumbrance 4
-      :frame_image_path "combined_shortbow.png"
-      :affects_morale false
-      :carry_weight 2
-      :bonus_power 0
-      :battle_row_type 1}
-     {:bonus_attack 0
-      :description ""
-      :frame_id 1002
-      :pretty_name "Claw"
-      :rarity_type 0
-      :damage_type 3
-      :bonus_encumbrance 5
-      :frame_image_path "combined_claw.png"
-      :affects_morale false
-      :carry_weight 0
-      :bonus_power 1
-      :battle_row_type 0}
-     {:bonus_attack 1
-      :description ""
-      :frame_id 1003
-      :pretty_name "Flail"
-      :rarity_type 0
-      :damage_type 3
-      :bonus_encumbrance 8
-      :frame_image_path "combined_flail.png"
-      :affects_morale false
-      :carry_weight 10
-      :bonus_power 2
-      :battle_row_type 0}
-     {:bonus_attack -1
-      :description ""
-      :frame_id 1004
-      :pretty_name "Two-Handed Club"
-      :rarity_type 0
-      :damage_type 2
-      :bonus_encumbrance 5
-      :frame_image_path "combined_oaken_club.png"
-      :affects_morale false
-      :carry_weight 4
-      :bonus_power 2
-      :battle_row_type 0}
-     {:bonus_attack 1
-      :description ""
-      :frame_id 1005
-      :pretty_name "Arming Sword (Ulfburt)"
-      :rarity_type 1
-      :damage_type 3
-      :bonus_encumbrance 2
-      :frame_image_path "combined_blunt_cutlass.png"
-      :affects_morale false
-      :carry_weight 3
-      :bonus_power 0
-      :battle_row_type 0}])
+  ;; (def all-weapon-frames
+  ;;   [{:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 1
+  ;;     :pretty_name "TEST SPEARss test TEST!"
+  ;;     :rarity_type 0
+  ;;     :damage_type 2
+  ;;     :bonus_encumbrance 4
+  ;;     :frame_image_path "combined_spear.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 4
+  ;;     :bonus_power 0
+  ;;     :battle_row_type 1}
+  ;;    {:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 2
+  ;;     :pretty_name "TEST WEAPON whose category is without specified attributes"
+  ;;     :rarity_type 0
+  ;;     :damage_type 2
+  ;;     :bonus_encumbrance 4
+  ;;     :frame_image_path "combined_spear.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 4
+  ;;     :bonus_power 0
+  ;;     :battle_row_type 1}
+  ;;    {:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 1000
+  ;;     :pretty_name "Spear"
+  ;;     :rarity_type 0
+  ;;     :damage_type 2
+  ;;     :bonus_encumbrance 4
+  ;;     :frame_image_path "combined_spear.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 4
+  ;;     :bonus_power 0
+  ;;     :battle_row_type 1}
+  ;;    {:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 1001
+  ;;     :pretty_name "Shortbow"
+  ;;     :rarity_type 0
+  ;;     :damage_type 1
+  ;;     :bonus_encumbrance 4
+  ;;     :frame_image_path "combined_shortbow.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 2
+  ;;     :bonus_power 0
+  ;;     :battle_row_type 1}
+  ;;    {:bonus_attack 0
+  ;;     :description ""
+  ;;     :frame_id 1002
+  ;;     :pretty_name "Claw"
+  ;;     :rarity_type 0
+  ;;     :damage_type 3
+  ;;     :bonus_encumbrance 5
+  ;;     :frame_image_path "combined_claw.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 0
+  ;;     :bonus_power 1
+  ;;     :battle_row_type 0}
+  ;;    {:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 1003
+  ;;     :pretty_name "Flail"
+  ;;     :rarity_type 0
+  ;;     :damage_type 3
+  ;;     :bonus_encumbrance 8
+  ;;     :frame_image_path "combined_flail.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 10
+  ;;     :bonus_power 2
+  ;;     :battle_row_type 0}
+  ;;    {:bonus_attack -1
+  ;;     :description ""
+  ;;     :frame_id 1004
+  ;;     :pretty_name "Two-Handed Club"
+  ;;     :rarity_type 0
+  ;;     :damage_type 2
+  ;;     :bonus_encumbrance 5
+  ;;     :frame_image_path "combined_oaken_club.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 4
+  ;;     :bonus_power 2
+  ;;     :battle_row_type 0}
+  ;;    {:bonus_attack 1
+  ;;     :description ""
+  ;;     :frame_id 1005
+  ;;     :pretty_name "Arming Sword (Ulfburt)"
+  ;;     :rarity_type 1
+  ;;     :damage_type 3
+  ;;     :bonus_encumbrance 2
+  ;;     :frame_image_path "combined_blunt_cutlass.png"
+  ;;     :affects_morale false
+  ;;     :carry_weight 3
+  ;;     :bonus_power 0
+  ;;     :battle_row_type 0}])
 
   (def single-zone-frame
     {:name "The Greater Capital Area"
