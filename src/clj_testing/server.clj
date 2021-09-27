@@ -164,42 +164,29 @@
     all-frames))
 
 (defn get-by-frame-type
-  [req]
-  (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])
-        frame-type-kw (keyword frame-type)]
-    (if-not (contains? frame-types-to-filename frame-type-kw)
-      (handler404 req (str "Unknown frame-type: " frame-type))
-      (do (let [frame-data (read-frames-from-frame-type frame-type-kw)]
-            (valid-json-response frame-data))))))
+  [req, frame-type-kw]
+  (do (let [frame-data (read-frames-from-frame-type frame-type-kw)]
+        (valid-json-response frame-data))))
 
 (defn update-by-frame-type
-  [req]
-  (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])
-        frame-type-kw (keyword frame-type)]
-    (if-not (contains? frame-types-to-filename frame-type-kw)
-      (handler404 req (str "Unknown frame-type: " frame-type))
-      (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
-                post-body (json/read-str (:body req))]
-            (do (println "post-map:" post-body)
-                (valid-json-response frame-data)))))))
+  [req, frame-type-kw]
+  (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
+            post-body (json/read-str (:body req))]
+        (do (println "post-map:" post-body)
+            (valid-json-response frame-data)))))
 
 (defn get-single-frame
-  [req]
+  [req, frame-type-kw]
   (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])
-        frame-id (Integer/parseInt (get-in match [:path-params :frame-id]))
-        frame-type-kw (keyword frame-type)]
-    (if-not (contains? frame-types-to-filename frame-type-kw)
-      (handler404 req (str "Unknown frame-type: " frame-type))
+        frame-id (Integer/parseInt (get-in match [:path-params :frame-id]))]
       (do (let [all-frames (read-frames-from-frame-type frame-type-kw)
                 frame-data (filter #(= (:frame_id %) frame-id) all-frames)]
             (if (zero? (count frame-data))
-              (handler404 req (str "No matching frame id of type: " frame-type " for frame-id: " frame-id))
+              (handler404 req (str "No matching frame id of type: " (name frame-type-kw) " for frame-id: " frame-id))
               (if (= (count frame-data) 1)
                 (valid-json-response frame-data)
-                (handler404 req (str "More than one matching frame of frame-type: " frame-type " for frame-id: " frame-id)))))))))
+                (handler404 req (str "More than one matching frame of frame-type: " (name frame-type-kw) " for frame-id: " frame-id))))))))
+
 (defonce my-pretty-printer
   (ches/create-pretty-printer
           (assoc ches/default-pretty-print-options
@@ -217,13 +204,9 @@
           (ches/generate-string final-data {:pretty my-pretty-printer}))))))
 
 (defn update-single-frame
-  [req]
+  [req, frame-type-kw]
   (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])
-        frame-id (get-in match [:path-params :frame-id])
-        frame-type-kw (keyword frame-type)]
-    (if-not (contains? frame-types-to-filename frame-type-kw)
-      (handler404 req (str "Unknown frame-type: " frame-type))
+        frame-id (get-in match [:path-params :frame-id])]
       (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
                 post-body (json/read-str (:body req) :key-fn keyword)]
             (do (let [new-data (try-update-existing-frames
@@ -232,7 +215,7 @@
                   (if (map? new-data) ;;explain-data returns a map
                     (invalid-json-response "New data didn't conform to spec" new-data
                     ;; (do (write-frame-data-to-disk frame-type-kw new-data)
-                        (valid-json-response new-data))))))))))
+                        (valid-json-response new-data)))))))))
 
 
 (defn create-single-frame
@@ -241,6 +224,15 @@
         frame-type (get-in match [:path-params :frame-type])
         frame-type-kw (keyword frame-type)]
     (valid-json-response (str "the frame-type is: " frame-type-kw) 1)))
+
+(defn with-valid-frame-type
+  [req, callback]
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])
+        frame-type-kw (keyword frame-type)]
+    (if-not (contains? frame-types-to-filename frame-type-kw)
+      (handler404 req (str "Unknown frame-type: " frame-type))
+      (callback req frame-type-kw))))
 
 (comment
   (def example-post-req
@@ -354,11 +346,11 @@
         ["/frames"
          ["" {:name ::frames-home :get test-handler}]
          ["/:frame-type" {:name ::frames-frame-type
-                          :get get-by-frame-type
-                          :post update-by-frame-type}]
+                          :get #(with-valid-frame-type % get-by-frame-type)
+                          :post #(with-valid-frame-type % update-by-frame-type)}]
          ["/:frame-type/:frame-id" {:name ::frames-single-frame
-                                    :get get-single-frame
-                                    :post update-single-frame}]]
+                                    :get #(with-valid-frame-type % get-single-frame)
+                                    :post #(with-valid-frame-type % update-single-frame)}]]
         ["/create_frame/:frame-type" {:name ::frames-create-frames
                                       :get create-single-frame
                                       :post create-single-frame}]
