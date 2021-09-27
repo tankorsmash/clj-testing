@@ -219,11 +219,16 @@
 
 
 (defn create-single-frame
-  [req]
-  (let [match (:reitit.core/match req)
-        frame-type (get-in match [:path-params :frame-type])
-        frame-type-kw (keyword frame-type)]
-    (valid-json-response (str "the frame-type is: " frame-type-kw) 1)))
+  [req, frame-type-kw]
+  (let [frame-data (:body req)
+        valid-frame? (valid-by-frame-type-un? frame-type-kw frame-data)]
+    (if-not valid-frame?
+      (invalid-json-response
+        "Not a valid frame body"
+        (explain-str-by-frame-type-un frame-type-kw frame-data))
+      (valid-json-response
+        "The valid frame was successfully created"
+        frame-data))))
 
 (defn with-valid-frame-type
   [req, callback]
@@ -237,7 +242,10 @@
 (comment
   (def example-post-req
     {:reitit.core/match {:path-params {:frame-type :weapon}}
-     :body (json/write-str {:name "josh" :age 21})})
+     ;; :body (json/write-str {:name "josh" :age 21})
+
+     :body {:name "josh" :age 21}
+     :headers {"content-type" "application/json"}})
 
   (:body example-post-req)
 
@@ -283,6 +291,7 @@
 
 (declare explain-by-frame-type-un)
 (declare explain-data-by-frame-type-un)
+(declare explain-str-by-frame-type-un)
 
 (defn try-update-existing-frames [frame-type all-frames new-frame]
   "makes sure new-frame is valid, and then updates all-frames if it is
@@ -303,6 +312,10 @@
 (defn explain-data-by-frame-type-un [frame-type frame]
   (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
     (s/explain-data req-un-spec frame)))
+
+(defn explain-str-by-frame-type-un [frame-type frame]
+  (let [req-un-spec (:req-un (frame-types-to-frame-spec frame-type))]
+    (s/explain-str req-un-spec frame)))
 
 (defn add-missing-slash
   [uri]
@@ -352,8 +365,8 @@
                                     :get #(with-valid-frame-type % get-single-frame)
                                     :post #(with-valid-frame-type % update-single-frame)}]]
         ["/create_frame/:frame-type" {:name ::frames-create-frames
-                                      :get create-single-frame
-                                      :post create-single-frame}]
+                                      :get #(with-valid-frame-type % create-single-frame)
+                                      :post #(with-valid-frame-type % create-single-frame)}]
         ["/hardware"
          ["" {:name ::hardware-root
               :get hardware-root}]
