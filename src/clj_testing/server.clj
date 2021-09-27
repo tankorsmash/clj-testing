@@ -192,7 +192,7 @@
           (assoc ches/default-pretty-print-options
                  :indentation "    ")))
 
-(defn write-frame-data-to-disk [frame-type frame-data]
+(defn write-single-frame-data-to-disk [frame-type frame-data]
   (if-not (zero? (count frame-data))
     (if (s/valid?
           (s/coll-of (:req-un (frame-types-to-frame-spec frame-type)))
@@ -213,8 +213,8 @@
                                  frame-type-kw
                                  frame-data post-body)]
                   (if (map? new-data) ;;explain-data returns a map
-                    (invalid-json-response "New data didn't conform to spec" new-data
-                    ;; (do (write-frame-data-to-disk frame-type-kw new-data)
+                    (invalid-json-response "New data didn't conform to spec" new-data)
+                    (do (write-single-frame-data-to-disk frame-type-kw new-data)
                         (valid-json-response new-data)))))))))
 
 
@@ -226,9 +226,13 @@
       (invalid-json-response
         "Not a valid frame body"
         (explain-str-by-frame-type-un frame-type-kw frame-data))
-      (valid-json-response
-        "The valid frame was successfully created"
-        frame-data))))
+      (if (-> (read-frames-from-frame-type frame-type-kw)
+              (contains? (:frame_id frame-data)))
+        (invalid-json-response (str "frame with frame_id: " (:frame_id frame-data) " already exists") {})
+        (do (write-single-frame-data-to-disk frame-type-kw frame-data)
+            (valid-json-response
+              "The valid frame was successfully created"
+              frame-data))))))
 
 (defn with-valid-frame-type
   [req, callback]
