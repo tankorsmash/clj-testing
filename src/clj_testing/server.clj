@@ -36,7 +36,22 @@
   ([req message]
    {:status 404 :headers {"Content-Type" "text/html"} :body message}))
 
-(defonce frame-types-to-filename
+(def valid-frame-types
+  #{:weapon
+    :armor
+    :zone
+    :weapon_category
+    :attribute
+    :battle_text_struct})
+
+(defn assert-all-valid-keys? [coll]
+  (for [frame-type valid-frame-types]
+    (let [valid-key? (contains? coll frame-type)]
+      (assert valid-key? (str "Missing keyword: " frame-type))
+      valid-key?)))
+
+
+(def frame-types-to-filename
          {:weapon "all_weapon_frames.json"
           :armor "all_armor_frames.json"
           :zone "all_zone_frames.json"
@@ -44,19 +59,23 @@
           :attribute "all_attribute_frames.json"
           :battle_text_struct "all_battle_text_struct_frames.json"})
 
+(assert-all-valid-keys? frame-types-to-filename)
+
 (defonce frame-types-to-frame-spec
   {:weapon {:req :frame-data.weapon/frame
             :req-un :frame-data.weapon/frame-un}
    :armor {:req :frame-data.armor/frame
            :req-un :frame-data.armor/frame-un}
-   ::zone {:req :frame-data.zone/frame
-           :req-un :frame-data.zone/frame-un}
-   ::weapon_category_category {:req :frame-data.weapon-category/frame
-                               :req-un :frame-data.weapon-category/frame-un}
-   ::attribute {:req :frame-data.attribute/frame
-                :req-un :frame-data.attribute/frame-un}
-   ::battle_text_struct {:req :frame-data.battle-text-struct/frame
-                         :req-un :frame-data.battle-text-struct/frame-un}})
+   :zone {:req :frame-data.zone/frame
+          :req-un :frame-data.zone/frame-un}
+   :weapon_category_category {:req :frame-data.weapon-category/frame
+                              :req-un :frame-data.weapon-category/frame-un}
+   :attribute {:req :frame-data.attribute/frame
+               :req-un :frame-data.attribute/frame-un}
+   :battle_text_struct {:req :frame-data.battle-text-struct/frame
+                        :req-un :frame-data.battle-text-struct/frame-un}})
+
+(assert-all-valid-keys? frame-types-to-frame-spec)
 
 (def root-static-asset-dir
   "C:\\Users\\Josh\\Documents\\cocos_projects\\magnolia_cocos\\Resources\\static_asset_dir")
@@ -211,9 +230,17 @@
                                  frame-type-kw
                                  frame-data post-body)]
                   (if (map? new-data) ;;explain-data returns a map
-                    (invalid-json-response "New data didn't conform to spec" new-data)
-                    (do (write-frame-data-to-disk frame-type-kw new-data)
+                    (invalid-json-response "New data didn't conform to spec" new-data
+                    ;; (do (write-frame-data-to-disk frame-type-kw new-data)
                         (valid-json-response new-data))))))))))
+
+
+(defn create-single-frame
+  [req]
+  (let [match (:reitit.core/match req)
+        frame-type (get-in match [:path-params :frame-type])
+        frame-type-kw (keyword frame-type)]
+    (valid-json-response (str "the frame-type is: " frame-type-kw) 1)))
 
 (comment
   (def example-post-req
@@ -332,6 +359,9 @@
          ["/:frame-type/:frame-id" {:name ::frames-single-frame
                                     :get get-single-frame
                                     :post update-single-frame}]]
+        ["/create_frame/:frame-type" {:name ::frames-create-frames
+                                      :get create-single-frame
+                                      :post create-single-frame}]
         ["/hardware"
          ["" {:name ::hardware-root
               :get hardware-root}]
