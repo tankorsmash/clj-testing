@@ -14,8 +14,8 @@
             [cheshire.core :as ches]
             [clj-http.client :as client]
             [clojure.java.shell :refer [sh]]
-            [clojure.core.match :refer [match]]))
-            ;; [jumblerg.middleware.cors :refer [wrap-cors]]))
+            [clojure.core.match :refer [match]]
+            [jumblerg.middleware.cors :refer [wrap-cors]]))
 
 (declare try-update-existing-frames)
 (declare valid-by-frame-type-un?)
@@ -177,7 +177,7 @@
 (defn update-by-frame-type
   [req, frame-type-kw]
   (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
-            post-body (json/read-str (:body req))]
+            post-body (:body req)]
         (do (println "post-map:" post-body)
             (valid-json-response frame-data)))))
 
@@ -214,8 +214,9 @@
   (let [match (:reitit.core/match req)
         frame-id (get-in match [:path-params :frame-id])]
       (do (let [frame-data (read-frames-from-frame-type frame-type-kw)
-                post-body (json/read-str (:body req) :key-fn keyword)]
-            (do (let [new-data (try-update-existing-frames
+                post-body (:body req)]
+            (do (println post-body)
+                (let [new-data (try-update-existing-frames
                                  frame-type-kw
                                  frame-data post-body)]
                   (if (map? new-data) ;;explain-data returns a map
@@ -388,9 +389,10 @@
                  (ring/create-default-handler {:not-found handler404}))))
 
 (def handler
-  (ring.middleware.json/wrap-json-body
-    inner-handler
-    {:keywords? true}))
+  (wrap-cors
+    (ring.middleware.json/wrap-json-body
+        inner-handler
+      {:keywords? true})))
 
 
 
@@ -433,6 +435,14 @@
     (if (zero? (:exit result))
       (handle-mapper-json (:out result) namespace_)
       (println "\nERROR!!!\n\n" result))))
+
+(do (register-specs "weaponMapper.js" "frame-data.weapon")
+    (register-specs "armorMapper.js" "frame-data.armor")
+    (register-specs "zoneMapper.js" "frame-data.zone")
+    (register-specs "weaponCategoryMapper.js" "frame-data.weapon-category")
+    (register-specs "attributeMapper.js" "frame-data.attribute")
+    (register-specs "battleTextStructMapper.js"
+                    "frame-data.battle-text-struct"))
 
 (comment
   (let [result (node "scripts/mapper_parsing.js" "weaponMapper.js")]
