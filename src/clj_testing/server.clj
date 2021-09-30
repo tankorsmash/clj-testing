@@ -15,6 +15,12 @@
             [clj-http.client :as client]
             [clojure.java.shell :refer [sh]]
             [clojure.core.match :refer [match]]))
+            ;; [jumblerg.middleware.cors :refer [wrap-cors]]))
+
+(declare try-update-existing-frames)
+(declare valid-by-frame-type-un?)
+(declare explain-str-by-frame-type-un)
+(declare explain-data-by-frame-type-un)
 
 ;; the routes that we want to be resolved to index.html
 (def route-set #{"/" "/contact" "/menu" "/about /testme" "/ajax"})
